@@ -1,7 +1,7 @@
 # Core
 arrow==0.10.0
 fastjsonschema==1.6
-gunicorn==19.4.5
+gunicorn==19.5.0
 jinja2==2.8.1
 jsonschema==2.6.0
 neo4j-driver==1.6.1
@@ -9,30 +9,30 @@ neo4jrestclient==2.1.1
 numpy==1.12.1
 pandas==0.23.3
 pycrypto==2.6.1
-pyyaml==3.11
+pyyaml==4.2b1
 redis==2.10.5
-requests==2.9.1
+requests==2.20.0
 werkzeug==0.14.1
 
 # Apache Airflow
-apache-airflow==1.9.0
+apache-airflow==1.10.2
 cryptography==2.4.2
 
 # SqlAlchemy
 alembic==0.8.10
 psycopg2-binary==2.7.5
-sqlalchemy==1.1.0
+sqlalchemy==1.1.15
 sqlalchemy-utils==0.33.10
 
 # Flask
-flask==0.11.1
-flask-admin==1.4.1
+flask==0.12.4
+flask-admin==1.5.3
 flask-cors==2.1.2
 flask-jsonschema==0.1.1
 flask-login==0.2.11
 flask-migrate==2.2.1
 flask-script==2.0.6
-flask-sqlalchemy==2.1
+flask-sqlalchemy==2.3
 
 # Celery
 celery==4.1.1

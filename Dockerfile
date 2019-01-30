@@ -7,6 +7,9 @@ EXPOSE 5000
 RUN mkdir -p /app
 WORKDIR /app
 
+# Apache Airflow
+ENV AIRFLOW_GPL_UNIDECODE yes
+
 # Install the Python requirements
 ADD requirements.txt /app/
 RUN pip install --upgrade pip
