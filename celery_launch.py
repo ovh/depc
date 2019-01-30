@@ -7,6 +7,6 @@ from depc.extensions import cel
 
 
 app = create_app(
-    os.getenv('DEPC_ENV') or 'default'
+    os.getenv('DEPC_ENV') or 'dev'
 )
 app.app_context().push()

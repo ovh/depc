@@ -26,8 +26,9 @@ class OperationOperator(DependenciesOperator):
         else:
             type = getattr(OperationTypes, self.type)
 
-        result = compute_qos_from_bools(
-            booleans=data, start=start, end=end, agg_op=type
-        )
+        with self.app.app_context():
+            result = compute_qos_from_bools(
+                booleans=data, start=start, end=end, agg_op=type
+            )
 
         return {"qos": result["qos"], "bools_dps": result["bools_dps"]}

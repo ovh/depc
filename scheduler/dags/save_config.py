@@ -43,7 +43,7 @@ def get_teams_schema(ds, **kwargs):
                 logger.info("[{0}] Configuration : {1}".format(team.name, config.data))
 
                 data = {
-                    "id": team.id,
+                    "id": str(team.id),
                     "name": team.name,
                     "topic": team.kafka_topic,
                     "schema": config.data,
