@@ -1,0 +1,37 @@
+{
+  "check_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name", "type", "parameters"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the check"
+      },
+      "type": {
+        "type": "string",
+        "description": "Type of check"
+      },
+      "parameters": {
+        "type": "object"
+      }
+    }
+  },
+  "check_update": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the check"
+      },
+      "type": {
+        "type": "string",
+        "description": "Type of check"
+      },
+      "parameters": {
+        "type": "object"
+      }
+    }
+  }
+}

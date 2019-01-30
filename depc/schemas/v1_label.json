@@ -1,0 +1,13 @@
+{
+  "label_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the label"
+      }
+    }
+  }
+}

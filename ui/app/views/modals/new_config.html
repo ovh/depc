@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <h3 class="modal-title">Update the configuration <span class="label label-danger pull-right">read-write</span></h3>
+</div>
+<div class="modal-body">
+	<pre data-ng-if="modalNewConfigCtrl.cmOption" ui-codemirror="modalNewConfigCtrl.cmOption" ng-model="modalNewConfigCtrl.config"></pre>
+	<br />
+	<p><i class="glyphicon glyphicon-info-sign"></i> Find the configuration format in the <a href="https://ovh.github.io/depc/" target="_blank">documentation</a>.</p>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-primary" type="button" ng-click="modalNewConfigCtrl.save()">Save</button>
+    <button class="btn btn-default" type="button" ng-click="modalNewConfigCtrl.cancel()">Close</button>
+</div>

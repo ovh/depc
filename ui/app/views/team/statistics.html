@@ -1,0 +1,53 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'statistics', team: statisticsCtrl.teamName}"></div>
+
+<div class="col-md-12">
+	<div class="row">
+
+		<div class="col-md-6">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">Filter by statistic</div>
+				<div class="panel-body">
+					<div class="loader" data-ng-if="statisticsCtrl.typeLoading"></div>
+					<div data-ng-if="!statisticsCtrl.typeLoading && statisticsCtrl.hasStatistics()">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label for="type" class="col-sm-2 control-label">Select a statistic</label>
+								<div class="col-sm-10">
+									<select class="form-control" name="type" data-ng-model="statisticsCtrl.selectedType" data-ng-change="statisticsCtrl.updateTypeChart()">
+								      <option data-ng-repeat="(type, _) in statisticsCtrl.types" ng-value="type">{{ statisticsCtrl.human_types[type] }}</option>
+								    </select>
+								</div>
+							</div>
+						</form>
+						<highchart id="chart" data-ng-if="statisticsCtrl.typeChart" config="statisticsCtrl.typeChart"></highchart>
+					</div>
+					<div data-ng-if="!statisticsCtrl.typeLoading && !statisticsCtrl.hasStatistics()">No statistic.</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">Filter by label</div>
+				<div class="panel-body">
+					<div class="loader" data-ng-if="statisticsCtrl.labelLoading"></div>
+					<div data-ng-if="!statisticsCtrl.labelLoading && statisticsCtrl.hasStatistics()">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label for="type" class="col-sm-2 control-label">Select a label</label>
+								<div class="col-sm-10">
+									<select class="form-control" name="type" data-ng-model="statisticsCtrl.selectedLabel" data-ng-change="statisticsCtrl.updateLabelChart()">
+								      <option data-ng-repeat="(label, _) in statisticsCtrl.labels">{{ label }}</option>
+								    </select>
+								</div>
+							</div>
+						</form>
+						<highchart id="chart" data-ng-if="statisticsCtrl.labelChart" config="statisticsCtrl.labelChart"></highchart>
+					</div>
+					<div data-ng-if="!statisticsCtrl.labelLoading && !statisticsCtrl.hasStatistics()">No statistic.</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

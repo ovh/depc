@@ -1,0 +1,59 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'configuration', team: configurationCtrl.teamName}"></div>
+
+<div class="col-md-12">
+	<div class="row">
+
+		<div class="col-md-3">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">History</div>
+				<div class="panel-body">
+					<div class="list-group" data-ng-if="!configurationCtrl.loadingConfigs && configurationCtrl.configs.length > 0">
+						<a data-ng-repeat="config in configurationCtrl.configs| orderBy: '-updated_at'" data-ng-click="configurationCtrl.selectConfig(config)" class="list-group-item clearfix">{{ config.updated_at | date:'medium' }}
+							<span class="badge badge-info" data-ng-if="configurationCtrl.isCurrentConfig(config)">Current</span>
+							<span class="pull-right" data-ng-if="!configurationCtrl.isCurrentConfig(config)">
+								<button class="btn btn-xs btn-default" data-ng-click="configurationCtrl.displayConfig(config)">Show</button>
+							</span>
+						</a>
+					</div>
+					<div class="loader" data-ng-if="configurationCtrl.loadingConfigs"></div>
+					<div data-ng-if="!configurationCtrl.loadingConfigs && configurationCtrl.configs.length == 0">
+						<div class="alert alert-warning">You do not have configuration yet.</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-5">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">Graph</div>
+				<div class="panel-body">
+					<vis-network data="configurationCtrl.graph.data" data-ng-if="!configurationCtrl.loadingConfigs && configurationCtrl.graph" options="configurationCtrl.graph.options" events="configurationCtrl.graph.events"></vis-network>
+					<div class="loader" data-ng-if="configurationCtrl.loadingConfigs"></div>
+					<div data-ng-if="!configurationCtrl.loadingConfigs && configurationCtrl.configs.length == 0">
+						<div class="alert alert-warning">You do not have configuration yet.</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">
+					Current Configuration <span class="label label-default">read-only</span>
+					<div class="btn-group pull-right" data-ng-if="!configurationCtrl.loadingConfigs">
+						<button data-ng-click="configurationCtrl.newConfig()" class="btn btn-default btn-xs" data-ng-if="checkGrants(configurationCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-edit"></i> Update it</button>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="panel-body">
+					<div class="loader" data-ng-if="configurationCtrl.loadingConfigs"></div>
+					<div data-ng-if="!configurationCtrl.loadingConfigs && configurationCtrl.configs.length == 0">
+						<div class="alert alert-warning">You do not have configuration yet.</div>
+					</div>
+					<pre ui-codemirror="configurationCtrl.cmOption" ng-model="configurationCtrl.currentJsonConfig" data-ng-if="!configurationCtrl.loadingCurrentConfig && configurationCtrl.currentConfig"></pre>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

@@ -1,0 +1,79 @@
+{
+    "sources": [
+        {
+            "description": "Fake source used in the documentation tutorial.",
+            "form": [],
+            "name": "Fake",
+            "schema": {
+                "properties": {},
+                "type": "object"
+            }
+        },
+        {
+            "description": "Use a database Warp10 to launch your WarpScripts.",
+            "form": [
+                {
+                    "key": "url",
+                    "placeholder": "http://127.0.0.1"
+                },
+                {
+                    "key": "token",
+                    "placeholder": "foobar"
+                }
+            ],
+            "name": "WarpScript",
+            "schema": {
+                "properties": {
+                    "token": {
+                        "description": "A read only token used authenticate the scripts.",
+                        "title": "Token",
+                        "type": "string"
+                    },
+                    "url": {
+                        "description": "The url used to launch the scripts.",
+                        "title": "Url",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url",
+                    "token"
+                ],
+                "type": "object"
+            }
+        },
+        {
+            "description": "Use an OpenTSDB database to launch your queries.",
+            "form": [
+                {
+                    "key": "url",
+                    "placeholder": "http://127.0.0.1"
+                },
+                {
+                    "key": "credentials",
+                    "placeholder": "foo:bar"
+                }
+            ],
+            "name": "OpenTSDB",
+            "schema": {
+                "properties": {
+                    "credentials": {
+                        "description": "The credentials used authenticate the queries.",
+                        "title": "Credentials",
+                        "type": "string"
+                    },
+                    "url": {
+                        "description": "The url used to query the database.",
+                        "title": "Url",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url",
+                    "credentials"
+                ],
+                "type": "object"
+            }
+        }
+    ]
+}

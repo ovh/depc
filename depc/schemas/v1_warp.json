@@ -1,0 +1,27 @@
+{
+  "check-dependency": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "domain": {
+        "type": "string"
+      },
+      "dependency": {
+        "enum": ["Filer"]
+      },
+      "value": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "domain",
+      "dependency",
+      "value",
+      "date"
+    ]
+  }
+}

@@ -1,0 +1,230 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'rules', team: rulesCtrl.teamName}"></div>
+
+<div class="col-md-12">
+	<div class="row">
+
+		<div class="col-md-3">
+
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">
+					Rules
+					<div class="btn-group pull-right">
+						<button data-ng-click="rulesCtrl.openNewRuleModal()" class="btn btn-default btn-xs" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-plus"></i> Create a new rule</button>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="panel-body" data-ng-if="rulesCtrl.selectedRule">
+					Rule selected : <strong>{{ rulesCtrl.selectedRule.name }}</strong> (<a data-ng-click="rulesCtrl.resetRule()">change</a>)
+				</div>
+				<div class="panel-body" data-ng-if="!rulesCtrl.selectedRule">
+					<div class="loader" data-ng-if="rulesCtrl.loadingRule"></div>
+					<div class="alert alert-warning" data-ng-if="!rulesCtrl.loadingRule && rulesCtrl.rules.length == 0">No rule saved.</div>
+					<div class="list-group" data-ng-if="!rulesCtrl.loadingRule && rulesCtrl.rules.length > 0">
+					  <a data-ng-repeat="rule in rulesCtrl.rules| orderBy: 'name'" data-ng-click="rulesCtrl.selectRule(rule)" class="list-group-item" data-ng-class="rulesCtrl.selectedRule == rule ? 'active' : ''">
+						<h4 class="list-group-item-heading">{{ rule.name }} <span class="badge pull-right" data-ng-class="rule.checks.length > 0 ? 'badge-info' : 'badge-default'">{{ rule.checks.length }} check{{rule.checks.length > 1 ? "s" : ""}}</span></h4>
+						<p class="list-group-item-text">{{ rule.description }}</p>
+					  </a>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
+				<div class="panel-heading">
+					Execute the rule
+					<div class="btn-group pull-right">
+						<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.openEditRuleModal()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-edit"></i> Edit</button>
+						<button class="btn btn-danger btn-xs" data-ng-click="rulesCtrl.deleteRule()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove-sign"></i> Delete</button>
+					</div>
+					<span class="clearfix"></span>
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">Name</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="name" placeholder="Host or the service to check" data-ng-model="rulesCtrl.name" ng-disabled="rulesCtrl.ruleExecuting">
+						    </div>
+						</div>
+						<div class="form-group">
+							<label for="range" class="col-sm-2 control-label">Range</label>
+							<div class="col-sm-10">
+								<div class="inner-addon right-addon">
+									<i class="glyphicon glyphicon-calendar date-picker-addon"></i>
+									<input ng-disabled="rulesCtrl.ruleExecuting" date-range-picker class="form-control date-picker" type="text" ng-model="rulesCtrl.date" options="rulesCtrl.dateOps" />
+								</div>
+							</div>
+						</div>
+					</form>
+					<hr data-ng-if="!rulesCtrl.ruleExecuting" />
+					<div class="btn-group pull-right" data-ng-if="!rulesCtrl.ruleExecuting">
+						<button class="btn btn-default" data-ng-click="rulesCtrl.executeRule()"><i class="glyphicon glyphicon-refresh"></i> Launch checks</button>
+					</div>
+					<span class="clearfix"></span>
+				</div>
+			</div>
+
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">Documentation</div>
+				<div class="panel-body">
+					<p>Find how to compute your QOS in the <a href="https://ovh.github.io/depc/" target="_blank">documentation</a>.</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default panel-depc no-margin-bottom">
+						<div class="panel-heading" data-ng-if="rulesCtrl.selectedRule">
+							<strong>Rule {{ rulesCtrl.selectedRule.name }}</strong> (<strong>{{ rulesCtrl.selectedRule.checks.length }}</strong> checks)
+							<div class="btn-group pull-right">
+								<button data-ng-click="rulesCtrl.openAssociateChecksModal()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-check"></i> Associate a check</button>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						<div class="loader" data-ng-if="rulesCtrl.ruleExecuting"></div>
+						<div style="text-align: center" data-ng-if="rulesCtrl.ruleExecuting"><h4>Querying the timeseries sources...</h4></div>
+
+						<div class="panel-body" data-ng-if='!rulesCtrl.selectedRule && !rulesCtrl.ruleExecuting'>Please select a rule.</div>
+
+						<div class="row" data-ng-if='rulesCtrl.hasResult()'>
+							<div class="col-md-12">
+								<div class="row">
+									<div class="col-lg-6 col-sm-12">
+										<div class="panel-body text-center panel-top-rules" data-ng-class="rulesCtrl.getPanel('class')">
+											<div ng-init="images={
+												'unknown': 'images/panel-unknown.png',
+												'pending': 'images/panel-unknown.png',
+												'ok': 'images/panel-ok.png',
+												'warning': 'images/panel-warning.png',
+												'critical': 'images/panel-critical.png'}">
+												<img ng-src="{{ images[rulesCtrl.getPanel('key')] }}" alt="{{ rulesCtrl.getPanel('key') }}"/>
+												<h4>
+													<abbr data-ng-if="rulesCtrl.result.qos != 'unknown'" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from the checks datapoints : every bad ticks in all checks are reported in the whole rule (we use the AND operation).'">{{ rulesCtrl.result.qos }}%</abbr>
+													<span data-ng-if="rulesCtrl.result.qos == 'unknown'">Unknown</span>
+												</h4>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-4 col-sm-12">
+										<div class="panel-body text-center no-padding" style="padding-top: 15px;">
+											<canvas style="position: relative; height:50vh; width:85vw" id="base" class="chart chart-bar" chart-colors="rulesCtrl.chartColors" chart-data="rulesCtrl.chartData" chart-labels="rulesCtrl.chartLabels" chart-options="rulesCtrl.chartOptions" ></canvas>
+										</div>
+									</div>
+									<div class="col-lg-2 col-sm-12">
+										<div class="btn-group-vertical" style="margin-top: 25px;">
+											<button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsEnableDebug()" data-ng-class="rulesCtrl.logsDebugEnabled ? 'active' : ''" type="button"><i class="glyphicon glyphicon-console"></i> Show debug logs</button>
+									        <button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsExpanded = !rulesCtrl.logsExpanded"><i class="glyphicon" data-ng-class="rulesCtrl.logsExpanded ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'"></i> {{ rulesCtrl.logsExpanded ? 'Reduce the logs' : 'Expand the logs' }}</button>
+											<button data-ng-if="rulesCtrl.result.qos != 'unknown'" data-ng-click="rulesCtrl.changeOrder()" class="btn btn-default btn-sm" data-ng-class="rulesCtrl.checksOrder == 'weight' ? 'active' : ''"><i class="glyphicon glyphicon-sort-by-order"></i> Sort checks by QOS</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-body no-padding">
+							<ovh-tail-logs data-ng-if="rulesCtrl.logs.length > 0" ng-style="rulesCtrl.logsExpanded ? {'height': '600px'} : {'height': '150px'}">
+						        <div class="row"
+										data-ng-repeat="log in rulesCtrl.logs |filter: rulesCtrl.logsFilterDebug | filter:rulesCtrl.logsFilterStr | orderBy:message.created_at track by $index"
+						                data-ng-class="{
+						                'text-muted'  : log.message.level === 'DEBUG',
+						                'text-primary' : log.message.level === 'INFO',
+						                'text-warning' : log.message.level === 'WARNING',
+						                'text-danger'  : log.message.level === 'ERROR' || log.message.level === 'CRITICAL'}">
+					                <span class="col-sm-3 col-md-3 col-lg-3" data-ng-bind="log.message.created_at | date:'M/d/yy h:mm:ss a'"></span>
+					                <span class="col-sm-2 col-md-2 col-lg-1 hidden-xs hidden-sm" data-ng-bind="log.message.level"></span>
+					                <span class="col-sm-7 col-md-7 col-lg-8" data-ng-bind="log.message.message"></span>
+					            </div>
+					            <div data-ng-if="rulesCtrl.logger.logs.length === 0">No logs available</div>
+						    </ovh-tail-logs>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
+				<div class="panel-body" data-ng-if="rulesCtrl.result && rulesCtrl.result.qos !== 'unknown'">
+					<table class="table">
+						<tbody>
+							<tr data-ng-repeat="check in rulesCtrl.result.checks" ng-class="{'no-top-border':$first}">
+								<td class="col-sm-2">
+									<div class="check-card">
+										<div class="check-card-title"><strong>{{ check.name }}</strong></div>
+										<div data-ng-if="check.timeseries.length > 1">Including {{ check.timeseries.length }} timeseries <i class="glyphicon glyphicon-info-sign icon-pointer" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from <strong>{{ check.timeseries.length }} timeseries</strong>. Only the first one is displayed here, please open the details to view them all.'"></i></div>
+										<div class="trends" data-ng-if="check.qos !== undefined">
+											<i class="glyphicon glyphicon-arrow-up text-success"></i> <abbr class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This check was in a good state during <strong>{{ rulesCtrl.getPeriodFormat(check.periods.ok, 'long') }}</strong>'">{{ rulesCtrl.getPeriodFormat(check.periods.ok, 'short') }}</abbr>
+											<i class="glyphicon glyphicon-arrow-down text-error"></i> <abbr class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This check was in a bad state during <strong>{{ rulesCtrl.getPeriodFormat(check.periods.ko, 'long') }}</strong>'">{{ rulesCtrl.getPeriodFormat(check.periods.ko, 'short') }}</abbr>
+										</div>
+										<div class="qos">
+											<span data-ng-if="check.qos !== undefined" class="label {{ rulesCtrl.getLabelClassByQos(check.qos) }}">QOS → {{ check.qos }}%</span>
+											<span data-ng-if="check.qos === undefined" class="label label-default">Unknown</span>
+										</div>
+										<button class="btn btn-primary btn-xs" data-ng-if="check.qos !== undefined" data-ng-click="rulesCtrl.displayCheckResult(check)"><i class="glyphicon glyphicon-stats"></i> Display details</button>
+									</div>
+								</td>
+								<td class="col-sm-9">
+									<highchart data-ng-if="check.chart" config="check.chart"></highchart>
+									<span class="alert alert-warning alert-check-unknown" data-ng-if="!check.chart && check.error">{{ check.error }}</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="panel-body" data-ng-if="(!rulesCtrl.result && rulesCtrl.selectedRule.checks.length && !rulesCtrl.ruleExecuting) || rulesCtrl.result.qos == 'unknown'">
+					<table class="table table-stripped">
+						<thead>
+							<tr>
+								<th>Check</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr data-ng-repeat="check in rulesCtrl.selectedRule.checks" ng-class="{'no-top-border':$first}">
+								<td>{{ check.name }}</td>
+								<td>
+									<div class="btn-group" role="group">
+									  <button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.openCheckParametersModal(check)"><i class="glyphicon glyphicon-info-sign"></i> View parameters</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="alert alert-warning" data-ng-if="!rulesCtrl.selectedRule.checks.length">No check associated.</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
+				<div class="panel-heading">
+					Variables
+					<div class="btn-group pull-right" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager', 'editor'])">
+						<a href="#/teams/{{ rulesCtrl.teamName }}/variables?level=Rule&rule={{ rulesCtrl.selectedRule.name }}" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-new-window"></i> Manage</a>
+						<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.loadVariables()"><i class="glyphicon glyphicon-refresh"></i> Refresh</button>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="panel-body">
+					<div class="loader" data-ng-if="rulesCtrl.loadingVariables"></div>
+					<div class="alert alert-warning" data-ng-if="!rulesCtrl.loadingVariables && !rulesCtrl.variables.length">No variable declared.</div>
+					<table class="table table-hover" data-ng-if="!rulesCtrl.loadingVariables && rulesCtrl.variables.length">
+						<thead>
+							<tr>
+								<td><strong>Name</strong></td>
+								<td><strong>Type</strong></td>
+								<td><strong>Value</strong></td>
+								<td><strong>Expression</strong></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr data-ng-repeat="variable in rulesCtrl.variables | orderBy: 'name'">
+								<td>{{ variable.name }}</td>
+								<td>{{ variable.type }}</td>
+								<td>{{ variable.value }}</td>
+								<td><code>{{ variable.expression }}</code></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</div>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>DepC - Dependency Checker</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/theme/twilight.css" />
+    <link rel="stylesheet" href="bower_components/vis/dist/vis.css" />
+    <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
+    <link rel="stylesheet" href="bower_components/ovh-angular-tail-logs/dist/ovh-angular-tail-logs.min.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+    <!-- build:base / -->
+    <base href="/">
+    <!-- endbuild -->
+  </head>
+  <body ng-app="depcwebuiApp">
+    <!--[if lte IE 8]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div class="header">
+        <div id="navbar" data-ng-include="'views/navbar.html'"></div>
+    </div>
+
+    <div class="content container-fluid">
+    <div ng-view=""></div>
+    </div>
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <script src="bower_components/angular-filter/dist/angular-filter.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/codemirror/lib/codemirror.js"></script>
+    <script src="bower_components/codemirror/mode/javascript/javascript.js"></script>
+    <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+    <script src="bower_components/tv4/tv4.js"></script>
+    <script src="bower_components/objectpath/lib/ObjectPath.js"></script>
+    <script src="bower_components/angular-schema-form/dist/schema-form.js"></script>
+    <script src="bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
+    <script src="bower_components/angular-schema-form-ui-codemirror/bootstrap-ui-codemirror.min.js"></script>
+    <script src="bower_components/vis/dist/vis.js"></script>
+    <script src="bower_components/angular-visjs/angular-vis.js"></script>
+    <script src="bower_components/highstock/highstock.js"></script>
+    <script src="bower_components/highcharts-ng/dist/highcharts-ng.js"></script>
+    <script src="bower_components/angular-toastr/dist/angular-toastr.tpls.js"></script>
+    <script src="bower_components/angular-confirm-modal/angular-confirm.js"></script>
+    <script src="bower_components/chart.js/dist/Chart.js"></script>
+    <script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
+    <script src="bower_components/angular-scroll-glue/src/scrollglue.js"></script>
+    <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/ovh-angular-tail-logs/dist/ovh-angular-tail-logs.min.js"></script>
+    <script src="bower_components/color-hash/dist/color-hash.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="bower_components/angular-daterangepicker/js/angular-daterangepicker.js"></script>
+    <script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+    <script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/app.js"></script>
+        <script src="scripts/filters/numberTrunc.js"></script>
+        <script src="scripts/filters/slugify.js"></script>
+        <script src="scripts/services/httpinterceptor.js"></script>
+        <script src="scripts/services/config.js"></script>
+        <script src="scripts/services/charts.js"></script>
+        <script src="scripts/services/qos.js"></script>
+        <script src="scripts/services/modal.js"></script>
+        <script src="scripts/services/rules.js"></script>
+        <script src="scripts/services/teams.js"></script>
+        <script src="scripts/services/sources.js"></script>
+        <script src="scripts/services/users.js"></script>
+        <script src="scripts/services/variables.js"></script>
+        <script src="scripts/services/breadcrumbs.js"></script>
+        <script src="scripts/services/dependencies.js"></script>
+        <script src="scripts/services/statistics.js"></script>
+        <script src="scripts/controllers/navbar.js"></script>
+        <script src="scripts/controllers/modal_display_check_result.js"></script>
+        <script src="scripts/controllers/modal_new_rule.js"></script>
+        <script src="scripts/controllers/modal_edit_rule.js"></script>
+        <script src="scripts/services/configurations.js"></script>
+        <script src="scripts/controllers/teams.js"></script>
+        <script src="scripts/controllers/modal_associate_checks.js"></script>
+        <script src="scripts/controllers/display_check_parameters.js"></script>
+        <script src="scripts/controllers/team/dashboard.js"></script>
+        <script src="scripts/controllers/team/dependencies.js"></script>
+        <script src="scripts/controllers/team/item.js"></script>
+        <script src="scripts/controllers/team/label.js"></script>
+        <script src="scripts/controllers/team/rules.js"></script>
+        <script src="scripts/controllers/team/sources.js"></script>
+        <script src="scripts/controllers/team/checks.js"></script>
+        <script src="scripts/controllers/team/variables.js"></script>
+        <script src="scripts/controllers/team/permissions.js"></script>
+        <script src="scripts/controllers/team/configuration.js"></script>
+        <script src="scripts/controllers/team/statistics.js"></script>
+        <script src="scripts/controllers/modal_new_config.js"></script>
+        <script src="scripts/controllers/modal_display_config.js"></script>
+        <!-- endbuild -->
+</body>
+</html>

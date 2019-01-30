@@ -1,0 +1,102 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'dashboard', team: labelCtrl.teamName}"></div>
+
+<div class="col-md-12">
+    <div class="row">
+
+        <div class="col-lg-8">
+            <div class="panel panel-default panel-depc" data-ng-repeat="(month, monthData) in labelCtrl.periods">
+                <div class="panel-heading">
+                    {{ month }} <span data-ng-if="!$first">→</span> <span data-ng-if="!$first" style="font-size: 13px;" class="label" data-ng-class="labelCtrl.getLabelClassByQos(monthData.average)">{{ monthData.average | numberTrunc: 3 }}%</span>
+                </div>
+                <div class="small-box" data-ng-if="monthData.average" data-ng-if="$first" data-ng-class="labelCtrl.getSlideBg(monthData.average)">
+                    <div class="inner">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h3>{{ monthData.average | numberTrunc: 3 }}%</h3>
+                                <p><abbr data-ng-if="monthData.average != 0" class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'All {{ labelCtrl.label }} were available on average <strong>{{ monthData.average | numberTrunc: 3 }}%</strong> during {{ $root.globals.date.format('MMMM YYYY') }}'">average QoS</abbr></p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>{{ monthData.warnings }}</h3>
+                                <p><abbr class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'Number of days where <strong>95%&nbsp;<=&nbsp;QoS&nbsp;<&nbsp;98%</strong>'">days in warning</abbr></p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>{{ monthData.errors }}</h3>
+                                <p><abbr class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'Number of days where <strong>QoS&nbsp;<&nbsp;95%</strong>'">days in critical</abbr></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-stats">
+                    <highchart id="chart" data-ng-if="monthData.chart" config="monthData.chart"></highchart>
+                    <div class="loader" data-ng-if="!monthData.chart"></div>
+                    <div style="text-align: center" data-ng-if="!monthData.chart"><h3>Querying the Warp10 database...</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+        	<div class="row">
+				<div class="col-md-12">
+                    <div class="panel panel-default panel-depc">
+                        <div class="panel-heading">Search</div>
+                        <div class="panel-body">
+                            <form role="search" id="search" data-ng-submit="labelCtrl.searchNode()">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search a node" data-ng-model="labelCtrl.nodeSearched">
+                                    <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" data-ng-click="labelCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
+                                  </span>
+                                </div>
+                                <div class="loader" data-ng-if="labelCtrl.loadNodes"></div>
+                                <div data-ng-if="labelCtrl.resultTitle">
+                                    <br />
+                                    <div data-ng-if="labelCtrl.nodesResult.length > 0">
+                                        <h4>Result ({{ labelCtrl.resultTitle }}) :</h4>
+                                    </div>
+                                    <div data-ng-if="labelCtrl.nodesResult.length == 0">
+                                        <div class="alert alert-info">No result.</div>
+                                    </div>
+                                </div>
+                                <div class="list-group" data-ng-if="labelCtrl.nodesResult.length > 0">
+                                  <a data-ng-repeat="node in labelCtrl.nodesResult track by $index" data-ng-href="#/teams/{{ labelCtrl.teamName }}/dashboard/{{ labelCtrl.label }}/{{ node }}{{ getDateUrlParams() }}" class="list-group-item">
+                                    {{ node }}
+                                  </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+					<div class="panel panel-default panel-depc">
+		                <div class="panel-heading">Worst QOS for {{ labelCtrl.selectedWorstDay }} <i class="glyphicon glyphicon-info-sign" uib-tooltip="Click on a day to display its worst QOS." tooltip-append-to-body="true"></i></div>
+		                <div class="panel-body">
+                            <div class="loader" data-ng-if="labelCtrl.worstLoading"></div>
+                            <div class="" data-ng-if="!labelCtrl.worstLoading && !labelCtrl.items.length">
+                                <div class="text-center">
+                                    <i class="glyphicon glyphicon-ok-circle" style="font-size: 150px; color: #6fd36b;"></i>
+                                    <br /><br />
+                                    <div class="alert alert-success">
+                                        <span>Well done, your QOS is <strong>100%</strong> for <strong>{{ labelCtrl.selectedWorstDay }}</strong> !</span>
+                                    </div>
+                                </div>
+                            </div>
+		                    <table class="table table-stripped" data-ng-if="!labelCtrl.worstLoading && labelCtrl.items.length > 0">
+		                        <thead>
+		                            <tr>
+		                                <th></th>
+		                                <th class="text-center">QoS</th>
+		                            </tr>
+		                        </thead>
+		                        <tbody>
+		                            <tr data-ng-repeat="item in labelCtrl.items | orderBy: 'qos'">
+		                                <td><a href="#/teams/{{ labelCtrl.teamName }}/dashboard/{{ labelCtrl.label }}/{{ item.name }}{{ getDateUrlParams() }}">{{ item.name }}</a></td>
+		                                <td class="text-center"><span class="label label-{{ labelCtrl.getStateByQos(item.qos) }}">{{ item.qos | numberTrunc: 3 }}%</span></td>
+		                            </tr>
+		                        </tbody>
+		                    </table>
+		                </div>
+		            </div>
+				</div>
+    		</div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,155 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'dependencies', team: dependenciesCtrl.teamName}"></div>
+
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default panel-depc" data-ng-if="!dependenciesCtrl.selectedLabel">
+				<div class="panel-heading">List of labels</div>
+				<div class="panel-body">
+
+					<div class="table-responsive" data-ng-if="!dependenciesCtrl.labelsLoading && dependenciesCtrl.labels.length">
+						<table id="results" class="table table-striped table-hover">
+							<thead>
+							<tr>
+								<th>Label</th>
+								<th>QoS Query <i class="glyphicon glyphicon-info-sign" uib-tooltip="The QoS Query is used to compute the QOS of your nodes (you must declare it in the configuration tab)." tooltip-append-to-body="true"></i></th>
+								<th class="text-center"><strong>Nodes</strong></th>
+							</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">
+									<td><a uib-tooltip="Display Nodes" tooltip-append-to-body="true" data-ng-click="dependenciesCtrl.selectLabel(label.name)">{{ label.name }}</a></td>
+									<td>
+										<span data-ng-if="label.qos_query != null"><code>{{ label.qos_query }}</code></span>
+										<span data-ng-if="label.qos_query == null"><i class="glyphicon glyphicon-ban-circle" uib-tooltip="Some nodes have been pushed but no QOS Query has been declared in the configuration for this label." tooltip-append-to-body="true"></i></span>
+									</td>
+									<td class="text-center">
+										<span class="badge badge-info" data-ng-if="label.nodes_count != 0">{{ label.nodes_count }}</span>
+										<i data-ng-if="label.nodes_count == 0" class="glyphicon glyphicon-ban-circle" uib-tooltip="This label is declared in the configuration but no node has been pushed yet." tooltip-append-to-body="true"></i>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="loader" data-ng-if="dependenciesCtrl.labelsLoading"></div>
+					<div class="alert alert-warning" data-ng-if="!dependenciesCtrl.labelsLoading && dependenciesCtrl.labels.length == 0">No label available.</div>
+				</div>
+			</div>
+			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel">
+				<div class="panel-heading"><u>Label :</u> {{ dependenciesCtrl.selectedLabel }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetLabel()">Choose another label</button></div>
+			</div>
+			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel && !dependenciesCtrl.selectedNode">
+				<div class="panel-heading">Select a node</div>
+				<div class="panel-body">
+					<div class="row">
+					 	<div class="col-xs-9">
+					 		<form role="search" id="search" data-ng-submit="dependenciesCtrl.searchNode()">
+					 			<div class="input-group">
+					 				<input type="text" class="form-control" placeholder="Search a node" data-ng-model="dependenciesCtrl.nodeSearched">
+							      	<span class="input-group-btn">
+							        <button class="btn btn-default" type="button" data-ng-click="dependenciesCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
+							      </span>
+							    </div>
+					        </form>
+						</div>
+						<div class="col-xs-3">
+							<button class="btn btn-default" data-ng-click="dependenciesCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
+						</div>
+				  	</div>
+				  	<div class="loader" data-ng-if="dependenciesCtrl.loadNodes"></div>
+				  	<div data-ng-if="dependenciesCtrl.resultTitle">
+				  		<hr />
+			  			<div data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+				  			<h4>Result ({{ dependenciesCtrl.resultTitle }}) :</h4>
+				  		</div>
+				  		<div data-ng-if="dependenciesCtrl.nodesResult.length == 0">
+				  			<div class="alert alert-info">No result.</div>
+			  			</div>
+				  	</div>
+			        <div class="list-group" data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+					  <a data-ng-repeat="node in dependenciesCtrl.nodesResult track by $index" data-ng-click="dependenciesCtrl.selectNode(node)" class="list-group-item">
+					  	{{ node }}
+					  </a>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
+				<div class="panel-heading"><u>Node :</u> {{ dependenciesCtrl.selectedNode }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetNode()">Choose another node</button></div>
+			</div>
+			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
+				<div class="panel panel-heading">Legend</div>
+				<div class="panel-body">
+					<div class="list-group">
+					  <a data-ng-repeat="(label, color) in dependenciesCtrl.legend" class="list-group-item">
+					  	{{ label }}
+					  	<div class="pull-right" id="circle" style="background-color: {{ color }}"></div>
+					  </a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">
+					Dependencies
+				</div>
+				<div class="panel-body">
+					<div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
+					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
+					<div data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.hasMonitoredLabel()  && !dependenciesCtrl.dependenciesLoading">
+						<div class="alert alert-info">
+							<p>
+								<i class="glyphicon glyphicon-info-sign"></i>
+								<strong>You have no monitored dependencies</strong>
+							</p>
+							<p>A monitored dependency is a node from which its label has an associated rule.</p>
+						</div>
+					</div>
+					<table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasMonitoredLabel() && !dependenciesCtrl.dependenciesLoading">
+						<thead>
+							<tr>
+								<th class="no-border-left"></th>
+								<th class="border-top">Name</th>
+								<th class="text-center border-top col-md-2">QOS</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies.isMonitored">
+								<th class="align-middle text-center" rowspan="{{val.nodes.length}}">{{ key }}
+								</th>
+								<td>{{val.nodes[0].name}}</td>
+								<td class="col-md-3 text-center">
+									<div class="btn-group">
+										<a data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{val.nodes[0].name}}" class="btn btn-xs btn-default">QOS Evolution</a>
+										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{val.nodes[0].name}}" class="btn btn-default btn-xs">Graph</a>
+										<a data-ng-click="dependenciesCtrl.deleteNode(val.nodes[0])" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete node</a>
+									</div>
+								</td>
+							</tr>
+							<tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)">
+								<td>{{value.name}}</td>
+								<td class="col-md-3 text-center">
+									<div class="btn-group">
+										<a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{value.name}}" class="btn btn-xs btn-default">QOS Evolution</a>
+										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{ value.name }}" class="btn btn-default btn-xs">Graph</a>
+										<a data-ng-click="dependenciesCtrl.deleteNode(value)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete node</a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="panel panel-default panel-depc">
+				<div class="panel-heading">Graph</div>
+				<div class="panel-body">
+					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
+					<div data-ng-if="!dependenciesCtrl.selectedNode">Please select a node.</div>
+					<vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

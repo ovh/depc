@@ -1,0 +1,83 @@
+SQLALCHEMY_DATABASE_URI: postgresql://user:pass@host/database?connect_timeout=5&keepalives=1&keepalives_idle=5&keepalives_interval=5&keepalives_count=2
+
+SECRET: mysecretkey
+
+DB_ENCRYPTION_KEY: mydbencryptionkey
+
+FLOAT_DECIMAL: 3
+
+FORCE_INSECURE_ADMIN: false
+
+CELERY_CONF:
+    BROKER_URL: redis://localhost/1
+    CELERY_RESULT_BACKEND: redis://localhost/2
+    CELERY_URL_PREFIX: celery
+
+NEO4J:
+    url: http://127.0.0.1:7474
+    uri: bolt://127.0.0.1:7687
+    username: neo4j
+    password: p4ssw0rd
+
+WARP10:
+    url: https://example.com/api/v0
+    rotoken: token
+    wtoken: token
+
+WARP10_CACHE:
+    url: https://example.com/api/v0
+    rotoken: token
+    wtoken: token
+
+REDIS_CACHE:
+    url: redis://localhost/3
+
+# Required to run DepC DAGs with Airflow
+REDIS_SCHEDULER_CACHE:
+    url: redis://localhost/4
+
+BEAMIUM:
+  source-dir: /opt/beamium/sources
+
+LOGGING:
+  filters:
+    result:
+      (): depc.logs.filters.ResultFilter
+  formatters:
+    normal:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    colored:
+      (): depc.logs.formatters.ColoredFormatter
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  handlers:
+    console:
+      level: DEBUG
+      class: logging.StreamHandler
+      formatter: colored
+      stream: ext://sys.stdout
+    database:
+      level: DEBUG
+      class: depc.logs.handlers.DatabaseHandler
+      filters: [result]
+  root:
+    level: DEBUG
+    handlers: [console, database]
+    propagate: 1
+  disable_existing_loggers: false
+
+# Configure the Kafka consumer to populate the Neo4j graph database
+# The consumer uses SASL/PLAIN authentication
+# One topic per team
+CONSUMER:
+    kafka:
+        hosts: localhost:9093
+        batch_size: 10
+        topics: [depc.my_topic]
+        username: depc.consumer
+        password: p4ssw0rd
+        client_id: depc.consumer
+        group_id: depc.consumer.depc_consumer_group
+    logging:
+        level: INFO
+    heartbeat:
+        delay: 5

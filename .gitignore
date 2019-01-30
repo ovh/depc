@@ -1,0 +1,47 @@
+# Configuration
+depc.prod.yml
+depc.production.yml
+depc.dev.yml
+depc.development.yml
+depc.test.yml
+depc.testing.yml
+
+# IDE
+.idea
+.vscode
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Airflow
+scheduler/airflow.cfg
+scheduler/airflow.db
+scheduler/unittests.cfg
+scheduler/logs/
+scheduler/airflow-webserver.pid
+
+# Sphinx
+docs/_build/
+
+# UI
+ui/node_modules/
+ui/dist/
+ui/.tmp/
+ui/bower_components/
+
+# macOS
+.DS_Store
+
+
+# Tests
+.coverage
+htmlcov/
+.pytest_cache/

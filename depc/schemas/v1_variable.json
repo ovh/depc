@@ -1,0 +1,20 @@
+{
+  "variable_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name", "value", "type"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the variable"
+      },
+      "value": {
+        "type": "string",
+        "description": "Value of the variable"
+      },
+      "type": {
+        "enum": ["string", "text", "number"]
+      }
+    }
+  }
+}

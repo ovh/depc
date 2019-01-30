@@ -1,0 +1,31 @@
+<div class="col-md-12">
+	<div id="custom-search-input">
+        <div class="input-group col-md-12">
+            <input type="text" class="form-control input-lg" placeholder="Search team" ng-model="teamsCtrl.searchTeam"/>
+            <span class="input-group-btn">
+                <button class="btn btn-info btn-lg" type="button">
+                    <i class="glyphicon glyphicon-search"></i>
+                </button>
+            </span>
+        </div>
+    </div>
+    <div class="row" data-ng-if="teamsCtrl.teamsLoading">
+		<div class="loader"></div>
+	</div>
+	<div class="alert alert-info" data-ng-if="teamsCtrl.teams.userOf.teams.length == 0">
+		<p>
+			<i class="glyphicon glyphicon-info-sign"></i>
+			<strong>You are not a member of any team</strong>
+		</p>
+		<p>You must ask a manager to join a team (you can display the managers by clicking on the <strong>user</strong> button in the bottom right of each team).</p>
+	</div>
+
+	<div class="row" data-ng-repeat="(_, data) in teamsCtrl.teams" data-ng-if='!teamsCtrl.teamsLoading'>
+		<div class="col-md-12" data-ng-if="filtered.length > 0">
+			<h3 class="team-headline">{{ data.title }}</h3>
+		</div>
+		<div class="col-md-4 team-container" data-ng-class="{'team-container-disable' : data.title != 'Your teams'}" data-ng-repeat="team in filtered = (data.teams | orderBy: 'name'| filter:{name:teamsCtrl.searchTeam})">
+			<a href="#/teams/{{ team.name }}{{ getDateUrlParams() }}">{{ team.name }}</a>
+		</div>
+	</div>
+</div>

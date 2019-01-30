@@ -1,0 +1,128 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'variables', team: variablesCtrl.teamName}"></div>
+
+<div class="col-md-5">
+	<div class="panel panel-default panel-depc">
+		<div class="panel-heading">
+			Select a level
+			<div class="clearfix"></div>
+		</div>
+		<div class="panel-body">
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="level" class="col-sm-2 control-label">Level</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="level" data-ng-model="variablesCtrl.level" data-ng-change="variablesCtrl.selectLevel()">
+					      <option data-ng-repeat="level in variablesCtrl.levels">{{ level }}</option>
+					    </select>
+					</div>
+				</div>
+				<div class="form-group" data-ng-if="variablesCtrl.level == 'Rule'">
+					<label for="rule" class="col-sm-2 control-label">Rule</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="rule" data-ng-model="variablesCtrl.rule">
+					      <option data-ng-repeat="rule in variablesCtrl.rules | orderBy: 'name'" data-ng-value="rule" data-ng-click="variablesCtrl.selectRule(rule)">{{ rule.name }}</option>
+					    </select>
+					</div>
+				</div>
+				<div class="form-group" data-ng-if="variablesCtrl.level == 'Source' || variablesCtrl.level == 'Check'">
+					<label for="source" class="col-sm-2 control-label">Source</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="source" data-ng-model="variablesCtrl.source">
+					      <option data-ng-repeat="source in variablesCtrl.sources | orderBy: 'name'" data-ng-value="source" data-ng-click="variablesCtrl.selectSource(source)">{{ source.name }}</option>
+					    </select>
+					</div>
+				</div>
+				<div class="form-group" data-ng-if="variablesCtrl.level == 'Check'">
+					<label for="check" class="col-sm-2 control-label">Check</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="check" data-ng-model="variablesCtrl.check">
+					      <option data-ng-repeat="check in variablesCtrl.checks | orderBy: 'name'" data-ng-value="check" data-ng-click="variablesCtrl.selectCheck(check)">{{ check.name }}</option>
+					    </select>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="panel panel-default panel-depc">
+		<div class="panel-heading">
+			List of Variables
+			<div class="btn-group pull-right" data-ng-if="!variablesCtrl.loadingVariables">
+				<button data-ng-click="variablesCtrl.newVariable()" class="btn btn-default btn-xs" data-ng-class="(variablesCtrl.mode == 'new') ? 'active': ''" data-ng-if="checkGrants(variablesCtrl.teamName, ['manager', 'editor'])"><i class="glyphicon glyphicon-plus"></i> Create a new variable</button>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="panel-body">
+			<div class="loader" data-ng-if="variablesCtrl.loadingVariables"></div>
+			<div class="alert alert-warning" data-ng-if="!variablesCtrl.loadingVariables && !variablesCtrl.variables.length">No variable declared.</div>
+			<table class="table table-hover" data-ng-if="!variablesCtrl.loadingVariables && variablesCtrl.variables.length">
+				<thead>
+					<tr>
+						<td><strong>Name</strong></td>
+						<td><strong>Type</strong></td>
+						<td><strong>Expression</strong></td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-ng-repeat="variable in variablesCtrl.variables | orderBy: 'name'">
+						<td>{{ variable.name }}</td>
+						<td>{{ variable.type }}</td>
+						<td><code>{{ variable.expression }}</code></td>
+						<td>
+							<div class="btn-group pull-right">
+								<button class="btn btn-xs" data-ng-class="(variable == variablesCtrl.variable) ? 'btn-primary' : 'btn-default'" data-ng-click="variablesCtrl.editVariable(variable)" data-ng-if="checkGrants(variablesCtrl.teamName, ['manager', 'editor'])"><i class="glyphicon glyphicon-edit"></i> Edit</button>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<div class="col-md-7">
+	<div class="panel panel-default panel-depc" data-ng-if="checkGrants(variablesCtrl.teamName, ['manager', 'editor'])">
+		<div class="panel-heading">
+			<span class="text-capitalize">{{ variablesCtrl.mode }} variable</span>
+		</div>
+		<div class="panel-body" data-ng-if="variablesCtrl.loadingVariables">
+			<div class="loader"></div>
+		</div>
+		<div class="panel-body" data-ng-if="!variablesCtrl.loadingVariables">
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label">Name</label>
+					<div class="col-sm-10">
+						<input class="form-control" id="name" data-ng-model="variablesCtrl.name" type="text">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="type" class="col-sm-2 control-label">Type</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="type" data-ng-model="variablesCtrl.type" data-ng-change="variablesCtrl.changeCm()">
+					      <option data-ng-repeat="type in variablesCtrl.availableTypes | orderBy:'toString()'">{{ type }}</option>
+					    </select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="value" class="col-sm-2 control-label">Value</label>
+					<div class="col-sm-10">
+						<textarea ui-codemirror="variablesCtrl.cmOption" class="form-control" rows=10 name="value" data-ng-model="variablesCtrl.value"></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="panel-footer" data-ng-if="!variablesCtrl.loadingVariable && checkGrants(variablesCtrl.teamName, ['manager', 'editor'])">
+			<div class="btn-group pull-left" data-ng-if="variablesCtrl.mode == 'edit'">
+				<button class="btn btn-danger" data-ng-click="variablesCtrl.deleteVariable()" data-ng-if="checkGrants(variablesCtrl.teamName, ['manager', 'editor'])">Delete the variable</button>
+			</div>
+			<div class="btn-group pull-right">
+				<button class="btn btn-primary" data-ng-click="variablesCtrl.save()">Save</button>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+
+</div>

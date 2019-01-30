@@ -1,0 +1,151 @@
+<div data-ng-include="'views/team/navbar.html'" ng-init="data = {menu: 'dashboard', team: itemCtrl.teamName}"></div>
+
+<div class="col-md-12" data-ng-if="itemCtrl.loading">
+    <div class="loader"></div>
+    <div style="text-align: center"><h3>Querying the Warp10 database...</h3></div>
+</div>
+
+<div class="col-md-6 col-md-offset-3" data-ng-if="itemCtrl.average == 'unknown'">
+    <div class="small-box bg-unknown">
+        <div class="inner">
+            <div class="row text-center">
+                <img src="images/empty.png" alt="Empty"/>
+                <br />
+                <h3>No QOS for {{ itemCtrl.name }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12" data-ng-if="!itemCtrl.loading && itemCtrl.average != 'unknown'">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="panel panel-default panel-depc" style="height: 480px;">
+                <div class="panel-heading">QOS Evolution</div>
+                <div class="small-box" data-ng-class="itemCtrl.getSlideBg(itemCtrl.average)">
+                    <div class="inner">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h3>{{ itemCtrl.average | numberTrunc: 3 }}%</h3>
+                                <p><abbr data-ng-if="monthData.average != 0" class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'This item <strong>average QOS</strong> during {{ $root.globals.date.format('MMMM YYYY') }}'">average QoS</abbr></p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>{{ itemCtrl.warnings }}</h3>
+                                <p><abbr class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'Number of days where <strong>95%&nbsp;<=&nbsp;QOS&nbsp;<&nbsp;98%</strong>'">days in warning</abbr></p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>{{ itemCtrl.errors }}</h3>
+                                <p><abbr class="help underlined" popover-trigger="'mouseenter'" uib-popover-html="'Number of days where <strong>QOS&nbsp;<&nbsp;95%</strong>'">days in critical</abbr></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-stats">
+                    <highchart id="chart" data-ng-if="itemCtrl.lineChart" config="itemCtrl.lineChart"></highchart>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="panel panel-default panel-depc" style="height: 480px;">
+                <div class="panel-heading">
+                    List of dependencies
+                    <div class="btn-group pull-right" data-ng-if="itemCtrl.qosQuery.type == 'dependencies'">
+                        <a href="#/teams/{{ itemCtrl.teamName }}/dependencies?label={{ itemCtrl.label }}&node={{ itemCtrl.name }}" class="btn btn-default btn-xs" uib-tooltip="The following graph displays the dependencies used in the QOS compute, click here to display the full list of dependencies." tooltip-append-to-body="true">View complete list</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <div data-ng-if="!itemCtrl.qosQuery">
+                        <p class="alert alert-warning">
+                            It seems you don't have any configuration for the <strong>{{ itemCtrl.label }}</strong> label.
+                            <br /><br />
+                            Maybe you created it in the past, some QOS have been computed so you can see older ones, then you removed it and no new QOS can be computed.
+                            <br /><br />
+                            Go to the <a href="#/teams/{{ itemCtrl.teamName }}/configuration?m={{ $root.globals.date.format('MM-YYYY') }}">configuration</a> tab to fix it.
+                        </p>
+                    </div>
+                    <div data-ng-if="itemCtrl.qosQuery.type == 'rule'">
+                        <p class="alert alert-info"><i class="glyphicon glyphicon-info-sign"></i> The QOS of <strong>{{ itemCtrl.name }}</strong> is computed from the rule <code>{{ itemCtrl.rule.name }}</code>.</p>
+                        <form class="form-inline" data-ng-if="!rulesCtrl.ruleExecuting">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <div class="dropdown">
+                                        Select a day :
+                                        <a class="dropdown-toggle" id="dropdown1" role="button" data-toggle="dropdown">
+                                        <div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="itemCtrl.ruleDate"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
+                                        </a>
+                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                            <datetimepicker data-ng-model="itemCtrl.ruleDate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'DD-MM-YYYY', renderOn: 'datepicker-changed'}"/>
+                                        </ul>
+                                        <a class="btn btn-primary" target="_blank" ng-href="{{ itemCtrl.getRuleDetailsUrl() }}"><i class="glyphicon glyphicon-new-window"></i> Execute</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div data-ng-if="itemCtrl.qosQuery.type == 'dependencies'">
+                        <p class="alert alert-info"><i class="glyphicon glyphicon-info-sign"></i> The QOS of <strong>{{ itemCtrl.name }}</strong> is computed using the following query : <code>{{ itemCtrl.currentConfig[itemCtrl.label].qos }}</code></p>
+                        <p class="alert alert-warning" data-ng-if="itemCtrl.dependenciesCount > 1000">This node has more than 1000 dependencies, we can not display them all. We are working hard to provide you a better experience on this.</p>
+                        <uib-tabset active="active">
+                            <uib-tab index="0" heading="Graph">
+                                <vis-network data="itemCtrl.graph.data" data-ng-if="itemCtrl.graph" options="itemCtrl.graph.options" events="itemCtrl.graph.events"></vis-network>
+                            </uib-tab>
+                            <uib-tab index="1" heading="List">
+                                <div class="table-container">
+                                    <div class="table-subcontainer">
+                                        <table class="table table-striped table-hover table-long" data-ng-if="itemCtrl.dependencies.length">
+                                            <tbody>
+                                                <tr data-ng-repeat="dep in itemCtrl.dependencies">
+                                                    <td>{{ dep.label }}</td>
+                                                    <td>{{ dep.name }}</td>
+                                                    <td>
+                                                        <div class="btn-group">
+                                                            <a href="#/teams/{{ itemCtrl.teamName }}/dashboard/{{ dep.label }}/{{ dep.name }}" class="btn btn-default btn-xs">QOS evolution</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </uib-tab>
+                        </uib-tabset>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12" data-ng-if="!itemCtrl.loading && itemCtrl.average != 'unknown' && itemCtrl.qosQuery.type == 'dependencies'">
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="title-bordered">First Dependencies QOS <i class="glyphicon glyphicon-info-sign" uib-tooltip="This list will changed in a next release to show you the dependencies with the worst QOS." tooltip-append-to-body="true"></i></h3>
+        </div>
+        <div class="col-md-4" data-ng-repeat="(dep, data) in itemCtrl.dependenciesQos">
+            <div class="panel panel-default panel-depc">
+                <div class="panel-heading">
+                    <strong>[{{ data.label }}]</strong> {{ data.name }} <span class="label label-success" data-ng-if="data.chart && data.chart != 'loading'">{{ data.chart.average | numberTrunc: 3 }}%</span>
+                    <div class="btn-group pull-right">
+                        <a href="#/teams/{{ itemCtrl.teamName }}/dashboard/{{ data.label }}/{{ data.name }}{{ getDateUrlParams() }}" class="btn btn-default btn-xs">View details</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body" style="height: 175px;">
+                    <div class="loader" data-ng-if="data.chart && data.chart == 'loading'"></div>
+                    <highchart id="chart" data-ng-if="data.chart && data.chart != 'loading'" config="data.chart.dps" data-ng-if="data.chart"></highchart>
+                    <span data-ng-if="!data.chart">
+                        <div class="row text-center">
+                            <br />
+                            <img src="images/empty.png" alt="Empty"/>
+                            <br />
+                            <h4>No QOS for {{ data.name }}</h4>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

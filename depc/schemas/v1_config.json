@@ -1,0 +1,41 @@
+{
+  "$comment": "ANY CHANGES APPLIED ON REGEX PATTERNS HERE SHOULD BE ADAPTED TO EXTRACTING PATTERNS AT: scheduler/dags/generate_dags.py",
+  "config_input": {
+    "type": "object",
+    "patternProperties": {
+      "^[A-Z]+[a-zA-Z0-9]*$": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["qos"],
+        "properties": {
+          "qos": {
+            "description": "The QOS query",
+            "type": "string",
+            "anyOf": [{
+               "description": "Regex for QOS based on a rule",
+               "type": "string",
+               "pattern": "^rule.(.+|'.+')$"
+            }, {
+               "description": "Regex for QOS based on the AND & OR operations",
+               "type": "string",
+               "pattern": "^operation.(AND|OR)\\(?\\)?(\\[[A-Z]+[a-zA-Z0-9]*(, [A-Z]+[a-zA-Z0-9]*)*?\\])$"
+            }, {
+               "description": "Regex for QOS based on the ATLEAST operation",
+               "type": "string",
+               "pattern": "^operation.(ATLEAST)\\([0-9]+\\)(\\[[A-Z]+[a-zA-Z0-9]*(, [A-Z]+[a-zA-Z0-9]*)*?\\])$"
+            }, {
+               "description": "Regex for QOS based on the RATIO operation",
+               "type": "string",
+               "pattern": "^operation.(RATIO)\\(0.[0-9]+\\)(\\[[A-Z]+[a-zA-Z0-9]*(, [A-Z]+[a-zA-Z0-9]*)*?\\])$"
+            }, {
+               "description": "Regex for QOS based on an aggregation",
+               "type": "string",
+               "pattern": "^aggregation.(AVERAGE|MIN|MAX)\\(?\\)?(\\[[A-Z]+[a-zA-Z0-9]*(, [A-Z]+[a-zA-Z0-9]*)*?\\])$"
+            }]
+          }
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

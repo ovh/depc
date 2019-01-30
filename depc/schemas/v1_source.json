@@ -1,0 +1,37 @@
+{
+  "source_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name", "plugin", "configuration"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the source"
+      },
+      "plugin": {
+        "type": "string",
+        "description": "Plugin to use for interaction with the source"
+      },
+      "configuration": {
+        "type": "object"
+      }
+    }
+  },
+  "source_update": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the source"
+      },
+      "plugin": {
+        "type": "string",
+        "description": "Plugin to use for interaction with the source"
+      },
+      "configuration": {
+        "type": "object"
+      }
+    }
+  }
+}

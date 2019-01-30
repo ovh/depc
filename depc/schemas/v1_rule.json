@@ -1,0 +1,70 @@
+{
+  "rule_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the rule"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the rule"
+      }
+    }
+  },
+  "rule_execute": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "start",
+      "end"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the dependency"
+      },
+      "end": {
+        "type": "integer",
+        "description": "The end timestamp"
+      },
+      "start": {
+        "type": "integer",
+        "description": "The from timestamp"
+      }
+    }
+  },
+  "rule_update": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the rule"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the rule"
+      }
+    }
+  },
+  "rule_change_checks": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["checks"],
+    "properties": {
+      "checks": {
+        "description": "Checks added in the rule",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

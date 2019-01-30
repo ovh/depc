@@ -1,0 +1,27 @@
+{
+  "grants_input": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["grants"],
+    "properties": {
+      "grants": {
+        "description": "Grants for the team",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["user", "role"],
+          "properties": {
+            "user": {
+              "description": "User to grant",
+              "type": "string"
+            },
+            "role": {
+              "description": "Role to grant",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

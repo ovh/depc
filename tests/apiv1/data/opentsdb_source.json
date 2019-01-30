@@ -1,0 +1,32 @@
+{
+    "description": "Use an OpenTSDB database to launch your queries.",
+    "form": [
+        {
+            "key": "url",
+            "placeholder": "http://127.0.0.1"
+        },
+        {
+            "key": "credentials",
+            "placeholder": "foo:bar"
+        }
+    ],
+    "schema": {
+        "properties": {
+            "credentials": {
+                "description": "The credentials used authenticate the queries.",
+                "title": "Credentials",
+                "type": "string"
+            },
+            "url": {
+                "description": "The url used to query the database.",
+                "title": "Url",
+                "type": "string"
+            }
+        },
+        "required": [
+            "url",
+            "credentials"
+        ],
+        "type": "object"
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "checks": [
+        {
+            "description": "This check executes a query on an OpenTSDB : every datapoints which\nis above a critical threshold lower the QOS.",
+            "form": [
+                {
+                    "key": "query",
+                    "type": "codemirror"
+                },
+                {
+                    "key": "threshold",
+                    "placeholder": "Ex: 500"
+                }
+            ],
+            "name": "Threshold",
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "query": {
+                        "description": "Query must return 1 or more timeserie(s).",
+                        "title": "OpenTSDB query",
+                        "type": "string"
+                    },
+                    "threshold": {
+                        "description": "The QOS will be lowered for every values strictly superior to this threshold.",
+                        "title": "Threshold",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "query",
+                    "threshold"
+                ],
+                "type": "object"
+            }
+        },
+        {
+            "description": "This check executes a query on an OpenTSDB : every datapoints which\nare outside a given interval lower the QOS.",
+            "form": [
+                {
+                    "key": "query",
+                    "type": "codemirror"
+                },
+                {
+                    "key": "bottom_threshold",
+                    "placeholder": "Ex: -200"
+                },
+                {
+                    "key": "top_threshold",
+                    "placeholder": "Ex: 200"
+                }
+            ],
+            "name": "Interval",
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "bottom_threshold": {
+                        "description": "The QOS will be lowered for every values strictly inferior to this threshold.",
+                        "title": "Bottom Threshold",
+                        "type": "string"
+                    },
+                    "query": {
+                        "description": "Query must return 1 or more timeserie(s).",
+                        "title": "OpenTSDB query",
+                        "type": "string"
+                    },
+                    "top_threshold": {
+                        "description": "The QOS will be lowered for every values strictly superior to this threshold.",
+                        "title": "Top Threshold",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "query",
+                    "top_threshold",
+                    "bottom_threshold"
+                ],
+                "type": "object"
+            }
+        }
+    ]
+}
