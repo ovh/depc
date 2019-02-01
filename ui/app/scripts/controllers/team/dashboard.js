@@ -17,8 +17,13 @@ angular.module('depcwebuiApp')
     self.previousMonth = moment().subtract(1, 'months').format('MMMM YYYY');
 
     self.goToPreviousMonth = function() {
+        $rootScope.globals.view = 'month';
         $rootScope.globals.date.add(-1, 'months');
         $location.search('m', $rootScope.globals.date.format('MM-YYYY'));
+
+        var date = moment($rootScope.globals.date);
+        $rootScope.globals.start = date.startOf('month').format('X');
+        $rootScope.globals.end = date.endOf('month').format('X');
     };
 
     teamsService.getTeamByName(self.teamName).then(function(response) {
