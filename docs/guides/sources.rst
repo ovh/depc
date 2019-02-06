@@ -12,9 +12,9 @@ OpenTSDB is a scalable and distributed time series database. Please refer to
 the `official documentation <http://opentsdb.net/docs/build/html/index.html>`__
 to learn how to query OpenTSDB.
 
-DepC needs 2 informations to query an OpenTSDB database :
+DepC needs 2 information to query an OpenTSDB database :
 
-- an url : ``http://my-opentsdb.local``
+- a URL : ``http://my-opentsdb.local``
 - the credentials separated by a colon : ``myuser:mypassword``
 
 Here is a really simple payload, to show you how to use it in your checks :
@@ -38,9 +38,9 @@ query it, so please refer to the `official documentation
 <https://www.warp10.io/content/03_Documentation/04_WarpScript/01_Concepts>`__
 to learn how to query Warp10.
 
-DepC needs 2 informations to query a Warp10 database :
+DepC needs 2 information to query a Warp10 database :
 
-- an url containing the API version : ``http://my-warp10.local/api/v0``
+- a URL containing the API version : ``http://my-warp10.local/api/v0``
 - a read-only token : ``myrotoken``
 
 Here is a really simple payload, to show you how to use it in your checks :
