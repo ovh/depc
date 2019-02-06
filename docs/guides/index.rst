@@ -11,4 +11,5 @@ some of DepC features :
    checks
    kafka
    queries
+   sources
    variables
