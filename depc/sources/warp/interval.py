@@ -80,13 +80,20 @@ class IntervalCheck(Warp10):
 
         # Transform the Warp10 values
         timeseries = []
-        for ts in response[0]:
-            timeseries.append(
-                {
-                    "dps": _transform_warp10_values(ts["v"]),
-                    "metric": ts["c"],
-                    "tags": ts["l"],
-                }
+        try:
+            for ts in response[0]:
+                timeseries.append(
+                    {
+                        "dps": _transform_warp10_values(ts["v"]),
+                        "metric": ts["c"],
+                        "tags": ts["l"],
+                    }
+                )
+
+        # Response is not parsable, return it to the user for debugging
+        except TypeError:
+            raise BadConfigurationException(
+                "Script does not return valid format : {}".format(response)
             )
 
         if not timeseries:
