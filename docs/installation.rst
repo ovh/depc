@@ -164,10 +164,10 @@ please read the `official documentation <https://airflow.apache.org/index.html>`
 .. code:: bash
 
     # Add the DepC root directory to the PYTHONPATH
-    export PYTHONPATH='./:$PYTHONPATH'
+    export PYTHONPATH="$(pwd)/:$PYTHONPATH"
 
     # Specify the DepC scheduler directory as the Airflow root directory
-    export AIRFLOW_HOME=scheduler/
+    export AIRFLOW_HOME="$(pwd)/scheduler"
 
     # Before this step, remember, you have to generate/configure the airflow.cfg
     make webserver

@@ -1,4 +1,4 @@
-.PHONY: ui tests docs
+.PHONY: ui tests docs scheduler
 
 api:
 	python manage.py runserver
