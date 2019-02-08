@@ -17,7 +17,7 @@ def _transform_warp10_values(values):
     values_copy = {}
     for v in values:
         ts = int(v[0] / 1000000)  # ms to s
-        values_copy[ts] = v[1]
+        values_copy[ts] = v[-1]
 
     return values_copy
 
