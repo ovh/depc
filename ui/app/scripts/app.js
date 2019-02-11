@@ -192,6 +192,11 @@ angular
       $rootScope.$on('requestError', function (event, args) {
         if ( args && args.hasOwnProperty("message") ) {
           toastr.error(args.message);
+
+          // Redirect to homepage
+          if ( args.message.includes('You do not have the required permissions') ) {
+            $location.path( "/teams" );
+          }
         }
       });
 
