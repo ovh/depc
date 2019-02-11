@@ -14,6 +14,9 @@ def get_team_qos(team_id):
     """
 
     .. :quickref: GET; Lorem ipsum."""
+    if not TeamPermission.is_user(team_id):
+        abort(403)
+
     label = request.args.get("label", None)
     name = request.args.get("name", None)
     start = request.args.get("start", None)
