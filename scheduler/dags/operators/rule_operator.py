@@ -2,7 +2,7 @@ import json
 
 from airflow.utils.decorators import apply_defaults
 
-from scheduler.dags import is_active_node, get_records
+from depc.utils.neo4j import is_active_node, get_records
 from scheduler.dags.operators import QosOperator
 
 

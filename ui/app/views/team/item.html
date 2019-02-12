@@ -51,7 +51,7 @@
                 <div class="panel-heading">
                     List of dependencies
                     <div class="btn-group pull-right" data-ng-if="itemCtrl.qosQuery.type == 'dependencies'">
-                        <a href="#/teams/{{ itemCtrl.teamName }}/dependencies?label={{ itemCtrl.label }}&node={{ itemCtrl.name }}" class="btn btn-default btn-xs" uib-tooltip="The following graph displays the dependencies used in the QOS compute, click here to display the full list of dependencies." tooltip-append-to-body="true">View complete list</a>
+                        <a href="#/teams/{{ itemCtrl.teamName }}/dependencies?label={{ itemCtrl.label }}&node={{ itemCtrl.name }}" class="btn btn-default btn-xs">Explore the Graph</a>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -76,7 +76,7 @@
                                         <div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="itemCtrl.ruleDate"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
                                         </a>
                                         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                            <datetimepicker data-ng-model="itemCtrl.ruleDate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'DD-MM-YYYY', renderOn: 'datepicker-changed'}"/>
+                                            <datetimepicker data-ng-model="itemCtrl.ruleDate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'YYYY-MM-DD', renderOn: 'datepicker-changed'}"/>
                                         </ul>
                                         <a class="btn btn-primary" target="_blank" ng-href="{{ itemCtrl.getRuleDetailsUrl() }}"><i class="glyphicon glyphicon-new-window"></i> Execute</a>
                                     </div>

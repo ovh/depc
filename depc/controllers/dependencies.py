@@ -1,12 +1,18 @@
 import re
 
+import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
 
 from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError
 from depc.controllers.configs import ConfigController
 from depc.controllers.teams import TeamController
-from depc.utils.neo4j import Neo4jClient
+from depc.utils.neo4j import (
+    Neo4jClient,
+    get_records,
+    is_active_node,
+    has_active_relationship,
+)
 
 
 class DependenciesController(Controller):
@@ -23,10 +29,12 @@ class DependenciesController(Controller):
 
         # Get labels per team
         neo = Neo4jClient()
-        query = """CALL db.labels() YIELD label
-        WITH split(label, '_')[0] AS Team, split(label, '_')[1] AS Label
-        RETURN Team, collect(Label) AS Labels
-        ORDER BY Team"""
+        query = (
+            "CALL db.labels() YIELD label "
+            "WITH split(label, '_')[0] AS Team, split(label, '_')[1] AS Label "
+            "RETURN Team, collect(Label) AS Labels "
+            "ORDER BY Team"
+        )
         results = neo.query(query, returns=(str, list))
 
         # Get the label for the current team
@@ -104,81 +112,100 @@ class DependenciesController(Controller):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = """
-        MATCH(n:{0}_{1}{{name: "{2}"}})
-        OPTIONAL MATCH (n)-[:DEPENDS_ON]->(m)
-        RETURN count(m)
-        """.format(
-            team.kafka_topic, label, node
-        )
+        query = (
+            "MATCH(n:{0}_{1}{{name: '{2}'}}) "
+            "OPTIONAL MATCH (n)-[:DEPENDS_ON]->(m) "
+            "RETURN count(m)"
+        ).format(team.kafka_topic, label, node)
         sequence = neo.query(query, data_contents=DATA_GRAPH)
 
         return {"count": sequence[0][0]}
 
     @classmethod
-    def get_node_dependencies(cls, team_id, label, node, filter_on_config=False):
-        team = TeamController._get({"Team": {"id": team_id}})
-        query = """
-        MATCH(n:{topic}_{label}{{name: "{name}"}})
-        OPTIONAL MATCH (n)-[r]->(m) {where}
-        RETURN n,r,m
-        ORDER BY m.name LIMIT 10
-        """
-
-        # Filter the dependencies with the labels declared in the configuration
-        where = ""
-        if filter_on_config:
-            label_config = ConfigController.get_label_config(team_id, label)
-            regex = r"^.*(\[[A-Za-z]+(, [A-Za-z]+)*?\])$"
-            match = re.search(regex, label_config["qos"])
-            if match:
-                deps = match.group(1)[1:-1].split(", ")
-                where += "WHERE '{}_{}' IN LABELS(m)".format(team.kafka_topic, deps[0])
-                for dep in deps[1:]:
-                    where += " OR '{}_{}' IN LABELS(m)".format(team.kafka_topic, dep)
-
-        neo = Neo4jClient()
-        query = query.format(
-            topic=team.kafka_topic, label=label, name=node, where=where
+    def get_node_dependencies(
+        cls,
+        team_id,
+        label,
+        node,
+        day=None,
+        filter_on_config=False,
+        include_old_nodes=False,
+    ):
+        topic = TeamController._get({"Team": {"id": team_id}}).kafka_topic
+        query = cls._build_dependencies_query(
+            team_id, topic, label, node, filter_on_config
         )
-        sequence = neo.query(query, data_contents=DATA_GRAPH)
-
         dependencies = {"dependencies": {}, "graph": {"nodes": [], "relationships": []}}
+        records = get_records(query)
 
-        if sequence.graph:
-            for g in sequence.graph:
+        # Loop on all relationships
+        for idx, record in enumerate(records):
 
-                # Handle the nodes
-                for node in g["nodes"]:
-                    title = node["labels"][0][len(team.kafka_topic) + 1 :]
-                    if title not in dependencies["dependencies"]:
-                        dependencies["dependencies"][title] = []
+            # Handle the main node
+            if idx == 0:
+                node = record.get("n")
+                title = list(node.labels)[0][len(topic) + 1 :]
 
-                    # Id is required to make data unique later
-                    node["properties"]["id"] = node["id"]
-                    dependencies["dependencies"][title].append(node["properties"])
+                if title not in dependencies["dependencies"]:
+                    dependencies["dependencies"][title] = []
+                dependencies["dependencies"][title].append(dict(node.items()))
 
-                    # Add the node data in the whole graph
-                    dependencies["graph"]["nodes"].append(
-                        {
-                            "id": node["id"],
-                            "label": node["properties"].get("name", "unknown"),
-                            "title": title,
-                        }
-                    )
+                dependencies["graph"]["nodes"].append(
+                    {"id": node.id, "label": dict(node.items())["name"], "title": title}
+                )
 
-                # Handle the relationships
-                for rel in g["relationships"]:
-                    dependencies["graph"]["relationships"].append(
-                        {
-                            "id": rel["id"],
-                            "from": rel["startNode"],
-                            "to": rel["endNode"],
-                            "arrows": "to",
-                        }
-                    )
+            # Handle the relationship
+            rel = record.get("r")
+            if not rel:
+                continue
 
-        dependencies = cls.make_unique(dependencies)
+            # Check inactive nodes
+            start_node = rel.start_node
+            end_node = rel.end_node
+            start = arrow.get(day, "YYYY-MM-DD").floor("day").timestamp
+            end = arrow.get(day, "YYYY-MM-DD").ceil("day").timestamp
+
+            if (not is_active_node(start, end, end_node)) or (
+                not has_active_relationship(start, end, rel.get("periods"))
+            ):
+                if not include_old_nodes:
+                    continue
+                else:
+                    setattr(end_node, "old", True)
+
+            # The label is 'acme_Mylabel', we just want 'Mylabel'
+            title = list(end_node.labels)[0][len(topic) + 1 :]
+
+            if title not in dependencies["dependencies"]:
+                dependencies["dependencies"][title] = []
+            dependencies["dependencies"][title].append(
+                {
+                    **dict(end_node.items()),
+                    **{
+                        "periods": list(rel.get("periods")),
+                        "old": getattr(end_node, "old", False),
+                    },
+                }
+            )
+
+            dependencies["graph"]["nodes"].append(
+                {
+                    "id": end_node.id,
+                    "label": dict(end_node.items())["name"],
+                    "title": title,
+                }
+            )
+
+            dependencies["graph"]["relationships"].append(
+                {
+                    "id": rel.id,
+                    "from": start_node.id,
+                    "to": end_node.id,
+                    "arrows": "to",
+                    "periods": list(rel.get("periods")),
+                }
+            )
+
         return dependencies
 
     @classmethod
@@ -211,20 +238,28 @@ class DependenciesController(Controller):
         return {}
 
     @classmethod
-    def make_unique(cls, deps):
-        """This function takes a dict and returns the unique dependencies."""
+    def _build_dependencies_query(
+        cls, team_id, topic, label, node, filter_on_config=False
+    ):
+        """Build a Cypher query based on given parameters."""
+        where = ""
+        query = (
+            "MATCH(n:{topic}_{label}{{name: '{name}'}}) "
+            "OPTIONAL MATCH (n)-[r]->(m) {where}"
+            "RETURN n,r,m ORDER BY m.name LIMIT 10"
+        )
 
-        # Dependencies
-        for dep in deps["dependencies"]:
-            unique = {v["id"]: v for v in deps["dependencies"][dep]}.values()
-            deps["dependencies"][dep] = list(unique)
+        # Filter the dependencies using the labels declared in the configuration
+        if filter_on_config:
+            label_config = ConfigController.get_label_config(team_id, label)
+            regex = r"^.*(\[[A-Za-z]+(, [A-Za-z]+)*?\])$"
 
-        # Nodes
-        unique = {v["id"]: v for v in deps["graph"]["nodes"]}.values()
-        deps["graph"]["nodes"] = list(unique)
+            match = re.search(regex, label_config["qos"])
+            if match:
+                deps = match.group(1)[1:-1].split(", ")
+                where += "WHERE '{}_{}' IN LABELS(m) ".format(topic, deps[0])
 
-        # Relationships
-        unique = {v["id"]: v for v in deps["graph"]["relationships"]}.values()
-        deps["graph"]["relationships"] = list(unique)
+                for dep in deps[1:]:
+                    where += "OR '{}_{}' IN LABELS(m) ".format(topic, dep)
 
-        return deps
+        return query.format(where=where, topic=topic, label=label, name=node)

@@ -72,7 +72,7 @@ angular.module('depcwebuiApp')
                         self.dependenciesCount = count;
 
                         // Get the node's dependencies declared in the configuration
-                        dependenciesService.getNodeDependencies(self.team.id, self.label, self.name, true).then(function(response) {
+                        dependenciesService.getNodeDependencies(self.team.id, self.label, self.name, moment().format('YYYY-MM-DD'), true, false).then(function(response) {
                             var dependencies = response['data']['dependencies'];
                             self.graph = config.graph_schema(response.data.graph.nodes, response.data.graph.relationships, null);
 
@@ -102,7 +102,7 @@ angular.module('depcwebuiApp')
 
                 // Get the QOS evolution of the main item
                 var click_fn = function () {
-                    self.ruleDate = Highcharts.dateFormat('%d-%m-%Y', this.x);
+                    self.ruleDate = Highcharts.dateFormat('%Y-%m-%d', this.x);
                     $rootScope.$apply();
                 };
                 var lineChart = chartsService.getChartLine(null, null, null, 320, null, null, null, null, click_fn);
@@ -196,7 +196,7 @@ angular.module('depcwebuiApp')
       if ( self.rule == undefined ) {
         return;
       }
-      var date = moment.utc(self.ruleDate, 'DD-MM-YYYY');
+      var date = moment.utc(self.ruleDate, 'YYYY-MM-DD');
       var start = date.startOf("day").unix();
       var end = date.endOf("day").unix();
 

@@ -7,7 +7,7 @@ import uuid
 import arrow
 from airflow.models import BaseOperator
 
-from scheduler.dags import is_active_node, get_records, has_active_relationship
+from depc.utils.neo4j import is_active_node, get_records, has_active_relationship
 from scheduler.dags.decoder import BoolsDpsDecoder
 
 logger = logging.getLogger(__name__)
@@ -206,7 +206,8 @@ class DependenciesOperator(QosOperator):
 
         # Retrieve the node and its dependencies
         start_time = time.time()
-        records = get_records(query)
+        with self.app.app_context():
+            records = get_records(query)
         nodes = self.filter_records(
             start=start,
             end=end,

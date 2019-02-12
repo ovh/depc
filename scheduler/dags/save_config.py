@@ -5,7 +5,8 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 
-from scheduler.dags import app, get_records
+from scheduler.dags import app
+from depc.utils.neo4j import get_records
 
 logger = logging.getLogger(__name__)
 

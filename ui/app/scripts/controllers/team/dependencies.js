@@ -8,13 +8,16 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('DependenciesCtrl', function ($routeParams, $location, $interval, $q, $confirm, toastr, config, modalService, teamsService, dependenciesService, rulesService) {
+  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, toastr, config, modalService, teamsService, dependenciesService) {
     var self = this;
     self.teamName = $routeParams.team;
 
     self.selectedLabel = null;
     self.selectedNode = null;
+    self.nodeProperties = {};
     self.loadNodes = false;
+    self.includeOldNodes = false;
+    self.selectedDay = moment().format('YYYY-MM-DD');
 
     self.resultTitle = null;
     self.nodeSearched = null;
@@ -23,21 +26,19 @@ angular.module('depcwebuiApp')
     self.graph = null;
     self.legend = {};
     self.dependenciesLoading = false;
-    self.dependencies = {
-        'isMonitored': {},
-        'isNotMonitored': {}
-    };
-
-      // Dates range
-      self.date = {
-          startDate: moment().startOf("day"),
-          endDate: moment().endOf("day")
-      };
+    self.dependencies = {};
 
       self.init = function () {
           self.labels = [];
-          self.rules = [];
           self.labelsLoading = true;
+
+          if ($routeParams.day) {
+            self.selectedDay = $routeParams.day;
+          }
+
+          if ($routeParams.old) {
+            self.includeOldNodes = $routeParams.old;
+          }
 
           teamsService.getTeamByName(self.teamName).then(function (response) {
               self.team = response.data;
@@ -45,14 +46,6 @@ angular.module('depcwebuiApp')
               dependenciesService.getTeamLabels(self.team.id).then(function (response) {
                   self.labels = response.data;
                   self.labelsLoading = false;
-                  // Handle the query parameters
-                  if ($routeParams.start) {
-                      self.date.startDate = moment.unix($routeParams.start);
-                  }
-
-                  if ($routeParams.end) {
-                      self.date.endDate = moment.unix($routeParams.end);
-                  }
 
                   if ($routeParams.label) {
                       self.selectLabel($routeParams.label);
@@ -66,12 +59,6 @@ angular.module('depcwebuiApp')
       };
       self.init();
 
-      self.getRuleDetailsUrl = function (rule_name, name) {
-          var start = moment(self.date.startDate).unix();
-          var end = moment(self.date.endDate).unix();
-
-          return '#/teams/' + self.teamName + '/rules?rule=' + rule_name + '&name=' + name + '&start=' + start + '&end=' + end + '&exec=1';
-      };
       self.selectLabel = function (label) {
           $location.search('label', label);
           self.selectedLabel = label;
@@ -109,18 +96,13 @@ angular.module('depcwebuiApp')
           self.resultTitle = null;
           self.graph = null;
           self.legend = {};
-          self.dependencies = {
-              'isMonitored': {},
-              'isNotMonitored': {}
-          };
-          self.allResults = null;
+          self.dependencies = {};
           self.dependenciesStatus = {};
 
           // Reset the query parameters
           $location.search('node', null);
           $location.search('start', null);
           $location.search('end', null);
-          $location.search('exec', null);
       };
 
       self.resetLabel = function () {
@@ -132,71 +114,100 @@ angular.module('depcwebuiApp')
           $location.search('label', null);
       };
 
+      self.loadDependencies = function() {
+        $location.search('day', self.selectedDay);
+        $location.search('old', self.includeOldNodes);
+
+        self.dependenciesLoading = true;
+        self.dependencies = {};
+        self.legend = {};
+
+          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeOldNodes).then(function (response) {
+            var data = response.data;
+            var dependencies = data.dependencies;
+
+            // Get periods about the main node
+            for ( var i in dependencies ) {
+                if ( i == self.selectedLabel ) {
+                    for ( var j in dependencies[i] ) {
+                        if ( dependencies[i][j].name == self.selectedNode ) {
+
+                            // Remove the node
+                            self.nodeProperties = dependencies[i][j];
+                            dependencies[i].splice(j, 1);
+
+                            // If there is no node in this label, remove it too
+                            if ( dependencies[i].length == 0 ) {
+                                delete dependencies[i]
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Create the legend
+            var labels = Object.keys(dependencies);
+            var colorHash = new ColorHash();
+            for ( var i in labels) {
+                self.legend[labels[i]] = colorHash.hex(labels[i]);
+            }
+
+            // Add the current node in the legends
+            self.legend[self.selectedLabel] = colorHash.hex(self.selectedLabel);
+
+            // Create the Vis.js graph
+            self.graph = config.graph_schema(data.graph.nodes, data.graph.relationships);
+
+            // Reformat the dependencies, associate their rule and their relationship
+            for (var label in dependencies) {
+                for (var i in self.labels) {
+                    if (self.labels[i]['name'] == label) {
+                        self.dependencies[label] = {
+                            'nodes': dependencies[label],
+                            'rule': self.labels[i]['qos_query']
+                        }
+                    }
+                }
+            }
+
+            self.dependenciesLoading = false;
+        });
+      };
+
       self.selectNode = function (node) {
           $location.search('node', node);
           self.selectedNode = node;
-          self.dependenciesLoading = true;
+          self.loadDependencies();
 
-          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, false).then(function (response) {
-              var data = response.data;
-              var dependencies = data.dependencies;
-
-              // contain label with special color
-              var colorArgs = new Object();
-
-              // Create the legend
-              var colorHash = new ColorHash();
-
-              for (var i in self.labels) {
-                  var index = Object.keys(dependencies).indexOf(self.labels[i].name);
-
-                  if ( index > -1 ) {
-                    if (self.labels[i].color == null) {
-                        self.legend[self.labels[i].name] = colorHash.hex(self.labels[i].name);
-                    } else {
-                        self.legend[self.labels[i].name] = self.labels[i].color;
-                        colorArgs[self.labels[i].name] = self.labels[i].color;
-                    }
-                  }
-              }
-              // Create the graph
-              self.graph = config.graph_schema(data.graph.nodes, data.graph.relationships, colorArgs);
-
-              // Group the dependencies by Monitored ones or not
-              for (var label in dependencies) {
-                  for (var i in self.labels) {
-                      if (self.labels[i]['name'] == label) {
-                        self.dependencies['isMonitored'][label] = {
-                            'nodes': dependencies[label],
-                            'rule': self.labels[i]['rule']
-                        }
-                      }
-                  }
-              }
-
-              self.dependenciesLoading = false;
-
-              // Launch the rules
-              if ($routeParams.exec === '1') {
-                  self.launchRules();
-              }
-          });
       };
 
-      self.hasMonitoredLabel = function () {
-          return Object.keys(self.dependencies.isMonitored).length > 0;
+      self.hasDependencies = function () {
+          return Object.keys(self.dependencies).length > 0;
       }
 
-      self.deleteNode = function(node) {
+      self.getNodeDate = function(d) {
+          if (!d) {
+            return '--'
+          }
+          return $filter('date')(d * 1000, 'yyyy-MM-dd HH:mm:ss')
+      }
+
+      self.displayRelationshipPeriods = function(periods) {
+        modalService.relationshipPeriods(periods);
+      };
+
+
+      self.deleteNode = function(label, node) {
         $confirm({
-            text: 'Are you sure you want to delete the node "' + node.name + '" ?',
+            text: 'Are you sure you want to delete the node "' + node + '" ?',
             title: 'Delete node',
             ok: 'Yes',
             cancel: 'No'
         })
         .then(function() {
-            dependenciesService.deleteNode(self.team.id, self.selectedLabel, node.name).then(function(response) {
-                toastr.success('The node ' + node.name + ' has been deleted.');
+            dependenciesService.deleteNode(self.team.id, label, node).then(function(response) {
+                toastr.success('The node ' + node + ' has been deleted.');
                 self.init();
                 self.resetLabel();
             }, function(err) {
@@ -204,14 +215,14 @@ angular.module('depcwebuiApp')
               // Node has still dependencies
               if ( err.status == 409 ) {
                 $confirm({
-                    text: 'Node "' + node.name + '" has still dependencies, do you want to delete them all ?',
+                    text: 'Node "' + node + '" has still dependencies, do you want to delete them all ?',
                     title: 'Delete node and relationships',
                     ok: 'Yes',
                     cancel: 'No'
                 })
                 .then(function() {
-                  dependenciesService.deleteNode(self.team.id, self.selectedLabel, node.name, true).then(function(response) {
-                      toastr.success('The node ' + node.name + ' and its relationships have been deleted.');
+                  dependenciesService.deleteNode(self.team.id, label, node, true).then(function(response) {
+                      toastr.success('The node ' + node + ' and its relationships have been deleted.');
                       self.init();
                       self.resetLabel();
                   });
