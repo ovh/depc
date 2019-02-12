@@ -55,31 +55,16 @@ angular.module('depcwebuiApp')
       return panels[level];
     };
 
-    var getGraphSchema = function(nodes, edges, colorGraph) {
+    var getGraphSchema = function(nodes, edges) {
       var data = {
         nodes: nodes,
         edges: edges
       };
 
-      // Set a custom color based on the label.
-      // We keep a cache of the colors to not
-      // use ColorHash for an already seen label.
-      var colors = {};
+      // Use ColorHash to set the color of nodes
       var colorHash = new ColorHash();
       for (var i in nodes) {
-        var title = nodes[i]['title'];
-        if (Object.keys(colors).indexOf(title) > -1) {
-          nodes[i]['color'] = colors[title];
-        } else {
-          var color;
-          if (colorGraph == null || colorGraph[nodes[i].title] == null) {
-            color = colorHash.hex(title);
-          } else {
-              color= colorGraph[nodes[i].title];
-          }
-          colors[title] = color;
-          nodes[i]['color'] = color;
-        }
+        nodes[i]['color'] = colorHash.hex(nodes[i]['title']);
       }
 
       var options = {

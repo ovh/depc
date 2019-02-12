@@ -177,6 +177,20 @@ angular.module('depcwebuiApp')
     });
    };
 
+   var relationshipPeriods = function(periods) {
+    return $uibModal.open({
+        size: 'md',
+        templateUrl: 'views/modals/relationship_periods.html',
+        controller: 'ModalRelationshipPeriodsCtrl',
+        controllerAs: 'modalRelationshipPeriodsCtrl',
+        resolve: {
+          periods: function() {
+            return periods;
+          }
+        }
+    });
+   };
+
    return {
       changeFromToDate: changeFromToDate,
       displayFullLogs: displayFullLogs,
@@ -187,7 +201,8 @@ angular.module('depcwebuiApp')
       associateChecks: associateChecks,
       displayCheckParameters: displayCheckParameters,
       displayConfig: displayConfig,
-      newConfig: newConfig
+      newConfig: newConfig,
+      relationshipPeriods: relationshipPeriods
    };
 
   });

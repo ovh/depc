@@ -1,3 +1,4 @@
+import arrow
 from flask import abort, jsonify, request
 
 from depc.apiv1 import api
@@ -59,7 +60,9 @@ def get_node_dependencies(team_id, label, node):
             team_id=team_id,
             label=label,
             node=node,
+            day=request.args.get("day", arrow.utcnow().format("YYYY-MM-DD")),
             filter_on_config=request.args.get("with_config", False),
+            include_old_nodes=request.args.get("with_olds", False),
         )
     )
 

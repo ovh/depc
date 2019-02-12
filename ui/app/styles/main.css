@@ -317,6 +317,10 @@ tr td.status-warning {
   background-color: #ffe27c !important;
 }
 
+th.active {
+  background-color: #f5f5f5 !important;
+}
+
 td.has-icons {
   padding: 0 8px !important;
 }

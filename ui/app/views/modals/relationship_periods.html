@@ -1,0 +1,23 @@
+<div class="modal-header">
+    <h3 class="modal-title">Periods</h3>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th class="col-md-6 text-center">From</th>
+                        <th class="col-md-6 text-center">To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="period in modalRelationshipPeriodsCtrl.periods">
+                        <td class="col-md-6 text-center">{{ modalRelationshipPeriodsCtrl.getNodeDate(period.from) }}</td>
+                        <td class="col-md-6 text-center">{{ modalRelationshipPeriodsCtrl.getNodeDate(period.to) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
