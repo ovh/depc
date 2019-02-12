@@ -21,6 +21,7 @@ class Config:
     JSON_AS_ASCII = False
     DEBUG = False
     LOGGERS = {}
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
     CELERY_RETRY_DELAY = 60
     CELERY_CONF = {
         "CELERY_TASK_SERIALIZER": "json",

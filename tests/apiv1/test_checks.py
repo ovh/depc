@@ -66,7 +66,6 @@ def test_list_source_checks(client, create_team, create_source, create_user, cre
 
 def test_post_source_check_authorization(client, create_team, create_user, create_source, create_grant):
     team_id = str(create_team('My team')['id'])
-    team_id = str(create_team('My team')['id'])
     source_id = str(create_source('My source', team_id)['id'])
 
     post_data = {'name': 'My check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}}
