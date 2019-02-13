@@ -1,4 +1,4 @@
-.PHONY: ui tests docs scheduler
+.PHONY: ui tests docs scheduler consumer
 
 api:
 	python manage.py runserver
@@ -26,3 +26,6 @@ docs: clean-docs
 
 tests:
 	pytest tests/ -vv
+
+consumer:
+	python consumer/main.py

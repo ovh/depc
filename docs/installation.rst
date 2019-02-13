@@ -55,9 +55,13 @@ using the provided configuration sample in ``depc.example.yml``.
 Name the configuration file ``depc.<env>.yml`` where you should replace ``<env>`` with the
 ``DEPC_ENV`` value.
 
-Set the environment variable :
+Set these environment variables :
 
 .. code:: bash
+
+    export DEPC_HOME="$(pwd)"
+
+    # Then export, one of the following environment variable
 
     # Development environment will use a depc.dev.yml file
     export DEPC_ENV=dev
@@ -183,4 +187,4 @@ You have to configure the appropriate fields into your configuration file (secti
 
 .. code:: bash
 
-    python consumer/main.py
+    make consumer

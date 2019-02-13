@@ -1,13 +1,11 @@
 #!/bin/env python3
-# -*- coding: utf-8 -*-
 
 import logging
 import os
 import sys
+from pathlib import Path
 
-CURRENT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-PARENT_FOLDER = os.path.dirname(CURRENT_FOLDER)
-sys.path.append(PARENT_FOLDER)
+sys.path.append(os.getenv("DEPC_HOME", str(Path(__file__).resolve().parents[2])))
 
 
 if __name__ == "__main__":

@@ -1,18 +1,17 @@
 import json
 import os
 import ssl
+from pathlib import Path
 
 import fastjsonschema
 import yaml
 from neo4j.v1 import basic_auth, TRUST_ON_FIRST_USE
 
+ENV = os.getenv("DEPC_ENV", "dev")
+HOME = os.getenv("DEPC_HOME", str(Path(__file__).resolve().parents[2]))
 
-ENV = os.environ["DEPC_ENV"]
-
-CURRENT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-PARENT_FOLDER = os.path.dirname(CURRENT_FOLDER)
-SCHEMAS_PATH = os.path.join(PARENT_FOLDER, "schemas.json")
-CONFIG_PATH = os.path.join(os.path.dirname(PARENT_FOLDER), "depc.{}.yml".format(ENV))
+SCHEMAS_PATH = str(Path(HOME) / "consumer" / "schemas.json")
+CONFIG_PATH = str(Path(HOME) / "depc.{}.yml".format(ENV))
 
 # Load the DepC config YAML file
 with open(CONFIG_PATH, "r") as config_file:
