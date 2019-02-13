@@ -4,6 +4,7 @@ import importlib
 import json
 import os
 import pkgutil
+from pathlib import Path
 
 import pandas
 import yaml
@@ -13,7 +14,7 @@ from flask.json import JSONEncoder
 from flask.wrappers import Request
 from werkzeug.routing import Rule
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = str(Path(__file__).resolve().parent)
 
 
 class ExtendedRequest(Request):
@@ -135,10 +136,12 @@ def import_submodules(package, modules_to_import):
 
 
 def create_app(environment="dev"):
-
     context = importlib.import_module("depc.context")
     conf_cls = getattr(context, "{}Config".format(environment.capitalize()))
-    conf_file = "depc.{}.yml".format(environment)
+    conf_file = str(
+        Path(os.getenv("DEPC_HOME", str(Path(__file__).resolve().parents[1])))
+        / "depc.{}.yml".format(environment)
+    )
 
     # Import all modules
     import_submodules(__name__, ("models", "sources", "tasks", "apiv1"))

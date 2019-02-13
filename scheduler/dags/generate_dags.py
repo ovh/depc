@@ -4,6 +4,7 @@ import math
 import re
 
 from airflow import DAG
+from airflow.executors import GetDefaultExecutor
 from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
@@ -202,7 +203,13 @@ def create_subdag(dag_parent, label, team):
 
 def create_subdag_operator(dag_parent, label, team):
     subdag, dependencies = create_subdag(dag_parent, label, team)
-    sd_op = SubDagOperator(task_id=label, dag=dag_parent, subdag=subdag)
+
+    # Since v1.10, Airflow forces to use the SequentialExecutor as the default
+    # executor for the SubDagOperator, so we need to explicitly specify the
+    # executor from the airflow.cfg
+    sd_op = SubDagOperator(
+        task_id=label, dag=dag_parent, subdag=subdag, executor=GetDefaultExecutor()
+    )
     return sd_op, dependencies
 
 
