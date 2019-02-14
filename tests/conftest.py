@@ -18,6 +18,7 @@ from depc.controllers.sources import SourceController
 from depc.controllers.teams import TeamController
 from depc.controllers.users import UserController
 from depc.extensions import db
+from depc.utils.neo4j import set_records
 
 
 class DepcTestClient(FlaskClient):
@@ -42,6 +43,14 @@ class DepcTestClient(FlaskClient):
 
 class DepcResponse(Response):
 
+    KEYS_TO_REMOVE = [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'created_at',
+        'updated_at'
+    ]
+
     def remove_keys(self, d, keys):
         if isinstance(keys, str):
             keys = [keys]
@@ -59,7 +68,7 @@ class DepcResponse(Response):
     @property
     def json(self):
         data = json.loads(self.data.decode('utf-8'))
-        self.remove_keys(data, ['id', 'createdAt', 'updatedAt', 'created_at', 'updated_at'])
+        self.remove_keys(data, self.KEYS_TO_REMOVE)
         return data
 
     def raises_required_property(self, prop):
@@ -98,11 +107,15 @@ def app_module():
 
 @pytest.fixture(scope='function')
 def app(app_module):
+    """This code is called between each test."""
     with app_module.app_context():
+
+        # Clean the relational database
         meta = db.metadata
         for table in reversed(meta.sorted_tables):
             db.session.execute(table.delete())
         db.session.commit()
+
     return app_module
 
 
@@ -219,3 +232,22 @@ def is_mock_equal(open_mock):
         mock = open_mock(mock_name)
         return DeepDiff(data, mock, ignore_order=True) == {}
     return _is_mock_equal
+
+
+@pytest.fixture(scope='function')
+def neo(app_module):
+    """This code is called between each test."""
+    with app_module.app_context():
+
+        # Clean the Neo4j database
+        set_records("MATCH (n) DETACH DELETE n;")
+
+    return app_module
+
+
+@pytest.fixture
+def neo_create(app, neo):
+    def _neo_create(query):
+        with app.app_context():
+            return set_records(query)
+    return _neo_create

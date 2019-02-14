@@ -85,3 +85,80 @@ def test_build_dependencies_query_multiple_deps(method, app, create_team, create
                      "WHERE 'acme_ServerA' IN LABELS(m) "
                      "OR 'acme_ServerB' IN LABELS(m) "
                      "RETURN n,r,m ORDER BY m.name LIMIT 10")
+
+
+def test_build_query_count_nodes(app):
+    with app.app_context():
+        query = DependenciesController()._build_query_count_nodes(
+            topic='acme',
+            labels=['Foo']
+        )
+    assert query == (
+        "MATCH (n:acme_Foo) WITH 'Foo' AS Label, count(n) AS Count "
+        "RETURN Label, Count "
+    )
+
+    with app.app_context():
+        query = DependenciesController()._build_query_count_nodes(
+            topic='acme',
+            labels=['Foo', 'Bar', 'Baz']
+        )
+    assert query == (
+        "MATCH (n:acme_Foo) WITH 'Foo' AS Label, count(n) AS Count "
+        "RETURN Label, Count "
+        "UNION MATCH (n:acme_Bar) WITH 'Bar' AS Label, count(n) AS Count "
+        "RETURN Label, Count "
+        "UNION MATCH (n:acme_Baz) WITH 'Baz' AS Label, count(n) AS Count "
+        "RETURN Label, Count "
+    )
+
+
+def test_build_query_nodes(app):
+    with app.app_context():
+        query = DependenciesController()._build_query_nodes(
+            topic='acme',
+            label='Foo'
+        )
+    assert query == "MATCH (n:acme_Foo) WITH n RETURN n.name"
+
+    with app.app_context():
+        query = DependenciesController()._build_query_nodes(
+            topic='acme',
+            label='Foo',
+            random=True
+        )
+    assert query == (
+        "MATCH (n:acme_Foo) WITH n"
+        ", rand() as r ORDER BY r "
+        "RETURN n.name"
+    )
+
+    with app.app_context():
+        query = DependenciesController()._build_query_nodes(
+            topic='acme',
+            label='Foo',
+            random=True,
+            name="bar"
+        )
+    assert query == (
+        "MATCH (n:acme_Foo) WITH n"
+        ", rand() as r ORDER BY r "
+        "WHERE n.name CONTAINS 'bar' "
+        "RETURN n.name"
+    )
+
+    with app.app_context():
+        query = DependenciesController()._build_query_nodes(
+            topic='acme',
+            label='Foo',
+            random=True,
+            name="bar",
+            limit=1234
+        )
+    assert query == (
+        "MATCH (n:acme_Foo) WITH n"
+        ", rand() as r ORDER BY r "
+        "WHERE n.name CONTAINS 'bar' "
+        "RETURN n.name "
+        "LIMIT 1234"
+    )
