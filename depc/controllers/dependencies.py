@@ -43,25 +43,10 @@ class DependenciesController(Controller):
         # Pick the wanted team's labels
         team_labels = labels_per_teams.get(team.kafka_topic, [])
 
-        # Construct the cypher to get the number of nodes per label
-        # TODO : add cache for this feature
+        # Get the number of nodes per label
         labels = {}
         if team_labels:
-            query = (
-                "MATCH (n:{team}_{label}) "
-                'WITH "{label}" AS Label, count(n) AS Count '
-                "RETURN Label, Count"
-            )
-            query = query.format(team=team.kafka_topic, label=team_labels[0])
-
-            for label in team_labels[1:]:
-                union = (
-                    "\nUNION MATCH (n:{team}_{label}) "
-                    'WITH "{label}" AS Label, count(n) AS Count '
-                    "RETURN Label, Count"
-                )
-                query += union.format(team=team.kafka_topic, label=label)
-
+            query = cls._build_query_count_nodes(team.kafka_topic, team_labels)
             results = neo.query(query, returns=(str, int))
 
             # Merge the Neo4j and DB labels
@@ -69,13 +54,15 @@ class DependenciesController(Controller):
                 r[0]: {"name": r[0], "nodes_count": r[1], "qos_query": None}
                 for r in results
             }
+
+        # No config: return the list of labels
         try:
             config = ConfigController.get_current_config(team_id)
         except NotFoundError:
             return list(labels.values())
 
+        # Add the QoS query for each label
         qos_queries = {l: d["qos"] for l, d in config["data"].items()}
-
         for label, query in qos_queries.items():
             if label not in labels:
                 labels[label] = {"name": label, "nodes_count": 0}
@@ -88,21 +75,7 @@ class DependenciesController(Controller):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{}_{}) WITH n".format(team.kafka_topic, label)
-
-        if random:
-            query += ", rand() as r ORDER BY r"
-
-        if name:
-            query += " WHERE n.name CONTAINS '{0}'".format(name)
-
-        query += " RETURN distinct(n.name)"
-
-        try:
-            limit = int(limit)
-            query += " LIMIT {0}".format(limit)
-        except (TypeError, ValueError):
-            pass
+        query = cls._build_query_nodes(team.kafka_topic, label, random, name, limit)
 
         results = neo.query(query, returns=(str,))
         return [r[0] for r in results]
@@ -236,6 +209,46 @@ class DependenciesController(Controller):
             raise RequirementsNotSatisfiedError(str(e))
 
         return {}
+
+    @classmethod
+    def _build_query_count_nodes(cls, topic, labels):
+        query = (
+            "MATCH (n:{team}_{label}) "
+            "WITH '{label}' AS Label, count(n) AS Count "
+            "RETURN Label, Count "
+        ).format(team=topic, label=labels[0])
+
+        for label in labels[1:]:
+            query += (
+                "UNION MATCH (n:{team}_{label}) "
+                "WITH '{label}' AS Label, count(n) AS Count "
+                "RETURN Label, Count "
+            ).format(team=topic, label=label)
+
+        return query
+
+    @classmethod
+    def _build_query_nodes(cls, topic, label, random=None, name=None, limit=None):
+        query = "MATCH (n:{}_{}) WITH n".format(topic, label)
+
+        # Randomize the nodes
+        if random:
+            query += ", rand() as r ORDER BY r"
+
+        # Filter by name
+        if name:
+            query += " WHERE n.name CONTAINS '{0}'".format(name)
+
+        # Only return the name of the nodes
+        query += " RETURN n.name"
+
+        try:
+            limit = int(limit)
+            query += " LIMIT {0}".format(limit)
+        except (TypeError, ValueError):
+            pass
+
+        return query
 
     @classmethod
     def _build_dependencies_query(
