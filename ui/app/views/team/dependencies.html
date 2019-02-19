@@ -110,7 +110,7 @@
 							</div>
 						</div>
 						<div class="checkbox">
-						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeOldNodes"> Display old nodes</label>
+						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeInactive"> Display inactive nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Inactive nodes are peer nodes that were not linked to the main node on the requested day." tooltip-append-to-body="true"></i></label>
 						</div>
 						<button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.loadDependencies()"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
 					  </form>
@@ -152,7 +152,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].old ? 'danger' : ''">
+							<tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].inactive ? 'danger' : ''">
 								<th class="align-middle text-center active" rowspan="{{val.nodes.length}}">
 									<abbr data-ng-if="val.rule" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'The QoS of <strong>{{ key }}</strong> is computed using the following query : <code>{{ val.rule }}</code>'">{{ key }}</abbr>
 									<span data-ng-if="!val.rule">{{ key }}</span>
@@ -169,7 +169,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.old ? 'danger' : ''">
+							<tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.inactive ? 'danger' : ''">
 								<td class="col-md-4">{{value.name}}</td>
 								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.from)}}</td>
 								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.to)}}</td>

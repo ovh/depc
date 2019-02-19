@@ -219,7 +219,7 @@ def test_get_node_dependencies_basic(client, create_team, create_user, create_gr
     resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
-        'Server': [{'name': 'server001', 'old': False, 'periods': [0]}]
+        'Server': [{'name': 'server001', 'inactive': False, 'periods': [0]}]
     }
 
     with patch('tests.conftest.DepcResponse.KEYS_TO_REMOVE', new_callable=PropertyMock) as a:
@@ -248,8 +248,8 @@ def test_get_node_dependencies_basic(client, create_team, create_user, create_gr
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'Server': [
-            {'name': 'server001', 'old': False, 'periods': [0]},
-            {'name': 'server002', 'old': False, 'periods': [0]}
+            {'name': 'server001', 'inactive': False, 'periods': [0]},
+            {'name': 'server002', 'inactive': False, 'periods': [0]}
         ]
     }
 
@@ -299,7 +299,7 @@ def test_get_node_dependencies_selecting_day(client, create_team, create_user, c
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'Server': [
-            {'name': 'server001', 'old': False, 'periods': [0]}
+            {'name': 'server001', 'inactive': False, 'periods': [0]}
         ]
     }
 
@@ -327,8 +327,8 @@ def test_get_node_dependencies_selecting_day(client, create_team, create_user, c
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'Server': [
-            {'name': 'server001', 'old': False, 'periods': [0]},
-            {'name': 'server002', 'old': False, 'periods': [0, 1549022400, 1550232000]}
+            {'name': 'server001', 'inactive': False, 'periods': [0]},
+            {'name': 'server002', 'inactive': False, 'periods': [0, 1549022400, 1550232000]}
         ]
     }
     with patch('tests.conftest.DepcResponse.KEYS_TO_REMOVE', new_callable=PropertyMock) as a:
@@ -357,7 +357,7 @@ def test_get_node_dependencies_selecting_day(client, create_team, create_user, c
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'Server': [
-            {'name': 'server001', 'old': False, 'periods': [0]}
+            {'name': 'server001', 'inactive': False, 'periods': [0]}
         ]
     }
 
@@ -381,7 +381,7 @@ def test_get_node_dependencies_selecting_day(client, create_team, create_user, c
     ]
 
 
-def test_get_node_dependencies_with_olds(client, create_team, create_user, create_grant, neo_create):
+def test_get_node_dependencies_with_inactives(client, create_team, create_user, create_grant, neo_create):
     team_id = str(create_team('Acme')['id'])
     user_id = str(create_user('depc')['id'])
     create_grant(team_id, user_id, 'member')
@@ -399,13 +399,13 @@ def test_get_node_dependencies_with_olds(client, create_team, create_user, creat
     # Now is fixed the 2019-02-05, when only server001 was active
     fixed_now = arrow.get(2019, 2, 5)
     with patch('depc.apiv1.dependencies.arrow.utcnow', return_value=fixed_now):
-        resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?with_olds=1'.format(team_id))
+        resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?inactive=1'.format(team_id))
 
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'Server': [
-            {'name': 'server001', 'old': False, 'periods': [0]},
-            {'name': 'server002', 'old': True, 'periods': [0, 1549022400]}
+            {'name': 'server001', 'inactive': False, 'periods': [0]},
+            {'name': 'server002', 'inactive': True, 'periods': [0, 1549022400]}
         ]
     }
 
@@ -449,11 +449,11 @@ def test_get_node_dependencies_with_config(client, create_team, create_user, cre
         "MERGE (c)-[:DEPENDS_ON{last_state: 'from', last_ts: 0, periods: [0]}]->(sb:acme_ServerB{name: 'serverB'}) "
     )
 
-    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?with_config=1'.format(team_id))
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?config=1'.format(team_id))
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}],
         'ServerA': [
-            {'name': 'serverA', 'old': False, 'periods': [0]}
+            {'name': 'serverA', 'inactive': False, 'periods': [0]}
         ]
     }
     with patch('tests.conftest.DepcResponse.KEYS_TO_REMOVE', new_callable=PropertyMock) as a:

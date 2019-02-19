@@ -48,7 +48,7 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getNodeDependencies = function(team_id, label, node, day, filteredByConfig, includingOldNodes) {
+    var getNodeDependencies = function(team_id, label, node, day, filteredByConfig, includingInactive) {
       var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node + '?1=1';
 
       if ( day ) {
@@ -56,11 +56,11 @@ angular.module('depcwebuiApp')
       }
 
       if ( filteredByConfig ) {
-        url = url + '&with_config=1';
+        url = url + '&config=1';
       }
 
-      if ( includingOldNodes ) {
-        url = url + '&with_olds=1';
+      if ( includingInactive ) {
+        url = url + '&inactive=1';
       }
 
       return $http({

@@ -208,8 +208,8 @@ def get_node_dependencies(team_id, label, node):
       }
 
     :param day: Filter by day (default is today)
-    :param with_config: Only include labels used in configuration
-    :param with_olds: Include the old nodes
+    :param config: Only include labels used in configuration
+    :param inactive: Include the inactive nodes
     :resheader Content-Type: application/json
     :status 200: the list of dependencies
     """
@@ -222,8 +222,8 @@ def get_node_dependencies(team_id, label, node):
             label=label,
             node=node,
             day=request.args.get("day", arrow.utcnow().format("YYYY-MM-DD")),
-            filter_on_config=request.args.get("with_config", False),
-            include_old_nodes=request.args.get("with_olds", False),
+            filter_on_config=request.args.get("config", False),
+            include_inactive=request.args.get("inactive", False),
         )
     )
 
