@@ -48,6 +48,7 @@
     "negotiator": ">=0.6.1",
     "request": ">=2.68.0",
     "requirejs": "^2.3.6",
+    "shell-quote": ">=1.6.1",
     "uglify-js": ">=2.6.0"
   }
 }
