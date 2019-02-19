@@ -16,7 +16,7 @@ angular.module('depcwebuiApp')
     self.selectedNode = null;
     self.nodeProperties = {};
     self.loadNodes = false;
-    self.includeOldNodes = false;
+    self.includeInactive = false;
     self.selectedDay = moment().format('YYYY-MM-DD');
 
     self.resultTitle = null;
@@ -36,8 +36,8 @@ angular.module('depcwebuiApp')
             self.selectedDay = $routeParams.day;
           }
 
-          if ($routeParams.old) {
-            self.includeOldNodes = $routeParams.old;
+          if ($routeParams.inactive) {
+            self.includeInactive = true;
           }
 
           teamsService.getTeamByName(self.teamName).then(function (response) {
@@ -116,13 +116,17 @@ angular.module('depcwebuiApp')
 
       self.loadDependencies = function() {
         $location.search('day', self.selectedDay);
-        $location.search('old', self.includeOldNodes);
+        if ( self.includeInactive ) {
+            $location.search('inactive', true);
+        } else {
+            $location.search('inactive', null);
+        }
 
         self.dependenciesLoading = true;
         self.dependencies = {};
         self.legend = {};
 
-          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeOldNodes).then(function (response) {
+          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeInactive).then(function (response) {
             var data = response.data;
             var dependencies = data.dependencies;
 

@@ -102,7 +102,7 @@ class DependenciesController(Controller):
         node,
         day=None,
         filter_on_config=False,
-        include_old_nodes=False,
+        include_inactive=False,
     ):
         topic = TeamController._get({"Team": {"id": team_id}}).kafka_topic
         query = cls._build_dependencies_query(
@@ -141,10 +141,10 @@ class DependenciesController(Controller):
             if (not is_active_node(start, end, end_node)) or (
                 not has_active_relationship(start, end, rel.get("periods"))
             ):
-                if not include_old_nodes:
+                if not include_inactive:
                     continue
                 else:
-                    setattr(end_node, "old", True)
+                    setattr(end_node, "inactive", True)
 
             # The label is 'acme_Mylabel', we just want 'Mylabel'
             title = list(end_node.labels)[0][len(topic) + 1 :]
@@ -156,7 +156,7 @@ class DependenciesController(Controller):
                     **dict(end_node.items()),
                     **{
                         "periods": list(rel.get("periods")),
-                        "old": getattr(end_node, "old", False),
+                        "inactive": getattr(end_node, "inactive", False),
                     },
                 }
             )
