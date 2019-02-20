@@ -66,7 +66,7 @@ angular
         reloadOnSearch: false,
         label: ':label'
       })
-      .when('/teams/:team/dashboard/:label/:name', {
+      .when('/teams/:team/dashboard/:label/:name*', {
         templateUrl: 'views/team/item.html',
         controller: 'ItemCtrl',
         controllerAs: 'itemCtrl',
