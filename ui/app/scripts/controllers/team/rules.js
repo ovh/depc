@@ -226,7 +226,7 @@ angular.module('depcwebuiApp')
             });
 
             // Stop the loop, we have our QOS
-            if ( result && result.qos ) {
+            if ( result && result.qos != undefined ) {
                 var stats = {'ok': 0, 'warning': 0, 'critical': 0, 'unknown': 0}
 
                 // Handle each check
