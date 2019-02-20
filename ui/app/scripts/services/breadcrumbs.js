@@ -30,6 +30,13 @@ angular.module('depcwebuiApp')
         angular.forEach(pathElements, function(el) {
             path += path === '/' ? el : '/' + el;
             var route = getRoute(path);
+
+            // The following url uses the wildcard to handle names
+            // containing a "/", we need to transform it.
+            if (route == '/teams/:team/dashboard/:label/:name') {
+                route = '/teams/:team/dashboard/:label/:name*'
+            }
+
             if (routes[route] && routes[route].label) {
             	var label = routes[route].label;
             	if ( label.startsWith(':') ) {
