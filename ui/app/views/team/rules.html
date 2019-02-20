@@ -149,15 +149,15 @@
 									<div class="check-card">
 										<div class="check-card-title"><strong>{{ check.name }}</strong></div>
 										<div data-ng-if="check.timeseries.length > 1">Including {{ check.timeseries.length }} timeseries <i class="glyphicon glyphicon-info-sign icon-pointer" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from <strong>{{ check.timeseries.length }} timeseries</strong>. Only the first one is displayed here, please open the details to view them all.'"></i></div>
-										<div class="trends" data-ng-if="check.qos !== undefined">
+										<div class="trends" data-ng-if="check.qos !== null">
 											<i class="glyphicon glyphicon-arrow-up text-success"></i> <abbr class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This check was in a good state during <strong>{{ rulesCtrl.getPeriodFormat(check.periods.ok, 'long') }}</strong>'">{{ rulesCtrl.getPeriodFormat(check.periods.ok, 'short') }}</abbr>
 											<i class="glyphicon glyphicon-arrow-down text-error"></i> <abbr class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This check was in a bad state during <strong>{{ rulesCtrl.getPeriodFormat(check.periods.ko, 'long') }}</strong>'">{{ rulesCtrl.getPeriodFormat(check.periods.ko, 'short') }}</abbr>
 										</div>
 										<div class="qos">
-											<span data-ng-if="check.qos !== undefined" class="label {{ rulesCtrl.getLabelClassByQos(check.qos) }}">QOS → {{ check.qos }}%</span>
-											<span data-ng-if="check.qos === undefined" class="label label-default">Unknown</span>
+											<span data-ng-if="check.qos !== null" class="label {{ rulesCtrl.getLabelClassByQos(check.qos) }}">QOS → {{ check.qos }}%</span>
+											<span data-ng-if="check.qos === null" class="label label-default">Unknown</span>
 										</div>
-										<button class="btn btn-primary btn-xs" data-ng-if="check.qos !== undefined" data-ng-click="rulesCtrl.displayCheckResult(check)"><i class="glyphicon glyphicon-stats"></i> Display details</button>
+										<button data-ng-if="check.qos !== null" class="btn btn-primary btn-xs" data-ng-if="check.qos !== undefined" data-ng-click="rulesCtrl.displayCheckResult(check)"><i class="glyphicon glyphicon-stats"></i> Display details</button>
 									</div>
 								</td>
 								<td class="col-sm-9">
