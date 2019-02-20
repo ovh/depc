@@ -9,8 +9,8 @@ Quickstart
    :maxdepth: 2
 
    dependencies
-   configuration
    qos
+   configuration
    dashboard
 
 .. note::

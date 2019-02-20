@@ -1,16 +1,16 @@
 .. _qos:
 
-Step 3 : Compute your QOS
+Step 2 : Compute your QOS
 =========================
 
-We have previously created the configuration of our team. The **Apache**
-and **Filer** nodes will use the **Server** rule to compute their QoS,
-so let's create it.
+The **Apache** and **Filer** nodes represent some servers in real life. In
+this case we can analyse data in TimeSeries databases, populated by some
+probes. Let's see how to do that !
 
 Create the Source
 -----------------
 
-DepC will analyse datapoints from a TimeSeries database to compute a QOS.
+DepC can analyse datapoints from a TimeSeries database to compute a QOS.
 The first step is to declare a **Source** : it’s basically an URL and a
 token used to communicate with the Timeseries database.
 

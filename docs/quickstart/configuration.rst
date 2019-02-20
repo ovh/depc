@@ -1,9 +1,12 @@
-Step 2 : Create the Configuration
+Step 3 : Create the Configuration
 =================================
 
-Now that :ref:`we have pushed <dependencies>` our nodes and their
-relationships, we must indicate how to compute a QOS for each of them.
-DepC uses 2 methods to compute the QoS of a node :
+Now that :ref:`we have pushed <dependencies>` our nodes and
+:ref:`created the rule <qos>` to compute the QoS of our servers, we must
+indicate how to compute the QoS for each kind of nodes.
+
+Depending on whether you have metrics to analyze or not, DepC can use 2
+methods to compute the QoS of a node :
 
 1. analysing datapoints available in a TimeSeries database,
 2. using the QoS of its parent(s).
