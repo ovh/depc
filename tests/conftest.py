@@ -7,6 +7,7 @@ import pytest
 from deepdiff import DeepDiff
 from flask import Response
 from flask.testing import FlaskClient
+from neo4j.exceptions import AuthError, ServiceUnavailable
 from werkzeug.datastructures import Headers
 
 from depc import create_app
@@ -18,7 +19,7 @@ from depc.controllers.sources import SourceController
 from depc.controllers.teams import TeamController
 from depc.controllers.users import UserController
 from depc.extensions import db
-from depc.utils.neo4j import set_records
+from depc.utils.neo4j import get_records, set_records
 
 
 class DepcTestClient(FlaskClient):
@@ -122,6 +123,31 @@ def app(app_module):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture(autouse=True)
+def skip_by_requirement(app, request):
+    """Skip a test if the requirement is not met.
+
+    Supporting argument: "neo4j"
+
+    Usage:
+
+        >>> @pytest.mark.skip_requirement('neo4j')
+        >>> def test_get_team_dependencies(client):
+        >>>    pass
+    """
+    if request.node.get_closest_marker('skip_requirement'):
+
+        # Skip test if neo4j is not running (or not well configured)
+        if request.node.get_closest_marker('skip_requirement').args[0] == 'neo4j':
+            with app.app_context():
+                try:
+                    get_records("RETURN 1")
+                except ServiceUnavailable as e:
+                    pytest.skip("Neo4j server error : {}".format(e))
+                except AuthError as e:
+                    pytest.skip("Neo4j authentication error : {}".format(e))
 
 
 @pytest.fixture
