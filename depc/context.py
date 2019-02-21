@@ -30,6 +30,12 @@ class Config:
         "CELERYD_HIJACK_ROOT_LOGGER": False,
         "CELERYD_POOL": "solo",
     }
+    NEO4J = {
+        "url": "http://127.0.0.1:7474",
+        "uri": "bolt://127.0.0.1:7687",
+        "username": "neo4j",
+        "password": "p4ssw0rd",
+    }
     JSONSCHEMA_DIR = os.path.join(BASE_DIR, "schemas")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 

@@ -3,6 +3,9 @@ from unittest.mock import PropertyMock, patch
 import arrow
 import pytest
 
+# Skip these tests if no instance of neo4j is available
+pytestmark = pytest.mark.skip_requirement('neo4j')
+
 
 def test_get_labels_authorization(client, create_team, create_user, create_grant):
     team_id = str(create_team('My team')['id'])
