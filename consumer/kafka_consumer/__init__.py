@@ -1,9 +1,9 @@
-import logging
 import time
 from collections import OrderedDict
 
 import fastjsonschema
 from kafka import KafkaConsumer, TopicPartition
+from loguru import logger
 from neo4j.exceptions import ServiceUnavailable
 from neo4j.v1 import GraphDatabase
 
@@ -13,9 +13,6 @@ from consumer.kafka_consumer.utils import (
     NODE_TEMPLATE,
     REL_TEMPLATE,
 )
-
-
-logger = logging.getLogger("depc_consumer")
 
 
 class Neo4jBoltDriver(object):

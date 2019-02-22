@@ -39,6 +39,17 @@ class Config:
         "username": "neo4j",
         "password": "p4ssw0rd",
     }
+    CONSUMER = {
+        "kafka": {
+            "hosts": "localhost:9093",
+            "batch_size": 10,
+            "topics": ["depc.my_topic"],
+            "username": "depc.consumer",
+            "password": "p4ssw0rd",
+            "client_id": "depc.consumer",
+            "group_id": "depc.consumer.depc_consumer_group",
+        }
+    }
     JSONSCHEMA_DIR = str(Path(BASE_DIR) / "schemas")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
