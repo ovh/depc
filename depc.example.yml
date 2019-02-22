@@ -56,7 +56,5 @@ CONSUMER:
         password: p4ssw0rd
         client_id: depc.consumer
         group_id: depc.consumer.depc_consumer_group
-    logging:
-        level: INFO
     heartbeat:
         delay: 5
