@@ -4,23 +4,28 @@ import ssl
 from pathlib import Path
 
 import fastjsonschema
-import yaml
-from neo4j.v1 import basic_auth, TRUST_ON_FIRST_USE
+from neo4j.v1 import TRUST_ON_FIRST_USE, basic_auth
 
-ENV = os.getenv("DEPC_ENV", "dev")
+from depc import create_app
+
 HOME = os.getenv("DEPC_HOME", str(Path(__file__).resolve().parents[2]))
-
 SCHEMAS_PATH = str(Path(HOME) / "consumer" / "schemas.json")
-CONFIG_PATH = str(Path(HOME) / "depc.{}.yml".format(ENV))
+DEFINITIONS_PATH = str(Path(HOME) / "consumer" / "definitions.json")
 
-# Load the DepC config YAML file
-with open(CONFIG_PATH, "r") as config_file:
-    CONFIG = yaml.load(config_file)
-    CONSUMER_CONFIG = CONFIG["CONSUMER"]
+
+app = create_app(environment=os.getenv("DEPC_ENV") or "dev")
+CONSUMER_CONFIG = app.config["CONSUMER"]
+
 
 # Load the JSON schemas to support flat and nested messages
-with open(SCHEMAS_PATH, "r") as schemas_file:
-    schemas = json.load(schemas_file)
+with open(SCHEMAS_PATH, "r") as f_schemas, open(DEFINITIONS_PATH, "r") as f_defs:
+    schemas = json.load(f_schemas)
+    definitions = json.load(f_defs)
+
+    # Add the definitions in each schema
+    schemas["flat"].update(definitions)
+    schemas["nested"].update(definitions)
+
     validate_flat_message = fastjsonschema.compile(schemas["flat"])
     validate_nested_message = fastjsonschema.compile(schemas["nested"])
 
@@ -45,8 +50,10 @@ KAFKA_CONFIG = {
 
 # Graph database configuration
 NEO4J_CONFIG = {
-    "uri": CONFIG["NEO4J"]["uri"],
-    "auth": basic_auth(CONFIG["NEO4J"]["username"], CONFIG["NEO4J"]["password"]),
+    "uri": app.config["NEO4J"]["uri"],
+    "auth": basic_auth(
+        app.config["NEO4J"]["username"], app.config["NEO4J"]["password"]
+    ),
     "encrypted": False,
     "trust": TRUST_ON_FIRST_USE,
 }

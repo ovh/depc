@@ -25,7 +25,7 @@ docs: clean-docs
 	cd docs/ && make html
 
 tests:
-	pytest tests/ -vv
+	export DEPC_ENV=test && pytest tests/ -vv
 
 consumer:
 	python consumer/main.py

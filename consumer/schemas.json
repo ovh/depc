@@ -2,16 +2,16 @@
     "flat": {
         "type": "object",
         "properties": {
-            "source_label": {"type": "string", "pattern": "^[A-Z]+[a-zA-Z0-9]*$"},
-            "source_name": {"type": "string", "pattern": "^[!#-&(-[\\]-_a-~]*$"},
-            "source_from": {"type": "integer", "minimum": 0},
-            "source_to": {"type": "integer", "minimum": 1},
-            "target_label": {"type": "string", "pattern": "^[A-Z]+[a-zA-Z0-9]*$"},
-            "target_name": {"type": "string", "pattern": "^[!#-&(-[\\]-_a-~]*$"},
-            "target_from": {"type": "integer", "minimum": 0},
-            "target_to": {"type": "integer", "minimum": 1},
-            "rel_from": {"type": "integer", "minimum": 0},
-            "rel_to": {"type": "integer", "minimum": 1}
+            "source_label": { "$ref": "#/definitions/label" },
+            "source_name": { "$ref": "#/definitions/name" },
+            "source_from": { "$ref": "#/definitions/from" },
+            "source_to": { "$ref": "#/definitions/to" },
+            "target_label": { "$ref": "#/definitions/label" },
+            "target_name": { "$ref": "#/definitions/name" },
+            "target_from": { "$ref": "#/definitions/from" },
+            "target_to": { "$ref": "#/definitions/to" },
+            "rel_from": { "$ref": "#/definitions/from" },
+            "rel_to": { "$ref": "#/definitions/to" }
         },
         "additionalProperties": false,
         "dependencies": {"target_label": ["target_name"]},
@@ -20,45 +20,13 @@
     "nested": {
         "type": "object",
         "properties": {
-            "source": {
-                "type": "object",
-                "properties": {
-                    "label": {"type": "string", "pattern": "^[A-Z]+[a-zA-Z0-9]*$"},
-                    "name": {"type": "string", "pattern": "^[!#-&(-[\\]-_a-~]*$"},
-                    "props": {
-                        "type": "object",
-                        "properties": {
-                            "from": {"type": "integer", "minimum": 0},
-                            "to": {"type": "integer", "minimum": 1}
-                        },
-                        "additionalProperties": false
-                    }
-                },
-                "additionalProperties": false,
-                "required": ["label", "name"]
-            },
-            "target": {
-                "type": "object",
-                "properties": {
-                    "label": {"type": "string", "pattern": "^[A-Z]+[a-zA-Z0-9]*$"},
-                    "name": {"type": "string", "pattern": "^[!#-&(-[\\]-_a-~]*$"},
-                    "props": {
-                        "type": "object",
-                        "properties": {
-                            "from": {"type": "integer", "minimum": 0},
-                            "to": {"type": "integer", "minimum": 1}
-                        },
-                        "additionalProperties": false
-                    }
-                },
-                "additionalProperties": false,
-                "required": ["label", "name"]
-            },
+            "source": { "$ref": "#/definitions/node" },
+            "target": { "$ref": "#/definitions/node" },
             "rel": {
                 "type": "object",
                 "properties": {
-                    "from": {"type": "integer", "minimum": 0},
-                    "to": {"type": "integer", "minimum": 1}
+                    "from": { "$ref": "#/definitions/from" },
+                    "to": { "$ref": "#/definitions/to" }
                 },
                 "additionalProperties": false
             }
