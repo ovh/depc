@@ -1,5 +1,5 @@
-from flask import current_app as app
 from flask import json
+from loguru import logger
 
 from depc.controllers import (
     Controller,
@@ -64,12 +64,9 @@ class RuleController(Controller):
 
         if not redis.exists(result_key):
             msg = "[{0}] Launching the rule with arguments : {1}..."
-            app.logger.info(
-                msg.format(rule.name, kwargs), extra={"result_key": result_key}
-            )
-            app.logger.info(
-                "[{0}] {1} checks to execute".format(rule.name, len(rule.checks)),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).info(msg.format(rule.name, kwargs))
+            logger.bind(result_key=result_key).info(
+                "[{0}] {1} checks to execute".format(rule.name, len(rule.checks))
             )
 
             # Synchronous calls : checks are launched sequentially and the
@@ -79,7 +76,6 @@ class RuleController(Controller):
                     rule_id=rule_id,
                     rule_checks=[check.id for check in rule.checks],
                     result_key=result_key,
-                    logger=app.logger,
                     kwargs=kwargs,
                 )
 
@@ -94,13 +90,11 @@ class RuleController(Controller):
                 kwargs=kwargs,
             )
         else:
-            app.logger.warning(
-                "Cache already exists for the rule '{0}'".format(rule.name),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).warning(
+                "Cache already exists for the rule '{0}'".format(rule.name)
             )
-            app.logger.debug(
-                "The cache has used the following arguments : {0}".format(kwargs),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).debug(
+                "The cache has used the following arguments : {0}".format(kwargs)
             )
 
             if sync:

@@ -37,33 +37,12 @@ REDIS_SCHEDULER_CACHE:
     url: redis://localhost/4
 
 BEAMIUM:
-  source-dir: /opt/beamium/sources
+    source-dir: /opt/beamium/sources
 
+# Please read the Loguru official documentation for further details about the logging format
 LOGGING:
-  filters:
-    result:
-      (): depc.logs.filters.ResultFilter
-  formatters:
-    normal:
-      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    colored:
-      (): depc.logs.formatters.ColoredFormatter
-      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-  handlers:
-    console:
-      level: DEBUG
-      class: logging.StreamHandler
-      formatter: colored
-      stream: ext://sys.stdout
-    database:
-      level: DEBUG
-      class: depc.logs.handlers.DatabaseHandler
-      filters: [result]
-  root:
-    level: DEBUG
-    handlers: [console, database]
-    propagate: 1
-  disable_existing_loggers: false
+    level: INFO
+    format: <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level:<8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>
 
 # Configure the Kafka consumer to populate the Neo4j graph database
 # The consumer uses SASL/PLAIN authentication

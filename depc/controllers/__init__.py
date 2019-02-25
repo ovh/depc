@@ -1,5 +1,5 @@
 import sqlalchemy.exc
-from flask import current_app as app
+from loguru import logger
 
 from depc.extensions import cel, db
 from depc.utils import is_uuid
@@ -63,7 +63,7 @@ class Controller(object):
         if cel.conf.CELERY_ALWAYS_EAGER:
             # Tasks are already executed
             return []
-        app.logger.info(
+        logger.info(
             "Scheduled async task {} with args {} {}".format(
                 task_func.name, args, kwargs
             )
@@ -72,7 +72,7 @@ class Controller(object):
 
     @classmethod
     def schedule_chain(cls, name, chain):
-        app.logger.info("Scheduled async chain {}".format(name))
+        logger.info("Scheduled async chain {}".format(name))
         chain_result = chain()
         if cel.conf.CELERY_ALWAYS_EAGER:
             # Tasks are already executed
@@ -204,12 +204,10 @@ class Controller(object):
             except sqlalchemy.exc.IntegrityError as error:
                 cls.handle_integrity_error(obj, error)
                 raise error  # Raised again if no error raised in the handler.
-            app.logger.info("Created new {} {}".format(cls.model_cls.__name__, obj.id))
+            logger.info("Created new {} {}".format(cls.model_cls.__name__, obj.id))
             cls.after_create(obj)
         else:
-            app.logger.debug(
-                "Created new uncommitted {}".format(cls.model_cls.__name__)
-            )
+            logger.debug("Created new uncommitted {}".format(cls.model_cls.__name__))
         return obj
 
     @classmethod
@@ -277,7 +275,7 @@ class Controller(object):
             cls.handle_integrity_error(obj, error)
             raise error  # Raised again if no error raised in the handler.
         cls.after_update(obj)
-        app.logger.info("Updated {} {}".format(cls.model_cls.__name__, obj.id))
+        logger.info("Updated {} {}".format(cls.model_cls.__name__, obj.id))
         return obj
 
     @classmethod

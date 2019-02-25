@@ -4,6 +4,7 @@ fastjsonschema==1.6
 gunicorn==19.5.0
 jinja2==2.8.1
 jsonschema==2.6.0
+loguru==0.2.5
 neo4j-driver==1.6.1
 neo4jrestclient==2.1.1
 numpy==1.12.1

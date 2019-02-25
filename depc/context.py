@@ -1,4 +1,6 @@
+import logging
 import os
+from pathlib import Path
 
 from depc import BASE_DIR
 from depc.extensions import (
@@ -21,6 +23,7 @@ class Config:
     JSON_AS_ASCII = False
     DEBUG = False
     LOGGERS = {}
+    LOGGING = {"level": "DEBUG"}
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     CELERY_RETRY_DELAY = 60
     CELERY_CONF = {
@@ -36,11 +39,12 @@ class Config:
         "username": "neo4j",
         "password": "p4ssw0rd",
     }
-    JSONSCHEMA_DIR = os.path.join(BASE_DIR, "schemas")
+    JSONSCHEMA_DIR = str(Path(BASE_DIR) / "schemas")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     @staticmethod
     def init_app(app):
+        setup_loggers(app)
         cel.init_app(app)
         with app.app_context():
             db.init_app(app)
@@ -51,7 +55,6 @@ class Config:
         redis_scheduler.init_app(app, config_prefix="REDIS_SCHEDULER_CACHE")
         login_manager.init_app(app)
         cors.init_app(app)
-        setup_loggers(app)
 
 
 class TestingConfig(Config):
