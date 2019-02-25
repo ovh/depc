@@ -1,20 +1,13 @@
 import hashlib
 import json
-import logging
+import pickle
 import re
 import time
 from functools import wraps
 
 import arrow
 import redis
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
-
-logger = logging.getLogger("RedisCache")
+from loguru import logger
 
 
 class CacheJSONEncoder(json.JSONEncoder):

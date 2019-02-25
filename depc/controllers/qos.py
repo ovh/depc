@@ -1,5 +1,3 @@
-import logging
-
 from depc.controllers import Controller
 from depc.extensions import redis
 from depc.queries import (
@@ -9,8 +7,6 @@ from depc.queries import (
     QOS_FILTERED_BY_LABEL,
 )
 from depc.utils.warp10 import Warp10Client, _transform_warp10_values
-
-logger = logging.getLogger(__name__)
 
 
 class QosController(Controller):

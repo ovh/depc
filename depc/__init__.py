@@ -9,7 +9,6 @@ from pathlib import Path
 import pandas
 import yaml
 from flask import Flask
-from flask.app import _logger_lock
 from flask.json import JSONEncoder
 from flask.wrappers import Request
 from werkzeug.routing import Rule
@@ -78,18 +77,6 @@ class ExtendedFlask(Flask):
     request_class = ExtendedRequest
     url_rule_class = ExtendedRule
     json_encoder = ExtendedJSONEncoder
-
-    @property
-    def logger(self):
-        if self._logger and self._logger.name == self.logger_name:
-            return self._logger
-        with _logger_lock:
-            if self._logger and self._logger.name == self.logger_name:
-                return self._logger
-            from logging import getLogger
-
-            self._logger = rv = getLogger(self.name)
-            return rv
 
 
 def read_config(config_file, verbose=False):
@@ -161,7 +148,7 @@ def create_app(environment="dev"):
     # Load extensions
     conf_cls.init_app(app)
 
-    from .apiv1 import api as apiv1_blueprint
+    from depc.apiv1 import api as apiv1_blueprint
 
     app.register_blueprint(apiv1_blueprint, url_prefix="/v1")
 

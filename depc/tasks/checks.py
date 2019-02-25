@@ -2,6 +2,7 @@ import time
 
 from flask import json
 from jinja2.exceptions import TemplateError
+from loguru import logger
 
 from depc.extensions import db, redis
 from depc.models.checks import Check
@@ -13,23 +14,21 @@ from depc.templates import Template
 from depc.utils.qos import compute_qos_from_bools
 
 
-def execute_check(logger, check_id, result_key, variables, name, start, end):
+def execute_check(check_id, result_key, variables, name, start, end):
     check = db.session.query(Check).get(check_id)
     if not check:
         raise UnrecoverableError("Check {} not found".format(check_id))
 
-    logger.info(
-        "[{0}] Executing check ({1})...".format(check.name, check.id),
-        extra={"result_key": result_key},
+    logger.bind(result_key=result_key).info(
+        "[{0}] Executing check ({1})...".format(check.name, check.id)
     )
 
     source = check.source
     source_plugin = BaseSource.load_source(source.plugin, source.configuration)
 
     # Render every values in parameters
-    logger.debug(
-        "[{0}] Raw parameters : {1}".format(check.name, check.parameters),
-        extra={"result_key": result_key},
+    logger.bind(result_key=result_key).debug(
+        "[{0}] Raw parameters : {1}".format(check.name, check.parameters)
     )
     template = Template(
         check=check,
@@ -49,9 +48,8 @@ def execute_check(logger, check_id, result_key, variables, name, start, end):
             "[{0}] {1}".format(check.name, str(error)), extra={"result_key": result_key}
         )
     else:
-        logger.debug(
-            "[{0}] Rendered parameters : {1}".format(check.name, parameters),
-            extra={"result_key": result_key},
+        logger.bind(result_key=result_key).debug(
+            "[{0}] Rendered parameters : {1}".format(check.name, parameters)
         )
 
         # Load the check
@@ -70,24 +68,21 @@ def execute_check(logger, check_id, result_key, variables, name, start, end):
         # There is no data returned by the check
         except UnknownStateException as e:
             error = e
-            logger.warning(
-                "[{0}] {1}".format(check.name, str(error)),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).warning(
+                "[{0}] {1}".format(check.name, str(error))
             )
 
         # Do not stop the chain if this check fails
         except (BadConfigurationException, Exception) as e:
             error = e
-            logger.critical(
-                "[{0}] {1}".format(check.name, str(error)),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).critical(
+                "[{0}] {1}".format(check.name, str(error))
             )
 
     # Display check duration
     duration = time.time() - start_time
-    logger.debug(
-        "[{0}] Check duration : {1}s".format(check.name, duration),
-        extra={"result_key": result_key},
+    logger.bind(result_key=result_key).debug(
+        "[{0}] Check duration : {1}s".format(check.name, duration)
     )
 
     result = {
@@ -105,22 +100,20 @@ def execute_check(logger, check_id, result_key, variables, name, start, end):
         result.update(check_result)
 
         if result["qos"]:
-            logger.info(
-                "[{0}] Check returned {1}%".format(check.name, check_result["qos"]),
-                extra={"result_key": result_key},
+            logger.bind(result_key=result_key).info(
+                "[{0}] Check returned {1}%".format(check.name, check_result["qos"])
             )
         else:
-            logger.warning(
+            logger.bind(result_key=result_key).warning(
                 "[{0}] No QOS returned by the check".format(
                     check.name, check_result["qos"]
-                ),
-                extra={"result_key": result_key},
+                )
             )
 
     return result
 
 
-def validate_results(logger, checks, rule_id, result_key, context):
+def validate_results(checks, rule_id, result_key, context):
     rule = db.session.query(Rule).get(rule_id)
     result = {"checks": checks, "context": context}
 
@@ -132,20 +125,16 @@ def validate_results(logger, checks, rule_id, result_key, context):
         result_rule = compute_qos_from_bools(booleans=[c["bools_dps"] for c in checks])
         result.update(result_rule)
 
-        logger.info(
-            "[{0}] Rule done".format(rule.name), extra={"result_key": result_key}
-        )
-        logger.info(
-            "[{0}] Rule QOS is {1:.5f}%".format(rule.name, result["qos"]),
-            extra={"result_key": result_key},
+        logger.bind(result_key=result_key).info("[{0}] Rule done".format(rule.name))
+        logger.bind(result_key=result_key).info(
+            "[{0}] Rule QOS is {1:.5f}%".format(rule.name, result["qos"])
         )
     else:
         result["qos"] = "unknown"
-        logger.warning(
+        logger.bind(result_key=result_key).warning(
             "[{0}] No QOS was found in any checks, so no QOS can be computed for the rule".format(
                 rule.name
-            ),
-            extra={"result_key": result_key},
+            )
         )
 
     # Add the check details in the result
@@ -154,9 +143,8 @@ def validate_results(logger, checks, rule_id, result_key, context):
         json.dumps(result).encode("utf-8"),
         ex=redis.seconds_until_midnight(),
     )
-    logger.debug(
-        "[{0}] Result added in cache ({1})".format(rule.name, result_key),
-        extra={"result_key": result_key},
+    logger.bind(result_key=result_key).debug(
+        "[{0}] Result added in cache ({1})".format(rule.name, result_key)
     )
 
     return result
