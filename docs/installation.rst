@@ -144,21 +144,6 @@ To start the Web UI :
 
 Now, you ca reach the DepC Web UI at : ``http://localhost:9000/#/teams``
 
-
-Run Celery
-~~~~~~~~~~
-
-Celery is required to compute the QOS.
-
-.. code:: bash
-
-    # Run a worker
-    make worker
-
-    # Run Flower
-    make flower
-
-
 Setup Airflow
 ~~~~~~~~~~~~~
 

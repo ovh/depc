@@ -8,11 +8,6 @@ FLOAT_DECIMAL: 3
 
 FORCE_INSECURE_ADMIN: false
 
-CELERY_CONF:
-    BROKER_URL: redis://localhost/1
-    CELERY_RESULT_BACKEND: redis://localhost/2
-    CELERY_URL_PREFIX: celery
-
 NEO4J:
     url: http://127.0.0.1:7474
     uri: bolt://127.0.0.1:7687

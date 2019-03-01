@@ -79,7 +79,7 @@ class IntervalCheck(Fake):
 
         return values
 
-    def execute(self, parameters, name, start, end):
+    async def execute(self, parameters, name, start, end):
         metric = parameters["metric"]
         start = start.timestamp
         end = end.timestamp

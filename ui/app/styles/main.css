@@ -776,10 +776,15 @@ pre.white-space {
   color: rgba(0,0,0,.4);
 }
 
-/** Ovh Angular Tail Logs **/
-.ovh-angular-tail-logs {
+/** Rule Logs **/
+.rule-logs {
   background-color: #022b36;
+  color: #fff;
+  font-family: monospace;
+  padding: 10px;
   height: inherit;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /** Search bar **/

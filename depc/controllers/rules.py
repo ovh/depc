@@ -1,9 +1,10 @@
+import asyncio
+
 from flask import json
-from loguru import logger
 
 from depc.controllers import (
-    Controller,
     AlreadyExistError,
+    Controller,
     NotFoundError,
     RequirementsNotSatisfiedError,
 )
@@ -11,7 +12,7 @@ from depc.controllers.checks import CheckController
 from depc.extensions import db, redis
 from depc.models.checks import Check
 from depc.models.rules import Rule
-from depc.tasks.rules import execute_async_rule, execute_sync_rule
+from depc.tasks import execute_asyncio_check, merge_all_checks, write_log
 
 
 class BoolsDpsDecoder(json.JSONDecoder):
@@ -63,45 +64,52 @@ class RuleController(Controller):
         result_key = redis.get_key_name("rule", rule_id, **kwargs)
 
         if not redis.exists(result_key):
-            msg = "[{0}] Launching the rule with arguments : {1}..."
-            logger.bind(result_key=result_key).info(msg.format(rule.name, kwargs))
-            logger.bind(result_key=result_key).info(
-                "[{0}] {1} checks to execute".format(rule.name, len(rule.checks))
+            logs = []
+            write_log(
+                logs,
+                "[{0}] Launching the rule with arguments : {1}...".format(
+                    rule.name, kwargs
+                ),
+                "INFO",
+            )
+            write_log(
+                logs,
+                "[{0}] {1} checks to execute".format(rule.name, len(rule.checks)),
+                "INFO",
             )
 
-            # Synchronous calls : checks are launched sequentially and the
-            # result of the rule is directly sent.
-            if sync:
-                return execute_sync_rule(
-                    rule_id=rule_id,
-                    rule_checks=[check.id for check in rule.checks],
-                    result_key=result_key,
-                    kwargs=kwargs,
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(
+                cls.execute_asyncio_rule(
+                    loop=loop, rule=rule, key=result_key, kwargs=kwargs
                 )
-
-            # Asynchronous way : returns a result ID. A Celery task execute
-            # the rule and the client must poll the /results/<ID> endpoint
-            # to have the complete result.
-            cls.schedule_task(
-                execute_async_rule,
-                rule_id=rule_id,
-                rule_checks=[check.id for check in rule.checks],
-                result_key=result_key,
-                kwargs=kwargs,
             )
+
+        # Cache already exists
         else:
-            logger.bind(result_key=result_key).warning(
-                "Cache already exists for the rule '{0}'".format(rule.name)
+            logs = []
+            write_log(
+                logs,
+                "Cache already exists for the rule '{0}'".format(rule.name),
+                "WARNING",
             )
-            logger.bind(result_key=result_key).debug(
-                "The cache has used the following arguments : {0}".format(kwargs)
+            write_log(
+                logs,
+                "The cache has used the following arguments : {0}".format(kwargs),
+                "DEBUG",
             )
 
-            if sync:
-                result = redis.get(result_key)
-                return json.loads(result, cls=BoolsDpsDecoder)
+        return cls.get_rule_result(result_key, logs)
 
-        return result_key
+    @classmethod
+    def get_rule_result(cls, key, logs=[]):
+        result = json.loads(redis.get(key))
+        data = {"logs": logs + result["logs"]}
+        if "qos" in result:
+            data["qos"] = result
+
+        return data
 
     @classmethod
     def update(cls, data, filters):
@@ -210,3 +218,27 @@ class RuleController(Controller):
             raise AlreadyExistError(
                 "The rule {name} already exists.", {"name": obj.name}
             )
+
+    @classmethod
+    async def execute_asyncio_rule(cls, loop, rule, key, kwargs):
+        all_checks_result = await asyncio.gather(
+            *[
+                execute_asyncio_check(
+                    check=check,
+                    name=kwargs.get("name"),
+                    start=kwargs.get("start"),
+                    end=kwargs.get("end"),
+                    key=key,
+                    variables=kwargs.get("variables", {}),
+                )
+                for check in rule.checks
+            ],
+            loop=loop,
+            return_exceptions=True
+        )
+
+        qos = merge_all_checks(
+            checks=all_checks_result, rule=rule, key=key, context=kwargs
+        )
+
+        return qos

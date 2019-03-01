@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('RulesCtrl', function ($scope, $interval, $timeout, $rootScope, OvhTailLogs, chartsService, rulesService, teamsService, variablesService, modalService, config, $location, $routeParams, toastr, $confirm) {
+  .controller('RulesCtrl', function (chartsService, rulesService, teamsService, variablesService, modalService, config, $location, $routeParams, toastr, $confirm) {
     var self = this;
 
     self.teamName = $routeParams.team;
@@ -21,8 +21,6 @@ angular.module('depcwebuiApp')
     this.name = null;
     this.interval = null;
     this.result = null;
-    this.checksOrder = 'name';
-    self.rulePromise = null;
 
     self.loadingVariables = false;
     self.variables = [];
@@ -76,16 +74,11 @@ angular.module('depcwebuiApp')
         self.logsDebugEnabled = !self.logsDebugEnabled;
     }
     self.logsFilterDebug = function(log) {
-        if ( !self.logsDebugEnabled && log.message.level == 'DEBUG') {
+        if ( !self.logsDebugEnabled && log.level == 'DEBUG') {
             return false;
         }
 
         return true;
-    };
-
-    // We disable this feature for now
-    self.fillLogsFilter = function(value) {
-        self.logsFilterStr = value;
     };
 
     self.getPeriodFormat = function(secs, fmt) {
@@ -180,7 +173,7 @@ angular.module('depcwebuiApp')
         self.result = null;
         self.checksResult = {};
         self.ruleExecuting = true;
-        self.logs = [];
+        self.logs = [{'level': 'INFO', 'message': 'Executing rule containing ' + self.selectedRule.checks.length + ' check(s)...'}];
 
         var start = moment(self.date.startDate).unix();
         var end = moment(self.date.endDate).unix();
@@ -192,20 +185,8 @@ angular.module('depcwebuiApp')
         $location.search('end', end);
         $location.search('exec', 1);
 
-        var rule = rulesService.executeRule(self.team.id, self.selectedRule.id, self.name, start, end).then(function(response) {
-            var result = response.data.result;
-
-            // Don't wait if cache exists
-            self.checkResult(result);
-
-            self.rulePromise = $interval(function() {
-                self.checkResult(result);
-            }, 1000);
-
-            // Cancel any pending timer
-            $scope.$on("$destroy", function () {
-                $interval.cancel(self.rulePromise);
-            });
+        rulesService.executeRule(self.team.id, self.selectedRule.id, self.name, start, end).then(function(response) {
+            self.checkResult(response.data.result);
         });
     };
 
@@ -214,121 +195,56 @@ angular.module('depcwebuiApp')
     }
 
     this.checkResult = function(result) {
-        rulesService.getResult(result, 'asc', 1000).then(function(response) {
-            var result = response.data.qos;
+        self.logs = result.logs;
+        console.log(self.logs);
+        var stats = {'ok': 0, 'warning': 0, 'critical': 0, 'unknown': 0}
 
-            var logs = response.data.logs;
-            var tmpLogs = self.logs;
-            tmpLogs.push(logs);
+        // Handle each check
+        for ( var i in result.qos.checks ) {
+            var check = result.qos.checks[i];
 
-            self.logs = _.uniq(_.flatten(tmpLogs), function (log) {
-                return log.message._id;
-            });
+            // Statistics (Ok, Warning, Critical, Unknown)
+            if ( check.qos == null ) {
+                stats['unknown'] += 1;
+            } else {
+                stats[config.getStateByQos(check.qos)] += 1;
+            }
 
-            // Stop the loop, we have our QOS
-            if ( result && result.qos != undefined ) {
-                var stats = {'ok': 0, 'warning': 0, 'critical': 0, 'unknown': 0}
+            // Add the chart for each check
+            if ( check.timeseries != undefined && check.timeseries.length > 0 ) {
+                var chartData = [];
+                var ts = check.timeseries[0];
+                for ( var dp in  ts.dps) {
+                    var val = Number(ts.dps[dp].toFixed(3));
+                    chartData.push([dp * 1000, val]);
+                }
 
-                // Handle each check
-                for ( var i in result.checks ) {
-                    var check = result.checks[i];
+                var metric = ts.metric;
+                var tags = JSON.stringify(ts.tags);
 
-                    // Statistics (Ok, Warning, Critical, Unknown)
-                    if ( check.qos == null ) {
-                        stats['unknown'] += 1;
-                    } else {
-                        stats[config.getStateByQos(check.qos)] += 1;
-                    }
-
-                    // Add the chart for each check
-                    if ( check.timeseries != undefined && check.timeseries.length > 0 ) {
-                        var chartData = [];
-                        var ts = check.timeseries[0];
-                        for ( var dp in  ts.dps) {
-                            var val = Number(ts.dps[dp].toFixed(3));
-                            chartData.push([dp * 1000, val]);
-                        }
-
-                        var metric = ts.metric;
-                        var tags = JSON.stringify(ts.tags);
-
-                        // Group the false periods
-                        var keys = Object.keys(check.bools_dps);
-                        var bands = [];
-                        for (var j = 0; j < keys.length-1; j++) {
-                          var val = check.bools_dps[keys[j]];
-                          if (!val) {
-                            bands.push({
-                              color: '#ff7272',
-                              from: keys[j] * 1000,
-                              to: keys[j+1] * 1000
-                            });
-                          }
-                        }
-
-                        var lineChart = chartsService.getCheckChart(115, metric + tags, chartData, bands);
-                        result.checks[i]['chart'] = lineChart;
+                // Group the false periods
+                var keys = Object.keys(check.bools_dps);
+                var bands = [];
+                for (var j = 0; j < keys.length-1; j++) {
+                    var val = check.bools_dps[keys[j]];
+                    if (!val) {
+                    bands.push({
+                        color: '#ff7272',
+                        from: keys[j] * 1000,
+                        to: keys[j+1] * 1000
+                    });
                     }
                 }
 
-                // All checks are done
-                self.chartData = [stats['ok'], stats['warning'], stats['critical'], stats['unknown']];
-                self.result = result;
-                $interval.cancel(self.rulePromise);
-                self.ruleExecuting = false;
+                var lineChart = chartsService.getCheckChart(115, metric + tags, chartData, bands);
+                result.qos.checks[i]['chart'] = lineChart;
             }
-        });
-    };
-
-    this.getCheckResult = function(check) {
-        if ( check.id in self.checksResult) {
-            return self.checksResult[check.id];
         }
 
-        return null;
-    };
-
-    this.getCheckDuration = function(check) {
-        var result = self.getCheckResult(check);
-
-        if ( result != null ) {
-            var duration = Number((parseFloat(result.duration)).toFixed(3));
-            return duration + 's';
-        }
-
-        return null;
-    }
-
-    this.isCheckFinished = function(check) {
-        return check.id in self.checksResult;
-    }
-
-    this.hasDetails = function(check) {
-        return self.isCheckFinished(check) && check.weight != -1;
-    };
-
-    this.getCheckProgress = function(check) {
-        var check_id = check.id;
-
-        if ( !(check_id in self.checksResult) ) {
-            return false;
-        } else {
-            var result = self.checksResult[check_id];
-
-            // The weight is used to order the list by QOS
-            var filteredChecks = self.selectedRule.checks.filter(function(check) {
-              return check.id == check_id;
-            });
-            filteredChecks[0]['weight'] = ( result['qos'] != null ) ? parseFloat(result['qos']) : -1;
-
-            if ( result['qos'] == null ) {
-                result['type'] = 'unknown';
-            } else {
-                result['type'] = config.getStateByQos(result['qos'])
-            }
-
-            return result;
-        }
+        // All checks are done
+        self.chartData = [stats['ok'], stats['warning'], stats['critical'], stats['unknown']];
+        self.result = result;
+        self.ruleExecuting = false;
     };
 
     self.getPanel = function(key) {
@@ -420,14 +336,6 @@ angular.module('depcwebuiApp')
     this.openCheckResultModal = function(check) {
         modalService.manageGrants(self.team);
     };
-
-    this.changeOrder = function() {
-        if ( self.checksOrder == 'name' ) {
-            self.checksOrder = 'weight';
-        } else {
-            self.checksOrder = 'name';
-        }
-    }
 
     this.getLabelClassByQos = function(qos) {
         return config.getLabelClassByQos(qos);

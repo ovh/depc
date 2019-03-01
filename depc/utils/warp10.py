@@ -3,6 +3,8 @@ import requests
 from flask import current_app as app
 from requests.exceptions import Timeout
 
+import aiohttp
+
 HEADERS = """
 $START$ 'start' STORE
 $END$ 'end' STORE
@@ -43,6 +45,16 @@ class Warp10Client:
         """
         date = "{0}.000000Z".format(arrow.get(ts).isoformat()[:-6])
         return date
+
+    async def async_execute(self):
+        url = self.url + "/exec"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=self.script) as r:
+                if r.status != 200:
+                    raise Warp10Exception(str(r.text))
+                resp = await r.json(content_type=None)
+        return resp
 
     def execute(self):
         try:

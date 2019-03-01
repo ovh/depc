@@ -37,12 +37,12 @@
 					</div>
 					<span class="clearfix"></span>
 				</div>
-				<div class="panel-body">
+				<div class="panel-body" data-ng-if="!rulesCtrl.ruleExecuting" >
 					<form class="form-horizontal">
 						<div class="form-group">
 							<label for="name" class="col-sm-2 control-label">Name</label>
 						    <div class="col-sm-10">
-						      <input type="text" class="form-control" id="name" placeholder="Host or the service to check" data-ng-model="rulesCtrl.name" ng-disabled="rulesCtrl.ruleExecuting">
+						      <input type="text" class="form-control" id="name" placeholder="Host or the service to check" data-ng-model="rulesCtrl.name">
 						    </div>
 						</div>
 						<div class="form-group">
@@ -50,16 +50,19 @@
 							<div class="col-sm-10">
 								<div class="inner-addon right-addon">
 									<i class="glyphicon glyphicon-calendar date-picker-addon"></i>
-									<input ng-disabled="rulesCtrl.ruleExecuting" date-range-picker class="form-control date-picker" type="text" ng-model="rulesCtrl.date" options="rulesCtrl.dateOps" />
+									<input date-range-picker class="form-control date-picker" type="text" ng-model="rulesCtrl.date" options="rulesCtrl.dateOps" />
 								</div>
 							</div>
 						</div>
 					</form>
-					<hr data-ng-if="!rulesCtrl.ruleExecuting" />
-					<div class="btn-group pull-right" data-ng-if="!rulesCtrl.ruleExecuting">
+					<hr />
+					<div class="btn-group pull-right">
 						<button class="btn btn-default" data-ng-click="rulesCtrl.executeRule()"><i class="glyphicon glyphicon-refresh"></i> Launch checks</button>
 					</div>
 					<span class="clearfix"></span>
+				</div>
+				<div class="panel-body" data-ng-if="rulesCtrl.ruleExecuting" >
+					<div class="loader"></div>
 				</div>
 			</div>
 
@@ -81,12 +84,9 @@
 							</div>
 							<div class="clearfix"></div>
 						</div>
-						<div class="loader" data-ng-if="rulesCtrl.ruleExecuting"></div>
-						<div style="text-align: center" data-ng-if="rulesCtrl.ruleExecuting"><h4>Querying the timeseries sources...</h4></div>
-
 						<div class="panel-body" data-ng-if='!rulesCtrl.selectedRule && !rulesCtrl.ruleExecuting'>Please select a rule.</div>
 
-						<div class="row" data-ng-if='rulesCtrl.hasResult()'>
+						<div class="row" data-ng-if="rulesCtrl.hasResult()">
 							<div class="col-md-12">
 								<div class="row">
 									<div class="col-lg-6 col-sm-12">
@@ -99,8 +99,8 @@
 												'critical': 'images/panel-critical.png'}">
 												<img ng-src="{{ images[rulesCtrl.getPanel('key')] }}" alt="{{ rulesCtrl.getPanel('key') }}"/>
 												<h4>
-													<abbr data-ng-if="rulesCtrl.result.qos != 'unknown'" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from the checks datapoints : every bad ticks in all checks are reported in the whole rule (we use the AND operation).'">{{ rulesCtrl.result.qos }}%</abbr>
-													<span data-ng-if="rulesCtrl.result.qos == 'unknown'">Unknown</span>
+													<abbr data-ng-if="rulesCtrl.result.qos.qos != 'unknown'" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from the checks datapoints : every bad ticks in all checks are reported in the whole rule (we use the AND operation).'">{{ rulesCtrl.result.qos.qos }}%</abbr>
+													<span data-ng-if="rulesCtrl.result.qos.qos == 'unknown'">Unknown</span>
 												</h4>
 											</div>
 										</div>
@@ -114,37 +114,35 @@
 										<div class="btn-group-vertical" style="margin-top: 25px;">
 											<button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsEnableDebug()" data-ng-class="rulesCtrl.logsDebugEnabled ? 'active' : ''" type="button"><i class="glyphicon glyphicon-console"></i> Show debug logs</button>
 									        <button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsExpanded = !rulesCtrl.logsExpanded"><i class="glyphicon" data-ng-class="rulesCtrl.logsExpanded ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'"></i> {{ rulesCtrl.logsExpanded ? 'Reduce the logs' : 'Expand the logs' }}</button>
-											<button data-ng-if="rulesCtrl.result.qos != 'unknown'" data-ng-click="rulesCtrl.changeOrder()" class="btn btn-default btn-sm" data-ng-class="rulesCtrl.checksOrder == 'weight' ? 'active' : ''"><i class="glyphicon glyphicon-sort-by-order"></i> Sort checks by QOS</button>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="panel-body no-padding">
-							<ovh-tail-logs data-ng-if="rulesCtrl.logs.length > 0" ng-style="rulesCtrl.logsExpanded ? {'height': '600px'} : {'height': '150px'}">
+							<div class="rule-logs" data-ng-if="rulesCtrl.logs.length > 0" ng-style="rulesCtrl.logsExpanded ? {'height': '600px'} : {'height': '150px'}">
 						        <div class="row"
-										data-ng-repeat="log in rulesCtrl.logs |filter: rulesCtrl.logsFilterDebug | filter:rulesCtrl.logsFilterStr | orderBy:message.created_at track by $index"
+										data-ng-repeat="log in rulesCtrl.logs |filter: rulesCtrl.logsFilterDebug | filter:rulesCtrl.logsFilterStr"
 						                data-ng-class="{
-						                'text-muted'  : log.message.level === 'DEBUG',
-						                'text-primary' : log.message.level === 'INFO',
-						                'text-warning' : log.message.level === 'WARNING',
-						                'text-danger'  : log.message.level === 'ERROR' || log.message.level === 'CRITICAL'}">
-					                <span class="col-sm-3 col-md-3 col-lg-3" data-ng-bind="log.message.created_at | date:'M/d/yy h:mm:ss a'"></span>
-					                <span class="col-sm-2 col-md-2 col-lg-1 hidden-xs hidden-sm" data-ng-bind="log.message.level"></span>
-					                <span class="col-sm-7 col-md-7 col-lg-8" data-ng-bind="log.message.message"></span>
+						                'text-muted'  : log.level === 'DEBUG',
+						                'text-primary' : log.level === 'INFO',
+						                'text-warning' : log.level === 'WARNING',
+						                'text-danger'  : log.level === 'ERROR' || log.level === 'CRITICAL'}">
+					                <span class="col-sm-2 col-md-2 col-lg-1 hidden-xs hidden-sm" data-ng-bind="log.level"></span>
+					                <span class="col-sm-10 col-md-10 col-lg-11" data-ng-bind="log.message"></span>
 					            </div>
 					            <div data-ng-if="rulesCtrl.logger.logs.length === 0">No logs available</div>
-						    </ovh-tail-logs>
+						    </div>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
-				<div class="panel-body" data-ng-if="rulesCtrl.result && rulesCtrl.result.qos !== 'unknown'">
+				<div class="panel-body" data-ng-if="rulesCtrl.result.qos && rulesCtrl.result.qos.qos !== 'unknown'">
 					<table class="table">
 						<tbody>
-							<tr data-ng-repeat="check in rulesCtrl.result.checks" ng-class="{'no-top-border':$first}">
+							<tr data-ng-repeat="check in rulesCtrl.result.qos.checks" ng-class="{'no-top-border':$first}">
 								<td class="col-sm-2">
 									<div class="check-card">
 										<div class="check-card-title"><strong>{{ check.name }}</strong></div>
@@ -168,7 +166,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="panel-body" data-ng-if="(!rulesCtrl.result && rulesCtrl.selectedRule.checks.length && !rulesCtrl.ruleExecuting) || rulesCtrl.result.qos == 'unknown'">
+				<div class="panel-body" data-ng-if="(!rulesCtrl.result.qos && rulesCtrl.selectedRule.checks.length && !rulesCtrl.ruleExecuting) || rulesCtrl.result.qos.qos == 'unknown'">
 					<table class="table table-stripped">
 						<thead>
 							<tr>

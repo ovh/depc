@@ -39,20 +39,6 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getResult = function(id) {
-      return $http({
-        url: config.depc_endpoint() + '/results/' + id,
-        method: "GET"
-      });
-    };
-
-    var getResult = function(id, sort, limit) {
-      return $http({
-        url: config.depc_endpoint() + '/results/' + id + '?sort=' + sort + '&limit=' + limit,
-        method: "GET"
-      });
-    };
-
     var associateRuleChecks = function(team_id, rule_id, checks) {
       return $http({
         url: config.depc_endpoint() + '/teams/' + team_id + '/rules/' + rule_id + '/checks',
@@ -73,7 +59,6 @@ angular.module('depcwebuiApp')
     return {
       getTeamRules: getTeamRules,
       executeRule: executeRule,
-      getResult: getResult,
       getCheck: getCheck,
       associateRuleChecks: associateRuleChecks,
       removeRuleLabel: removeRuleLabel

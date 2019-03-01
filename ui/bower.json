@@ -23,7 +23,6 @@
     "angular-toastr": "^2.1.1",
     "angular-confirm-modal": "^1.2.6",
     "angular-chart.js": "^1.1.1",
-    "ovh-angular-tail-logs": "^1.1.2",
     "color-hash": "^1.0.3",
     "angular-daterangepicker": "^0.2.2",
     "moment": "^2.10.2",
@@ -65,12 +64,6 @@
       "dependencies": {
         "angular": "^1.x"
       }
-    },
-    "ovh-angular-tail-logs": {
-      "main": [
-        "dist/ovh-angular-tail-logs.min.js",
-        "dist/ovh-angular-tail-logs.min.css"
-      ]
     }
   }
 }

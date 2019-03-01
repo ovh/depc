@@ -2,19 +2,9 @@ import logging
 import re
 import sys
 
-import celery.signals
 from loguru import logger
 
-from depc.logs.handlers import DatabaseHandler, InterceptHandler
-
-
-@celery.signals.setup_logging.connect
-def setup_logging(*args, **kwargs):
-    """Hack to prevent Celery from messing with loggers.
-
-    See https://github.com/celery/celery/issues/1867
-    """
-    pass
+from depc.logs.handlers import InterceptHandler
 
 
 def setup_loggers(app):
@@ -51,13 +41,4 @@ def setup_loggers(app):
     if logging_format:
         stdout_sink.update({"format": logging_format})
 
-    logger.configure(
-        handlers=[
-            {
-                "sink": DatabaseHandler,
-                "filter": lambda record: "result_key" in record["extra"],
-                "format": "{message}",
-            },
-            stdout_sink,
-        ]
-    )
+    logger.configure(handlers=[stdout_sink])

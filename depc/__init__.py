@@ -143,7 +143,6 @@ def create_app(environment="dev"):
     app.config.from_object(conf_cls)
     data_file = read_config(conf_file)
     app.config.update(data_file)
-    app.config["CELERY_CONF"].update(conf_cls.CELERY_CONF)
 
     # Load extensions
     conf_cls.init_app(app)
