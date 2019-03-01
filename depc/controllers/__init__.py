@@ -1,7 +1,7 @@
 import sqlalchemy.exc
 from loguru import logger
 
-from depc.extensions import cel, db
+from depc.extensions import db
 from depc.utils import is_uuid
 
 
@@ -56,28 +56,6 @@ class Controller(object):
             "Undefined join for {cls} and {class}",
             {"cls": cls.model_cls.__name__, "class": object_class.__name__},
         )
-
-    @classmethod
-    def schedule_task(cls, task_func, *args, **kwargs):
-        task_result = task_func.delay(*args, **kwargs)
-        if cel.conf.CELERY_ALWAYS_EAGER:
-            # Tasks are already executed
-            return []
-        logger.info(
-            "Scheduled async task {} with args {} {}".format(
-                task_func.name, args, kwargs
-            )
-        )
-        return [task_result.id]
-
-    @classmethod
-    def schedule_chain(cls, name, chain):
-        logger.info("Scheduled async chain {}".format(name))
-        chain_result = chain()
-        if cel.conf.CELERY_ALWAYS_EAGER:
-            # Tasks are already executed
-            return []
-        return [chain_result.id]
 
     @classmethod
     def _get_model_class_by_name(cls, class_name, parent_class=db.Model):

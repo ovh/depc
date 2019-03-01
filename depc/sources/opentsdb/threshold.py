@@ -47,10 +47,10 @@ class ThresholdCheck(OpenTSDB):
 
     name = "Threshold"
 
-    def compute(self, parameters, name, start, end, query):
+    async def compute(self, parameters, name, start, end, query):
         logger.debug("Computing the QoS in {0} check".format(self.name))
 
-        timeseries = self.make_query(query)
+        timeseries = await self.make_query(query)
         if not timeseries:
             msg = "No data for {} (from {} to {})".format(name, start, end)
             logger.warning(msg)
@@ -77,7 +77,7 @@ class ThresholdCheck(OpenTSDB):
 
         return result
 
-    def execute(self, parameters, name, start, end):
+    async def execute(self, parameters, name, start, end):
         try:
             query = {
                 "start": start.timestamp,
@@ -92,4 +92,4 @@ class ThresholdCheck(OpenTSDB):
             msg = "OpenTSDB Query is not valid : {}".format(parameters["query"])
             raise BadConfigurationException(msg)
 
-        return self.compute(parameters, name, start, end, query)
+        return await self.compute(parameters, name, start, end, query)

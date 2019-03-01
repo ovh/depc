@@ -26,18 +26,6 @@ if [[ "$APP_TYPE" = "api" || -z $APP_TYPE ]];then
     --max-requests $G_MAX_REQUESTS --max-requests-jitter $G_MAX_REQUESTS_JITTER \
     manage:app
 
-elif [ "$APP_TYPE" = "worker" ];then
-
-    echo "Starting celery worker (queue=celery)"
-    export C_FORCE_ROOT="true"
-    exec celery worker --app celery_launch.cel --hostname $APP_TYPE.%n
-
-elif [ "$APP_TYPE" = "flower" ];then
-
-    echo "Starting flower"
-    CELERY_URL_PREFIX=$( grep CELERY_URL_PREFIX $CONFIG_FILE | awk '{print $NF}' )
-    exec celery flower -A celery_launch.cel --port=5000 --url_prefix=$CELERY_URL_PREFIX
-
 else
 
     echo "Wrong argument : $APP_TYPE"

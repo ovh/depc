@@ -5,7 +5,6 @@ from pathlib import Path
 from depc import BASE_DIR
 from depc.extensions import (
     admin,
-    cel,
     cors,
     db,
     jsonschema,
@@ -25,14 +24,6 @@ class Config:
     LOGGERS = {}
     LOGGING = {"level": "DEBUG"}
     SQLALCHEMY_DATABASE_URI = "sqlite://"
-    CELERY_RETRY_DELAY = 60
-    CELERY_CONF = {
-        "CELERY_TASK_SERIALIZER": "json",
-        "CELERY_RESULT_SERIALIZER": "json",
-        "CELERY_ACCEPT_CONTENT": ["json"],
-        "CELERYD_HIJACK_ROOT_LOGGER": False,
-        "CELERYD_POOL": "solo",
-    }
     NEO4J = {
         "url": "http://127.0.0.1:7474",
         "uri": "bolt://127.0.0.1:7687",
@@ -56,7 +47,6 @@ class Config:
     @staticmethod
     def init_app(app):
         setup_loggers(app)
-        cel.init_app(app)
         with app.app_context():
             db.init_app(app)
         migrate.init_app(app, db)

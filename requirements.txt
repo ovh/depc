@@ -14,6 +14,8 @@ pyyaml==4.2b1
 redis==2.10.5
 requests==2.20.0
 werkzeug==0.14.1
+aiohttp==2.3.10
+yarl==1.1.1
 
 # Apache Airflow
 apache-airflow==1.10.2
@@ -34,11 +36,6 @@ flask-login==0.2.11
 flask-migrate==2.2.1
 flask-script==2.0.6
 flask-sqlalchemy==2.3
-
-# Celery
-celery==4.1.1
-flower==0.9.1
-kombu==4.3.0
 
 # Kafka
 kafka-python==1.4.3

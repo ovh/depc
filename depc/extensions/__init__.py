@@ -8,15 +8,12 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event, exc, select
 from sqlalchemy.engine import Engine
 
-from depc.extensions.custom_tasks import TaskWithLogger
 from depc.extensions.encrypted_dict import FlaskEncryptedDict
-from depc.extensions.flask_celery import FlaskCelery
 from depc.extensions.flask_redis_cache import FlaskRedisCache
 
 admin = Admin(index_view=AdminIndexView())
 db = SQLAlchemy(session_options={"autoflush": False})
 migrate = Migrate()
-cel = FlaskCelery("depc", include=["depc.tasks"], task_cls=TaskWithLogger)
 cors = CORS(send_wildcard=True)
 jsonschema = JsonSchema()
 flask_encrypted_dict = FlaskEncryptedDict()

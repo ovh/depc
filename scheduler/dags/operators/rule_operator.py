@@ -65,11 +65,14 @@ class RuleOperator(QosOperator):
                     end=end,
                 )
 
-                if result["qos"] != "unknown":
+                if result["qos"]["qos"] != "unknown":
                     has_qos = True
                     self.log.info(
                         "[{0}/{1}] The QOS of {2} is {3}%".format(
-                            self.team_name, self.label, node["name"], result["qos"]
+                            self.team_name,
+                            self.label,
+                            node["name"],
+                            result["qos"]["qos"],
                         )
                     )
 
@@ -77,7 +80,7 @@ class RuleOperator(QosOperator):
                     self.write_metric(
                         metric="depc.qos.node",
                         ts=start,
-                        value=result["qos"],
+                        value=result["qos"]["qos"],
                         tags={
                             "label": self.label,
                             "name": node["name"],
@@ -89,14 +92,17 @@ class RuleOperator(QosOperator):
                     key = "{ds}.{team}.{label}".format(
                         ds=ds, team=self.team_name, label=self.label
                     )
-                    redis.lpush("{}.average".format(key), result["qos"])
+                    redis.lpush("{}.average".format(key), result["qos"]["qos"])
 
                     # Save information to reuse it later (`bools_dps` is used in
                     # OperationOperator and `qos` is used in AggregationOperator)
                     redis.set(
                         "{}.{}.node".format(key, node["name"]),
                         json.dumps(
-                            {"bools_dps": result["bools_dps"], "qos": result["qos"]}
+                            {
+                                "bools_dps": result["qos"]["bools_dps"],
+                                "qos": result["qos"]["qos"],
+                            }
                         ),
                     )
 

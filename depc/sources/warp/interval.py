@@ -54,7 +54,7 @@ class IntervalCheck(Warp10):
 
     name = "Interval"
 
-    def execute(self, parameters, name, start, end):
+    async def execute(self, parameters, name, start, end):
         client = Warp10Client(
             url=self.configuration["url"], rotoken=self.configuration["token"]
         )
@@ -66,7 +66,7 @@ class IntervalCheck(Warp10):
         )
 
         try:
-            response = client.execute()
+            response = await client.async_execute()
         except Warp10Exception as e:
             try:
                 message = html.unescape(

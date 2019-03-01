@@ -1,7 +1,7 @@
 import json
 import logging
 
-import requests
+import aiohttp
 
 from depc.sources import BaseSource, SourceRegister
 from depc.sources.exceptions import DataFetchException
@@ -42,18 +42,16 @@ class OpenTSDB(BaseSource):
 
     name = "OpenTSDB"
 
-    def make_query(self, data):
+    async def make_query(self, data):
         url = self.configuration["url"] + "/api/query"
+        credentials = self.configuration["credentials"].split(":", maxsplit=1)
 
-        r = requests.post(
-            url,
-            auth=tuple(self.configuration["credentials"].split(":", maxsplit=1)),
-            data=json.dumps(data),
-        )
-
-        if r.status_code != 200:
-            raise DataFetchException(str(r.text))
-        result = r.json()
+        auth = aiohttp.BasicAuth(credentials[0], credentials[1])
+        async with aiohttp.ClientSession(auth=auth) as session:
+            async with session.post(url, json=data) as r:
+                if r.status != 200:
+                    raise DataFetchException(str(r.text))
+                result = await r.json()
 
         # Convert the query result to be
         # compliant with the Pandas compute

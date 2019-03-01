@@ -6,12 +6,6 @@ api:
 ui:
 	cd ui/ && grunt serve
 
-worker:
-	celery worker -A celery_launch.cel
-
-flower:
-	celery flower -A celery_launch.cel
-
 webserver:
 	airflow webserver
 

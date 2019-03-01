@@ -26,7 +26,6 @@ angular
     'toastr',
     'angular-confirm',
     'chart.js',
-    'ovh-angular-tail-logs',
     'daterangepicker',
   ])
   .config(function ($routeProvider, $locationProvider, $httpProvider, schemaFormProvider) {
