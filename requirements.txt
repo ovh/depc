@@ -38,6 +38,7 @@ flask-sqlalchemy==2.3
 # Celery
 celery==4.1.1
 flower==0.9.1
+kombu==4.3.0
 
 # Kafka
 kafka-python==1.4.3
