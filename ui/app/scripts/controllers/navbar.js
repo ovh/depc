@@ -96,15 +96,6 @@ angular.module('depcwebuiApp')
             "separator": " to ",
             "firstDay": 1
         },
-        ranges: {
-           'Today': [moment().startOf("day"), moment().endOf("day")],
-           'Yesterday': [moment().subtract(1, 'days').startOf("day"), moment().subtract(1, 'days').endOf('day')],
-           'Current Week': [moment().startOf('isoWeeks').startOf("day"), moment().endOf("day")],
-           'Current Month': [moment().startOf('months').startOf("day"), moment().endOf("day")],
-           'Last 2 Days': [moment().subtract(2, 'days').startOf("day"), moment().endOf("day")],
-           'Last 7 Days': [moment().subtract(7, 'days').startOf("day"), moment().endOf("day")],
-           'Last 30 Days': [moment().subtract(30, 'days').startOf("day"), moment().endOf("day")]
-        },
         alwaysShowCalendars: true
     };
 
