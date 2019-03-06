@@ -26,6 +26,11 @@ if [[ "$APP_TYPE" = "api" || -z $APP_TYPE ]];then
     --max-requests $G_MAX_REQUESTS --max-requests-jitter $G_MAX_REQUESTS_JITTER \
     manage:app
 
+elif [ "$APP_TYPE" = "consumer" ];then
+
+    echo "Starting the Kafka consumer"
+    make consumer
+
 else
 
     echo "Wrong argument : $APP_TYPE"
