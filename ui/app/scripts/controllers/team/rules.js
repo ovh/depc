@@ -21,37 +21,11 @@ angular.module('depcwebuiApp')
     this.name = null;
     this.interval = null;
     this.result = null;
+    self.day = moment.utc().format('YYYY-MM-DD');
 
     self.loadingVariables = false;
     self.variables = [];
     self.logs = [];
-
-    // Dates range
-    self.date = {
-        startDate: moment().startOf("day"),
-        endDate: moment().endOf("day")
-    };
-    self.dateOps = {
-        maxDate: moment().endOf("day"),
-        drops: "up",
-        autoApply: true,
-        showWeekNumbers: true,
-        locale: {
-            "format": "YYYY-MM-DD",
-            "separator": " to ",
-            "firstDay": 1
-        },
-        ranges: {
-           'Today': [moment().startOf("day"), moment().endOf("day")],
-           'Yesterday': [moment().subtract(1, 'days').startOf("day"), moment().subtract(1, 'days').endOf('day')],
-           'Current Week': [moment().startOf('isoWeeks').startOf("day"), moment().endOf("day")],
-           'Current Month': [moment().startOf('months').startOf("day"), moment().endOf("day")],
-           'Last 2 Days': [moment().subtract(2, 'days').startOf("day"), moment().endOf("day")],
-           'Last 7 Days': [moment().subtract(7, 'days').startOf("day"), moment().endOf("day")],
-           'Last 30 Days': [moment().subtract(30, 'days').startOf("day"), moment().endOf("day")]
-        },
-        alwaysShowCalendars: true
-    };
 
     // ChartJS
     this.chartLabels = ['Ok', 'Warning', 'Critical', 'Unknown'];
@@ -127,17 +101,8 @@ angular.module('depcwebuiApp')
         this.name = $routeParams.name;
       }
 
-      self.date = {
-        startDate: moment().startOf("day"),
-        endDate: moment().endOf("day")
-      };
-
-      if ($routeParams.start) {
-        self.date.startDate = moment.unix($routeParams.start);
-      }
-
-      if ($routeParams.end) {
-        self.date.endDate = moment.unix($routeParams.end);
+      if ($routeParams.day) {
+          self.day = moment.utc($routeParams.day).format('YYYY-MM-DD');
       }
 
       if ($routeParams.rule) {
@@ -164,8 +129,6 @@ angular.module('depcwebuiApp')
         // Reinit query parameters
         $location.search('name', null);
         $location.search('label', null);
-        $location.search('start', null);
-        $location.search('end', null);
         $location.search('exec', null);
     };
 
@@ -175,14 +138,14 @@ angular.module('depcwebuiApp')
         self.ruleExecuting = true;
         self.logs = [{'level': 'INFO', 'message': 'Executing rule containing ' + self.selectedRule.checks.length + ' check(s)...'}];
 
-        var start = moment(self.date.startDate).unix();
-        var end = moment(self.date.endDate).unix();
+        var day = moment.utc(self.day, 'YYYY-MM-DD');
+        var start = day.startOf("day").unix();
+        var end = day.endOf("day").unix();
 
         // Change the query parameters
         $location.search('rule', self.selectedRule.name);
         $location.search('name', self.name);
-        $location.search('start', start);
-        $location.search('end', end);
+        $location.search('day', moment(self.day).format('YYYY-MM-DD'));
         $location.search('exec', 1);
 
         rulesService.executeRule(self.team.id, self.selectedRule.id, self.name, start, end).then(function(response) {

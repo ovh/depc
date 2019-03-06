@@ -46,11 +46,15 @@
 						    </div>
 						</div>
 						<div class="form-group">
-							<label for="range" class="col-sm-2 control-label">Range</label>
+							<label for="name" class="col-sm-2 control-label">Day</label>
 							<div class="col-sm-10">
-								<div class="inner-addon right-addon">
-									<i class="glyphicon glyphicon-calendar date-picker-addon"></i>
-									<input date-range-picker class="form-control date-picker" type="text" ng-model="rulesCtrl.date" options="rulesCtrl.dateOps" />
+								<div class="dropdown">
+									<a class="dropdown-toggle" id="dropdown1" role="button" data-toggle="dropdown">
+										<div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="rulesCtrl.day"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
+									</a>
+									<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+										<datetimepicker data-ng-model="rulesCtrl.day" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'YYYY-MM-DD'}"/>
+									</ul>
 								</div>
 							</div>
 						</div>
