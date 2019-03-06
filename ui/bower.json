@@ -5,7 +5,7 @@
   "dependencies": {
     "angular": "1.6.7",
     "bootstrap": "^3.2.0",
-    "angular-sanitize": "*",
+    "angular-sanitize": "1.6.7",
     "angular-animate": "1.6.7",
     "angular-cookies": "1.6.7",
     "angular-resource": "1.6.7",

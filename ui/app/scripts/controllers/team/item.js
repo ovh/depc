@@ -196,11 +196,7 @@ angular.module('depcwebuiApp')
       if ( self.rule == undefined ) {
         return;
       }
-      var date = moment.utc(self.ruleDate, 'YYYY-MM-DD');
-      var start = date.startOf("day").unix();
-      var end = date.endOf("day").unix();
-
-      return '#/teams/' + self.teamName + '/rules?rule=' + self.rule.name + '&name=' + self.name + '&start=' + start + '&end=' + end + '&exec=1';
+      return '#/teams/' + self.teamName + '/rules?rule=' + self.rule.name + '&day=' + self.ruleDate + '&name=' + self.name + '&exec=1';
     };
 
 });
