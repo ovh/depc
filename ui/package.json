@@ -36,6 +36,7 @@
   },
   "scripts": {},
   "dependencies": {
+    "cli": ">=1.0.0",
     "cryptiles": ">=4.1.2",
     "debug": ">=2.6.9",
     "fresh": ">=0.5.2",
