@@ -159,7 +159,6 @@ angular.module('depcwebuiApp')
 
     this.checkResult = function(result) {
         self.logs = result.logs;
-        console.log(self.logs);
         var stats = {'ok': 0, 'warning': 0, 'critical': 0, 'unknown': 0}
 
         // Handle each check
