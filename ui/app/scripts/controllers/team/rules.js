@@ -215,7 +215,7 @@ angular.module('depcwebuiApp')
         // No result means no panel
         if ( self.result != null ) {
 
-            var qos = self.result.qos;
+            var qos = self.result.qos.qos;
 
             if ( qos == 'unknown' ) {
                 return panel[key];
