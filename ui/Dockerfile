@@ -1,14 +1,16 @@
-FROM node:8.9.1
+FROM nginx:1.15.10
 
 WORKDIR /app
 
-# Install base debian packages
 RUN apt-get update \
-        && apt-get install -y nginx
+        && apt-get -y install curl gnupg2 apt-transport-https git
 
-# Redirect logs to stdout and stderr
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-        && ln -sf /dev/stderr /var/log/nginx/error.log
+# Install Node.js 8
+RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key -o nodesource.gpg.key \
+        && apt-key add nodesource.gpg.key
+RUN echo 'deb https://deb.nodesource.com/node_8.x stretch main' > /etc/apt/sources.list.d/nodesource.list
+RUN apt-get update \
+        && apt-get install -y nodejs
 
 # Install npm packages
 COPY package.json /app/package.json
@@ -17,8 +19,6 @@ RUN npm install \
         && npm install bower -g \
         && npm install grunt-cli -g \
         && npm install grunt -g
-
-COPY nginx/default /etc/nginx/sites-enabled/default
 
 # Install bower components
 COPY bower.json /app/bower.json
@@ -33,7 +33,7 @@ COPY Gruntfile.js /app/Gruntfile.js
 
 # Build HTML/CSS/JS
 RUN grunt build \
-        && mv /app/dist/* /var/www/html
+        && mv /app/dist/* /usr/share/nginx/html
 
 # Start web server
 EXPOSE 80
