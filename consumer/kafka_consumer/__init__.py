@@ -170,6 +170,10 @@ def validate_and_reformat_messages(team, records):
         )
 
     for msg in records:
+        # Happens when the message is not properly deserialized
+        if msg is None:
+            logger.info("message is NoneType, skipped")
+            continue
 
         # Message sent using the EventBus SDK
         if "metadata" in msg:
