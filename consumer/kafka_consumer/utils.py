@@ -4,6 +4,7 @@ import ssl
 from pathlib import Path
 
 import fastjsonschema
+from loguru import logger
 from neo4j.v1 import TRUST_ON_FIRST_USE, basic_auth
 
 from depc import create_app
@@ -30,6 +31,19 @@ with open(SCHEMAS_PATH, "r") as f_schemas, open(DEFINITIONS_PATH, "r") as f_defs
     validate_nested_message = fastjsonschema.compile(schemas["nested"])
 
 
+def deserialize(m):
+    try:
+        decoded = m.decode("utf-8")
+        return json.loads(decoded)
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        logger.warning(
+            'Unable to deserialize the upcoming message, encountered error typed {} with "{}"'.format(
+                type(e).__name__, e
+            )
+        )
+        logger.warning("Received bad formatted message: {}".format(m))
+
+
 # Kafka configuration
 KAFKA_CONFIG = {
     "bootstrap_servers": CONSUMER_CONFIG["kafka"]["hosts"],
@@ -41,7 +55,7 @@ KAFKA_CONFIG = {
     "ssl_check_hostname": False,
     "client_id": CONSUMER_CONFIG["kafka"]["client_id"],
     "group_id": CONSUMER_CONFIG["kafka"]["group_id"],
-    "value_deserializer": lambda m: json.loads(m.decode("utf-8")),
+    "value_deserializer": deserialize,
     "max_poll_records": CONSUMER_CONFIG["kafka"]["batch_size"],
     "auto_offset_reset": "earliest",
     "enable_auto_commit": False,
@@ -92,7 +106,7 @@ CALL apoc.do.when(
         r IS NULL AND rows['props']['from'] IS NOT NULL AND rows['props']['to'] IS NOT NULL AND rows['props']['from'] < rows['props']['to'],
     "MERGE (source)-[rel:DEPENDS_ON{periods: periods, last_state: 'to', last_ts: to}]->(target) RETURN source, rel, target",
     '',
-    {source:source, target: target, periods: [rows['props']['from'], rows['props']['to']]}
+    {source: source, target: target, periods: [rows['props']['from'], rows['props']['to']], to: rows['props']['to']}
 ) YIELD value AS R2
 
 // ###
