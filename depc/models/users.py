@@ -37,8 +37,8 @@ class User(BaseModel, UserMixin):
     __repr_fields__ = ("name",)
 
     name = db.Column(db.String(255), nullable=False, unique=True)
-    admin = db.Column(db.Boolean(), default="f")
-    active = db.Column(db.Boolean(), default="t")
+    admin = db.Column(db.Boolean(), default=False)
+    active = db.Column(db.Boolean(), default=True)
 
     teams = association_proxy("grants", "team")
 
