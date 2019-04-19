@@ -2,7 +2,7 @@
 arrow==0.10.0
 fastjsonschema==1.6
 gunicorn==19.5.0
-jinja2==2.8.1
+jinja2==2.10.1
 jsonschema==2.6.0
 loguru==0.2.5
 neo4j-driver==1.6.1
@@ -18,13 +18,13 @@ aiohttp==2.3.10
 yarl==1.1.1
 
 # Apache Airflow
-apache-airflow==1.10.2
+apache-airflow==1.10.3
 cryptography==2.4.2
 
 # SqlAlchemy
 alembic==0.8.10
 psycopg2-binary==2.7.5
-sqlalchemy==1.1.15
+sqlalchemy==1.3.0
 sqlalchemy-utils==0.33.10
 
 # Flask
@@ -35,7 +35,7 @@ flask-jsonschema==0.1.1
 flask-login==0.2.11
 flask-migrate==2.2.1
 flask-script==2.0.6
-flask-sqlalchemy==2.3
+flask-sqlalchemy==2.3.2
 
 # Kafka
 kafka-python==1.4.3
