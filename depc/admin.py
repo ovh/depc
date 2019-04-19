@@ -89,8 +89,11 @@ class ExtendedModelView(AuthModelView):
 
 
 class RuleModelView(ExtendedModelView):
-    column_list = ("name", "description", "team.name")
+    form_columns = ("team", "name", "description")
+    column_list = ("team.name", "name", "description")
     column_labels = {"team.name": "Team"}
+    column_searchable_list = ["name"]
+    column_default_sort = ("created_at", True)
 
     def _get_data_from_form(self, form):
         data = super()._get_data_from_form(form)
@@ -105,16 +108,23 @@ class RuleModelView(ExtendedModelView):
 
 
 class SourceModelView(ExtendedModelView):
+    form_columns = ("team", "name", "plugin", "configuration")
     column_exclude_list = ("id", "created_at", "updated_at", "configuration")
-    column_list = ("name", "plugin", "team.name")
+    column_list = ("team.name", "name", "plugin")
     column_labels = {"team.name": "Team"}
     form_excluded_columns = ("id", "created_at", "updated_at", "source_checks")
     form_overrides = {"configuration": JSONField}
+    column_searchable_list = ["name"]
+    column_default_sort = ("created_at", True)
 
 
 class CheckModelView(ExtendedModelView):
-    form_excluded_columns = ("id", "created_at", "updated_at", "rules")
+    form_columns = ("name", "source", "type", "parameters")
+    column_list = ("source.team.name", "name", "type", "parameters")
+    column_labels = {"source.team.name": "Team"}
     form_overrides = {"parameters": JSONField}
+    column_searchable_list = ["name"]
+    column_default_sort = ("created_at", True)
 
     def _get_data_from_form(self, form):
         data = super()._get_data_from_form(form)
@@ -128,11 +138,25 @@ class CheckModelView(ExtendedModelView):
 class GrantModelView(ExtendedModelView):
     column_list = ("user.name", "role", "team.name")
     column_labels = {"user.name": "User", "role": "Role", "team.name": "Team"}
+    column_searchable_list = ["user.name"]
+    column_default_sort = ("created_at", True)
+
+
+class TeamModelView(ExtendedModelView):
+    form_columns = ("name",)
+    column_searchable_list = ["name"]
+    column_default_sort = ("created_at", True)
+
+
+class UserModelView(ExtendedModelView):
+    form_columns = ("name", "active", "admin")
+    column_searchable_list = ["name"]
+    column_default_sort = ("created_at", True)
 
 
 admin.add_view(CheckModelView(Check, db.session))
 admin.add_view(SourceModelView(Source, db.session))
 admin.add_view(RuleModelView(Rule, db.session))
-admin.add_view(ExtendedModelView(User, db.session))
-admin.add_view(ExtendedModelView(Team, db.session))
+admin.add_view(UserModelView(User, db.session))
+admin.add_view(TeamModelView(Team, db.session))
 admin.add_view(GrantModelView(Grant, db.session))
