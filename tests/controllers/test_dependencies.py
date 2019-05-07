@@ -39,6 +39,27 @@ def test_build_dependencies_query_rule(app, create_team, create_rule, create_con
                      "RETURN n,r,m ORDER BY m.name LIMIT 10")
 
 
+def test_build_dependencies_query_with_downstream(app, create_team, create_rule, create_config):
+    team_id = str(create_team('My team')['id'])
+    create_rule('Servers', team_id)
+    create_config(team_id, {
+        'Server': {'qos': 'rule.Servers'}
+    })
+
+    with app.app_context():
+        query = DependenciesController()._build_dependencies_query(
+            team_id=team_id,
+            topic='acme',
+            label='Server',
+            node='server.ovh.net',
+            filter_on_config=True,
+            downstream=True
+        )
+    assert query == ("MATCH(n:acme_Server{name: 'server.ovh.net'}) "
+                     "OPTIONAL MATCH (n)<-[r]-(m) "
+                     "RETURN n,r,m ORDER BY m.name LIMIT 10")
+
+
 @pytest.mark.parametrize("method", [("operation"), ("aggregation")])
 def test_build_dependencies_query_one_dep(method, app, create_team, create_rule, create_config):
     team_id = str(create_team('My team')['id'])

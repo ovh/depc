@@ -17,6 +17,7 @@ angular.module('depcwebuiApp')
     self.nodeProperties = {};
     self.loadNodes = false;
     self.includeInactive = false;
+    self.displayDownstreamNodes = false;
     self.selectedDay = moment().format('YYYY-MM-DD');
 
     self.resultTitle = null;
@@ -38,6 +39,10 @@ angular.module('depcwebuiApp')
 
           if ($routeParams.inactive) {
             self.includeInactive = true;
+          }
+
+          if ($routeParams.downstream) {
+            self.displayDownstreamNodes = true;
           }
 
           teamsService.getTeamByName(self.teamName).then(function (response) {
@@ -122,11 +127,17 @@ angular.module('depcwebuiApp')
             $location.search('inactive', null);
         }
 
+        if ( self.displayDownstreamNodes ) {
+            $location.search('downstream', true);
+        } else {
+            $location.search('downstream', null);
+        }
+
         self.dependenciesLoading = true;
         self.dependencies = {};
         self.legend = {};
 
-          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeInactive).then(function (response) {
+          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeInactive, self.displayDownstreamNodes).then(function (response) {
             var data = response.data;
             var dependencies = data.dependencies;
 

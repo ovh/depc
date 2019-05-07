@@ -103,10 +103,11 @@ class DependenciesController(Controller):
         day=None,
         filter_on_config=False,
         include_inactive=False,
+        display_downstream=False,
     ):
         topic = TeamController._get({"Team": {"id": team_id}}).kafka_topic
         query = cls._build_dependencies_query(
-            team_id, topic, label, node, filter_on_config
+            team_id, topic, label, node, filter_on_config, display_downstream
         )
         dependencies = {"dependencies": {}, "graph": {"nodes": [], "relationships": []}}
         records = get_records(query)
@@ -133,8 +134,13 @@ class DependenciesController(Controller):
                 continue
 
             # Check inactive nodes
-            start_node = rel.start_node
-            end_node = rel.end_node
+            if display_downstream:
+                start_node = rel.end_node
+                end_node = rel.start_node
+            else:
+                start_node = rel.start_node
+                end_node = rel.end_node
+
             start = arrow.get(day, "YYYY-MM-DD").floor("day").timestamp
             end = arrow.get(day, "YYYY-MM-DD").ceil("day").timestamp
 
@@ -172,8 +178,8 @@ class DependenciesController(Controller):
             dependencies["graph"]["relationships"].append(
                 {
                     "id": rel.id,
-                    "from": start_node.id,
-                    "to": end_node.id,
+                    "from": end_node.id if display_downstream else start_node.id,
+                    "to": start_node.id if display_downstream else end_node.id,
                     "arrows": "to",
                     "periods": list(rel.get("periods")),
                 }
@@ -252,13 +258,14 @@ class DependenciesController(Controller):
 
     @classmethod
     def _build_dependencies_query(
-        cls, team_id, topic, label, node, filter_on_config=False
+        cls, team_id, topic, label, node, filter_on_config=False, downstream=False
     ):
         """Build a Cypher query based on given parameters."""
         where = ""
+        order = "(n)<-[r]-(m)" if downstream else "(n)-[r]->(m)"
         query = (
             "MATCH(n:{topic}_{label}{{name: '{name}'}}) "
-            "OPTIONAL MATCH (n)-[r]->(m) {where}"
+            "OPTIONAL MATCH {order} {where}"
             "RETURN n,r,m ORDER BY m.name LIMIT 10"
         )
 
@@ -275,4 +282,6 @@ class DependenciesController(Controller):
                 for dep in deps[1:]:
                     where += "OR '{}_{}' IN LABELS(m) ".format(topic, dep)
 
-        return query.format(where=where, topic=topic, label=label, name=node)
+        return query.format(
+            where=where, order=order, topic=topic, label=label, name=node
+        )
