@@ -479,6 +479,47 @@ def test_get_node_dependencies_with_config(client, create_team, create_user, cre
     ]
 
 
+def test_get_node_dependencies_with_downstream(client, create_team, create_user, create_grant, create_rule, create_config, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    user_id = str(create_user('depc')['id'])
+    create_grant(team_id, user_id, 'member')
+    client.login('depc')
+
+    # One node with two dependencies
+    neo_create(
+        "CREATE (c:acme_Cluster{name: 'cluster01'}) "
+        "MERGE (c)-[:DEPENDS_ON{last_state: 'from', last_ts: 0, periods: [0]}]->(s1:acme_Server{name: 'server001'}) "
+        "MERGE (c)-[:DEPENDS_ON{last_state: 'from', last_ts: 0, periods: [0]}]->(s2:acme_Server{name: 'server002'})"
+    )
+
+    # Display upstream nodes
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
+    assert resp.json['dependencies'] == {
+        'Cluster': [{'name': 'cluster01'}],
+        'Server': [
+            {'name': 'server001', 'inactive': False, 'periods': [0]},
+            {'name': 'server002', 'inactive': False, 'periods': [0]}
+        ]
+    }
+
+    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001'.format(team_id))
+    assert resp.json['dependencies'] == {
+        'Server': [{'name': 'server001'}]
+    }
+
+    # Display downstream nodes
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?downstream=1'.format(team_id))
+    assert resp.json['dependencies'] == {
+        'Cluster': [{'name': 'cluster01'}]
+    }
+
+    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001?downstream=1'.format(team_id))
+    assert resp.json['dependencies'] == {
+        'Server': [{'name': 'server001'}],
+        'Cluster': [{'inactive': False, 'name': 'cluster01', 'periods': [0]}]
+    }
+
+
 def test_delete_node_authorization(client, create_team, create_user, create_grant):
     team_id = str(create_team('My team')['id'])
 

@@ -112,6 +112,9 @@
 						<div class="checkbox">
 						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeInactive"> Display inactive nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Inactive nodes are peer nodes that were not linked to the main node on the requested day." tooltip-append-to-body="true"></i></label>
 						</div>
+						<div class="checkbox">
+						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.displayDownstreamNodes"> Display downstream nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Downstream nodes are dependencies which depend of the main node (so upstream nodes are dependencies which impact the main node QoS)." tooltip-append-to-body="true"></i></label>
+						</div>
 						<button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.loadDependencies()"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
 					  </form>
 				</div>
