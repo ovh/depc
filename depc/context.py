@@ -41,6 +41,13 @@ class Config:
             "group_id": "depc.consumer.depc_consumer_group",
         }
     }
+    KAFKA_CONFIG = {
+        "hosts": "localhost:9093",
+        "topic": "depc.config",
+        "username": "depc.writer",
+        "password": "p4ssw0rd",
+        "client_id": "depc.writer"
+    }
     JSONSCHEMA_DIR = str(Path(BASE_DIR) / "schemas")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 

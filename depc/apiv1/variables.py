@@ -1,7 +1,7 @@
 from flask import abort, jsonify
 from flask_login import login_required
 
-from depc.apiv1 import api, format_object, get_payload
+from depc.apiv1 import api, format_object, get_payload, conf_to_kafka
 from depc.controllers.variables import VariableController
 from depc.users import TeamPermission
 
@@ -210,6 +210,7 @@ def get_check_variable(team_id, source_id, check_id, variable_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def post_team_variable(team_id):
     """
 
@@ -229,6 +230,7 @@ def post_team_variable(team_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def post_rule_variable(team_id, rule_id):
     """
 
@@ -248,6 +250,7 @@ def post_rule_variable(team_id, rule_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def post_source_variable(team_id, source_id):
     """
 
@@ -267,6 +270,7 @@ def post_source_variable(team_id, source_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def post_check_variable(team_id, source_id, check_id):
     """
 
@@ -286,6 +290,7 @@ def post_check_variable(team_id, source_id, check_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def put_team_variable(team_id, variable_id):
     """
 
@@ -315,6 +320,7 @@ def put_team_variable(team_id, variable_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def put_rule_variable(team_id, rule_id, variable_id):
     """
 
@@ -344,6 +350,7 @@ def put_rule_variable(team_id, rule_id, variable_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def put_source_variable(team_id, source_id, variable_id):
     """
 
@@ -373,6 +380,7 @@ def put_source_variable(team_id, source_id, variable_id):
     request_schema=("v1_variable", "variable_input"),
 )
 @login_required
+@conf_to_kafka
 def put_check_variable(team_id, source_id, check_id, variable_id):
     """
 
@@ -398,6 +406,7 @@ def put_check_variable(team_id, source_id, check_id, variable_id):
 
 @api.route("/teams/<team_id>/variables/<variable_id>", methods=["DELETE"])
 @login_required
+@conf_to_kafka
 def delete_team_variable(team_id, variable_id):
     """
 
@@ -423,6 +432,7 @@ def delete_team_variable(team_id, variable_id):
     "/teams/<team_id>/rules/<rule_id>/variables/<variable_id>", methods=["DELETE"]
 )
 @login_required
+@conf_to_kafka
 def delete_rule_variable(team_id, rule_id, variable_id):
     """
 
@@ -448,6 +458,7 @@ def delete_rule_variable(team_id, rule_id, variable_id):
     "/teams/<team_id>/sources/<source_id>/variables/<variable_id>", methods=["DELETE"]
 )
 @login_required
+@conf_to_kafka
 def delete_source_variable(team_id, source_id, variable_id):
     """
 
@@ -474,6 +485,7 @@ def delete_source_variable(team_id, source_id, variable_id):
     methods=["DELETE"],
 )
 @login_required
+@conf_to_kafka
 def delete_check_variable(team_id, source_id, check_id, variable_id):
     """
 

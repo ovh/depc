@@ -7,6 +7,8 @@ from functools import wraps
 from flask import Blueprint, current_app, jsonify, request
 from flask_jsonschema import _validate
 
+from depc.utils.kafka import get_team_configuration, send_to_kafka
+
 # We need to import these controllers
 # to use it in Flask-Admin
 from depc.controllers.teams import TeamController
@@ -116,6 +118,18 @@ def dict_to_camel_case(d):
 def dict_to_str_dict(d):
     """Convert all values of a dict to string"""
     return {k: str(v) for k, v in d.items()}
+
+
+def conf_to_kafka(func):
+    def _conf_to_kafka(*args, **kwargs):
+        data = func(*args, **kwargs)
+        team_id = kwargs.get("team_id")
+        if team_id:
+            config = get_team_configuration(team_id)
+            send_to_kafka(current_app.config.get("KAFKA_CONFIG").get("topic"), config)
+        return data
+    _conf_to_kafka.__name__ = func.__name__
+    return _conf_to_kafka
 
 
 @api.route("/ping")

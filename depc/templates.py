@@ -9,7 +9,11 @@ def iso8601_filter(ts):
     """
     Take a timestamp and return it as a ISO8601 formatted date.
     """
-    return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    try:
+        date = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    except TypeError:
+        return ts
+    return date
 
 
 def regex_search_filter(value, pattern, ignorecase=False, multiline=False):

@@ -53,3 +53,11 @@ CONSUMER:
         group_id: depc.consumer.depc_consumer_group
     heartbeat:
         delay: 5
+
+
+KAFKA_CONFIG:
+    hosts: localhost:9093
+    topic: depc.mytopic
+    username: depc.writer
+    password: p4ssw0rd
+    client_id: depc.myclient

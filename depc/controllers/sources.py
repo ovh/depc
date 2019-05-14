@@ -10,23 +10,28 @@ class SourceController(Controller):
     model_cls = Source
 
     @classmethod
-    def get(cls, *args, **kwargs):
-        return super(SourceController, cls).get(*args, **kwargs)
+    def list(
+        cls,
+        filters=None,
+        order_by=None,
+        limit=None,
+        reverse=None,
+        blacklist=False,
+        with_checks=True,
+    ):
+        objs = cls._list(filters, order_by, limit, reverse, blacklist)
+        return [
+            cls.resource_to_dict(o, blacklist=blacklist, with_checks=with_checks)
+            for o in objs
+        ]
 
     @classmethod
-    def update(cls, *args, **kwargs):
-        return super(SourceController, cls).update(*args, **kwargs)
-
-    @classmethod
-    def delete(cls, *args, **kwargs):
-        return super(SourceController, cls).delete(*args, **kwargs)
-
-    @classmethod
-    def resource_to_dict(cls, obj, blacklist=False):
+    def resource_to_dict(cls, obj, blacklist=False, with_checks=True):
         from ..controllers.checks import CheckController
 
-        d = super().resource_to_dict(obj, blacklist=False)
-        d["checks"] = [CheckController.resource_to_dict(c) for c in obj.checks]
+        d = super().resource_to_dict(obj, blacklist=blacklist)
+        if with_checks:
+            d["checks"] = [CheckController.resource_to_dict(c) for c in obj.checks]
         return d
 
     @classmethod

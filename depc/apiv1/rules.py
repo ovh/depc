@@ -1,7 +1,7 @@
 from flask import abort, jsonify
 from flask_login import login_required
 
-from depc.apiv1 import api, format_object, get_payload
+from depc.apiv1 import api, format_object, get_payload, conf_to_kafka
 from depc.controllers.rules import RuleController
 from depc.users import TeamPermission
 
@@ -99,6 +99,7 @@ def get_rule(team_id, rule_id):
     "/teams/<team_id>/rules", methods=["POST"], request_schema=("v1_rule", "rule_input")
 )
 @login_required
+@conf_to_kafka
 def post_rule(team_id):
     """Add a new rule.
 
@@ -150,6 +151,7 @@ def post_rule(team_id):
     request_schema=("v1_rule", "rule_update"),
 )
 @login_required
+@conf_to_kafka
 def put_rule(team_id, rule_id):
     """Edit an existing rule.
 
@@ -195,6 +197,7 @@ def put_rule(team_id, rule_id):
 
 @api.route("/teams/<team_id>/rules/<rule_id>", methods=["DELETE"])
 @login_required
+@conf_to_kafka
 def delete_rule(team_id, rule_id):
     """Delete a rule.
 

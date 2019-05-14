@@ -1,7 +1,7 @@
 from flask import abort, jsonify
 from flask_login import login_required
 
-from depc.apiv1 import api, format_object, get_payload
+from depc.apiv1 import api, format_object, get_payload, conf_to_kafka
 from depc.controllers import NotFoundError
 from depc.controllers.sources import SourceController
 from depc.sources import BaseSource
@@ -388,6 +388,7 @@ def get_source(team_id, source_id):
     request_schema=("v1_source", "source_input"),
 )
 @login_required
+@conf_to_kafka
 def post_source(team_id):
     """Add a new source.
 
@@ -441,6 +442,7 @@ def post_source(team_id):
     request_schema=("v1_source", "source_update"),
 )
 @login_required
+@conf_to_kafka
 def put_source(team_id, source_id):
     """Edit an existing source.
 
@@ -489,6 +491,7 @@ def put_source(team_id, source_id):
 
 @api.route("/teams/<team_id>/sources/<source_id>", methods=["DELETE"])
 @login_required
+@conf_to_kafka
 def delete_source(team_id, source_id):
     """Delete a source.
 
