@@ -1,6 +1,7 @@
 from sqlalchemy.ext.associationproxy import association_proxy
 
 from depc.extensions import db
+from depc.extensions.encrypted_dict import EncryptedDict
 from depc.models import BaseModel
 
 
@@ -24,6 +25,7 @@ class Team(BaseModel):
         "Variable.check_id==None)",
         backref="team",
     )
+    metas = db.Column(EncryptedDict, default={}, nullable=True)
 
     @property
     def members(self):

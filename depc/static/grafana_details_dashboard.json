@@ -1,0 +1,1398 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_DEPC_WARP10",
+        "label": "Depc Warp10",
+        "description": "",
+        "type": "datasource",
+        "pluginId": "grafana-warp10-datasource",
+        "pluginName": "Warp10"
+      }
+    ],
+    "__requires": [
+      {
+        "type": "grafana",
+        "id": "grafana",
+        "name": "Grafana",
+        "version": "5.4.4"
+      },
+      {
+        "type": "datasource",
+        "id": "grafana-warp10-datasource",
+        "name": "Warp10",
+        "version": "2.1.0"
+      },
+      {
+        "type": "panel",
+        "id": "graph",
+        "name": "Graph",
+        "version": "5.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "singlestat",
+        "name": "Singlestat",
+        "version": "5.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "table",
+        "name": "Table",
+        "version": "5.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "text",
+        "name": "Text",
+        "version": "5.0.0"
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": null,
+    "iteration": 1559901327950,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 15,
+        "panels": [],
+        "title": "All $label",
+        "type": "row"
+      },
+      {
+        "cacheTimeout": null,
+        "colorBackground": true,
+        "colorValue": false,
+        "colors": [
+          "#d44a3a",
+          "rgba(237, 129, 40, 0.89)",
+          "#299c46"
+        ],
+        "datasource": "${DS_DEPC_WARP10}",
+        "decimals": 3,
+        "format": "none",
+        "gauge": {
+          "maxValue": 100,
+          "minValue": 0,
+          "show": false,
+          "thresholdLabels": false,
+          "thresholdMarkers": true
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 4,
+          "x": 0,
+          "y": 1
+        },
+        "id": 4,
+        "interval": null,
+        "links": [],
+        "mappingType": 1,
+        "mappingTypes": [
+          {
+            "name": "value to text",
+            "value": 1
+          },
+          {
+            "name": "range to text",
+            "value": 2
+          }
+        ],
+        "maxDataPoints": 100,
+        "nullPointMode": "connected",
+        "nullText": null,
+        "postfix": "",
+        "postfixFontSize": "50%",
+        "prefix": "",
+        "prefixFontSize": "50%",
+        "rangeMaps": [
+          {
+            "from": "null",
+            "text": "N/A",
+            "to": "null"
+          }
+        ],
+        "sparkline": {
+          "fillColor": "rgba(31, 118, 189, 0.18)",
+          "full": false,
+          "lineColor": "rgb(31, 120, 193)",
+          "show": true
+        },
+        "tableColumn": "",
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.label' { 'team' '$$TEAMID$$' 'name' $label } $startISO $endISO ] FETCH\n{ '.app' '' 'team' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "thresholds": "98,99",
+        "title": "Average QoS",
+        "type": "singlestat",
+        "valueFontSize": "80%",
+        "valueMaps": [
+          {
+            "op": "=",
+            "text": "N/A",
+            "value": "null"
+          }
+        ],
+        "valueName": "avg"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "${DS_DEPC_WARP10}",
+        "fill": 1,
+        "gridPos": {
+          "h": 6,
+          "w": 14,
+          "x": 4,
+          "y": 1
+        },
+        "id": 8,
+        "legend": {
+          "alignAsTable": false,
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "rightSide": false,
+          "show": false,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "links": [],
+        "nullPointMode": "null",
+        "percentage": false,
+        "pointradius": 2,
+        "points": true,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.label' { 'team' '$$TEAMID$$' 'name' $label } $startISO $endISO ] FETCH\n{ '.app' '' 'team' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": false,
+            "line": true,
+            "op": "lt",
+            "value": 99,
+            "yaxis": "left"
+          },
+          {
+            "colorMode": "warning",
+            "fill": false,
+            "line": true,
+            "op": "lt",
+            "value": 98,
+            "yaxis": "left"
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "QoS Evolution",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "columns": [],
+        "datasource": "${DS_DEPC_WARP10}",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 1
+        },
+        "id": 20,
+        "links": [],
+        "pageSize": null,
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 1,
+          "desc": false
+        },
+        "styles": [
+          {
+            "alias": "Day",
+            "dateFormat": "YYYY-MM-DD",
+            "link": false,
+            "pattern": "Time",
+            "type": "date"
+          },
+          {
+            "alias": "QoS",
+            "colorMode": "cell",
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 3,
+            "link": false,
+            "pattern": "/.*/",
+            "thresholds": [
+              "98",
+              "99"
+            ],
+            "type": "number",
+            "unit": "percent"
+          }
+        ],
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.label' { 'team' '$$TEAMID$$' 'name' $label } $startISO $endISO ] FETCH\n{ '.app' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Worst Days",
+        "transform": "timeseries_to_columns",
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 7
+        },
+        "id": 10,
+        "panels": [],
+        "repeat": "node",
+        "title": "$node",
+        "type": "row"
+      },
+      {
+        "cacheTimeout": null,
+        "colorBackground": true,
+        "colorValue": false,
+        "colors": [
+          "#d44a3a",
+          "rgba(237, 129, 40, 0.89)",
+          "#299c46"
+        ],
+        "datasource": "${DS_DEPC_WARP10}",
+        "decimals": 3,
+        "format": "percent",
+        "gauge": {
+          "maxValue": 100,
+          "minValue": 0,
+          "show": false,
+          "thresholdLabels": false,
+          "thresholdMarkers": true
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 8
+        },
+        "id": 6,
+        "interval": null,
+        "links": [],
+        "mappingType": 1,
+        "mappingTypes": [
+          {
+            "name": "value to text",
+            "value": 1
+          },
+          {
+            "name": "range to text",
+            "value": 2
+          }
+        ],
+        "maxDataPoints": 100,
+        "nullPointMode": "connected",
+        "nullText": null,
+        "postfix": "",
+        "postfixFontSize": "50%",
+        "prefix": "",
+        "prefixFontSize": "50%",
+        "rangeMaps": [
+          {
+            "from": "null",
+            "text": "N/A",
+            "to": "null"
+          }
+        ],
+        "sparkline": {
+          "fillColor": "rgba(31, 118, 189, 0.18)",
+          "full": false,
+          "lineColor": "rgb(31, 120, 193)",
+          "show": true
+        },
+        "tableColumn": "",
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.node' { 'team' '$$TEAMID$$' 'label' $label 'name' $node } $startISO $endISO ] FETCH\n{ '.app' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "thresholds": "98,99",
+        "title": "Average",
+        "type": "singlestat",
+        "valueFontSize": "80%",
+        "valueMaps": [
+          {
+            "op": "=",
+            "text": "N/A",
+            "value": "null"
+          }
+        ],
+        "valueName": "avg"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "${DS_DEPC_WARP10}",
+        "fill": 1,
+        "gridPos": {
+          "h": 5,
+          "w": 10,
+          "x": 3,
+          "y": 8
+        },
+        "id": 2,
+        "legend": {
+          "alignAsTable": false,
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "rightSide": false,
+          "show": false,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "links": [],
+        "nullPointMode": "null",
+        "percentage": false,
+        "pointradius": 2,
+        "points": true,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.node' { 'team' '$$TEAMID$$' 'label' $label 'name' $node } $startISO $endISO ] FETCH\n{ '.app' '' 'team' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": false,
+            "line": true,
+            "op": "lt",
+            "value": 99,
+            "yaxis": "left"
+          },
+          {
+            "colorMode": "warning",
+            "fill": false,
+            "line": true,
+            "op": "lt",
+            "value": 98,
+            "yaxis": "left"
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "QoS Evolution",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "decimals": 2,
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "cacheTimeout": null,
+        "colorBackground": true,
+        "colorPostfix": false,
+        "colorValue": false,
+        "colors": [
+          "#d44a3a",
+          "rgba(237, 129, 40, 0.89)",
+          "#299c46"
+        ],
+        "datasource": "${DS_DEPC_WARP10}",
+        "decimals": 3,
+        "format": "percent",
+        "gauge": {
+          "maxValue": 100,
+          "minValue": 0,
+          "show": false,
+          "thresholdLabels": false,
+          "thresholdMarkers": false
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 13,
+          "y": 8
+        },
+        "id": 17,
+        "interval": null,
+        "links": [],
+        "mappingType": 1,
+        "mappingTypes": [
+          {
+            "name": "value to text",
+            "value": 1
+          },
+          {
+            "name": "range to text",
+            "value": 2
+          }
+        ],
+        "maxDataPoints": 100,
+        "nullPointMode": "connected",
+        "nullText": null,
+        "postfix": "",
+        "postfixFontSize": "50%",
+        "prefix": "",
+        "prefixFontSize": "50%",
+        "rangeMaps": [
+          {
+            "from": "null",
+            "text": "N/A",
+            "to": "null"
+          }
+        ],
+        "sparkline": {
+          "fillColor": "rgba(31, 118, 189, 0.18)",
+          "full": false,
+          "lineColor": "rgb(31, 120, 193)",
+          "show": false
+        },
+        "tableColumn": "",
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.node' { 'team' '$$TEAMID$$' 'label' $label 'name' $node } $startISO $endISO ] FETCH\n{ '.app' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "thresholds": "98,99",
+        "title": "Last day",
+        "type": "singlestat",
+        "valueFontSize": "80%",
+        "valueMaps": [
+          {
+            "op": "=",
+            "text": "N/A",
+            "value": "null"
+          }
+        ],
+        "valueName": "current"
+      },
+      {
+        "columns": [],
+        "datasource": "${DS_DEPC_WARP10}",
+        "fontSize": "100%",
+        "gridPos": {
+          "h": 5,
+          "w": 5,
+          "x": 16,
+          "y": 8
+        },
+        "id": 19,
+        "links": [],
+        "pageSize": null,
+        "scroll": true,
+        "showHeader": true,
+        "sort": {
+          "col": 1,
+          "desc": false
+        },
+        "styles": [
+          {
+            "alias": "Day",
+            "dateFormat": "YYYY-MM-DD",
+            "link": false,
+            "linkTargetBlank": false,
+            "linkTooltip": "",
+            "linkUrl": "",
+            "pattern": "Time",
+            "type": "date"
+          },
+          {
+            "alias": "QoS",
+            "colorMode": "cell",
+            "colors": [
+              "rgba(245, 54, 54, 0.9)",
+              "rgba(237, 129, 40, 0.89)",
+              "rgba(50, 172, 45, 0.97)"
+            ],
+            "decimals": 3,
+            "link": false,
+            "pattern": "/.*/",
+            "thresholds": [
+              "98",
+              "99"
+            ],
+            "type": "number",
+            "unit": "percent"
+          }
+        ],
+        "targets": [
+          {
+            "advancedMode": true,
+            "expr": "$start 1 - ISO8601 'startISO' STORE\n[ $token 'depc.qos.node' { 'team' '$$TEAMID$$' 'label' $label 'name' $node } $startISO $endISO ] FETCH\n{ '.app' '' } RELABEL\nSORT \n",
+            "friendlyQuery": {
+              "bucketCount": 50,
+              "bucketizer": null,
+              "bucketizers": [
+                "sum",
+                "max",
+                "min",
+                "mean",
+                "mean.circular",
+                "bucketizer.mean.circular.exclude-nulls",
+                "first",
+                "last",
+                "join",
+                "median",
+                "count",
+                "and",
+                "or"
+              ],
+              "className": "",
+              "filter": null,
+              "filterLabels": [],
+              "filterParamClass": "",
+              "filterParamMap": {},
+              "filterParamNumber": 0,
+              "filters": [
+                {
+                  "name": "byclass",
+                  "type": "S"
+                },
+                {
+                  "name": "bylabels",
+                  "type": "M"
+                },
+                {
+                  "name": "last.eq",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ne",
+                  "type": "N"
+                },
+                {
+                  "name": "last.gt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.ge",
+                  "type": "N"
+                },
+                {
+                  "name": "last.lt",
+                  "type": "N"
+                },
+                {
+                  "name": "last.le",
+                  "type": "N"
+                }
+              ],
+              "labels": {},
+              "readToken": "",
+              "reducer": null,
+              "reducerLabels": [],
+              "reducers": [
+                "argmax",
+                "argmin",
+                "count",
+                "count.exclude-nulls",
+                "count.include-nulls",
+                "join",
+                "join.forbid-nulls",
+                "max",
+                "max.forbid-nulls",
+                "mean",
+                "mean.exclude-nulls",
+                "mean.circular",
+                "mean.circular.exclude-nulls",
+                "median",
+                "min",
+                "min.forbid-nulls",
+                "and",
+                "and.exclude-nulls",
+                "or",
+                "or.exclude-nulls",
+                "sd",
+                "shannonentropy.0",
+                "shannonentropy.1",
+                "sum",
+                "sum.forbid-nulls",
+                "var"
+              ]
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Worst Days",
+        "transform": "timeseries_to_columns",
+        "type": "table"
+      },
+      {
+        "content": "<p style=\"text-align: center;\">\n<img src=\"data:image/png;base64,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\" />\n<br /><br />\n<a href=\"$$BASEURL$$#/teams/$$TEAMNAME$$/dashboard/$label/$node\" target=\"_blank\">Display QoS in DepC</a>\n</p>",
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 21,
+          "y": 8
+        },
+        "id": 22,
+        "links": [],
+        "mode": "html",
+        "title": "",
+        "type": "text"
+      }
+    ],
+    "schemaVersion": 16,
+    "style": "dark",
+    "tags": [
+      "depc",
+      "qos"
+    ],
+    "templating": {
+      "list": [
+        {
+          "allValue": null,
+          "current": {},
+          "datasource": "${DS_DEPC_WARP10}",
+          "definition": "",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Label",
+          "multi": false,
+          "name": "label",
+          "options": [],
+          "query": "[] 'labels' STORE   [   $token   'depc.qos.label' { 'team' '$$TEAMID$$' }     ] FIND    'allGTS' STORE   <%  \t'currentGTS' STORE   \t$currentGTS LABELS   \t'name' GET  1 ->LIST  \t$labels APPEND  'labels' STORE   %>  'getName' STORE     { $allGTS $getName FOREACH }  $labels UNIQUE LSORT  SWAP DROP",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "allValue": null,
+          "current": {},
+          "datasource": "${DS_DEPC_WARP10}",
+          "definition": "",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Nodes",
+          "multi": true,
+          "name": "node",
+          "options": [],
+          "query": "[] 'labels' STORE   [   $token   'depc.qos.node' { 'team' '$$TEAMID$$' 'label' $label }     ] FIND    'allGTS' STORE   <%  \t'currentGTS' STORE   \t$currentGTS LABELS   \t'name' GET  1 ->LIST  \t$labels APPEND  'labels' STORE   %>  'getName' STORE     { $allGTS $getName FOREACH }  $labels UNIQUE LSORT  SWAP DROP",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "now/M",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
+    },
+    "timezone": "",
+    "title": "DepC QoS Details",
+    "version": 1
+  }

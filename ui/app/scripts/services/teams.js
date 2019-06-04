@@ -91,6 +91,13 @@ angular.module('depcwebuiApp')
       });
     };
 
+    var exportGrafana = function(team_id, view) {
+      return $http({
+        url: config.depc_endpoint() + '/teams/' + team_id + '/export/grafana?view=' + view,
+        method: "GET"
+      });
+    };
+
     return {
       getTeams: getTeams,
       getTeamByName: getTeamByName,
@@ -99,6 +106,7 @@ angular.module('depcwebuiApp')
       editTeamRule: editTeamRule,
       deleteTeamRule: deleteTeamRule,
       getTeamGrants: getTeamGrants,
-      associateTeamGrants: associateTeamGrants
+      associateTeamGrants: associateTeamGrants,
+      exportGrafana: exportGrafana
     };
   });

@@ -1,5 +1,6 @@
 import json
 
+from unittest.mock import PropertyMock, patch
 
 def test_list_teams_authorization(client):
     resp = client.get('/v1/teams')
@@ -159,3 +160,115 @@ def test_put_grants_multiple(client, create_team, create_user, create_grant):
         {'role': 'member', 'user': 'manager'},
         {'role': 'editor', 'user': 'editor'}
     ]
+
+
+def test_export_grafana_authorization(client, create_team, create_user, create_grant):
+    team_id = str(create_team('My team')['id'])
+
+    resp = client.get('/v1/teams/{}/export/grafana'.format(team_id))
+    assert resp.status_code == 401
+
+    roles = {'member': 403, 'editor': 403, 'manager': 200}
+    for role, status in roles.items():
+        user_id = str(create_user(role)['id'])
+        create_grant(team_id, user_id, role)
+        client.login(role)
+        resp = client.get('/v1/teams/{}/export/grafana'.format(team_id))
+        assert resp.status_code == status
+
+
+def test_export_grafana_routing(client, create_team, create_user, create_grant):
+    team_id = str(create_team('My team')['id'])
+    user_id = str(create_user('manager')['id'])
+    create_grant(team_id, user_id, 'manager')
+    client.login('manager')
+
+    resp = client.get('/v1/teams/{}/export/grafana'.format(team_id))
+    assert resp.json["grafana_template"]["title"] == "DepC QoS Summary"
+    resp = client.get('/v1/teams/{}/export/grafana?view=summary'.format(team_id))
+    assert resp.json["grafana_template"]["title"] == "DepC QoS Summary"
+    resp = client.get('/v1/teams/{}/export/grafana?view=details'.format(team_id))
+    assert resp.json["grafana_template"]["title"] == "DepC QoS Details"
+    resp = client.get('/v1/teams/{}/export/grafana?view=foobar'.format(team_id))
+    assert resp.json["grafana_template"]["title"] == "DepC QoS Summary"
+
+
+def test_export_grafana_summary(client, create_team, create_user, create_grant, create_rule, create_config):
+    team_id = str(create_team('My team')['id'])
+    user_id = str(create_user('manager')['id'])
+    create_grant(team_id, user_id, 'manager')
+    create_rule('MyRule', team_id)
+    create_config(team_id, {'MyLabel': {'qos': 'rule.MyRule'}})
+
+    client.login('manager')
+    resp = client.get('/v1/teams/{}/export/grafana?view=summary'.format(team_id))
+
+    # $$TEAMID$$ replacement
+    assert team_id in resp.json["grafana_template"]["templating"]["list"][0]["query"]
+    for panel in resp.json["grafana_template"]["panels"]:
+        if "targets" in panel.keys():
+            assert team_id in panel["targets"][0]["expr"]
+
+    # $$MERMAIDDIAGRAM$$ replacement
+    for panel in resp.json["grafana_template"]["panels"]:
+        if panel["title"] == "Dependencies QoS":
+            assert panel["content"] == "graph TB\n\ndepc.qos.label_name_MyLabel_[MyLabel]\n"
+            break
+
+    # $$BASEURL$$ and $$TEAMNAME$$ replacement
+    with patch('tests.conftest.DepcResponse.KEYS_TO_REMOVE', new_callable=PropertyMock) as a:
+        a.return_value = []  # We need the `id` field
+        for panel in resp.json["grafana_template"]["panels"]:
+            if panel["id"] == 43:
+                assert "http://127.0.0.1/#/teams/My team/dashboard/$label" in panel["content"]
+                break
+
+
+def test_export_grafana_details(client, create_team, create_user, create_grant):
+    team_id = str(create_team('My team')['id'])
+    user_id = str(create_user('manager')['id'])
+    create_grant(team_id, user_id, 'manager')
+
+    client.login('manager')
+    resp = client.get('/v1/teams/{}/export/grafana?view=details'.format(team_id))
+
+    # $$TEAMID$$ replacement
+    assert team_id in resp.json["grafana_template"]["templating"]["list"][0]["query"]
+    assert team_id in resp.json["grafana_template"]["templating"]["list"][1]["query"]
+
+    for panel in resp.json["grafana_template"]["panels"]:
+        if "targets" in panel.keys():
+            assert team_id in panel["targets"][0]["expr"]
+
+    # $$BASEURL$$ and $$TEAMNAME$$ replacement
+    with patch('tests.conftest.DepcResponse.KEYS_TO_REMOVE', new_callable=PropertyMock) as a:
+        a.return_value = []  # We need the `id` field
+        for panel in resp.json["grafana_template"]["panels"]:
+            if panel["id"] == 22:
+                assert "http://127.0.0.1/#/teams/My team/dashboard/$label/$node" in panel["content"]
+                break
+
+
+def test_export_grafrana_without_metas(client, create_team, create_user, create_grant):
+    team_id = str(create_team('My team')['id'])
+    user_id = str(create_user('manager')['id'])
+    create_grant(team_id, user_id, 'manager')
+
+    client.login('manager')
+    resp = client.get('/v1/teams/{}/export/grafana'.format(team_id))
+
+    assert "metas" in resp.json
+    assert resp.json["metas"] == {}
+
+
+def test_export_grafrana_with_metas(client, create_team, create_user, create_grant):
+    payload = {"url": "foo", "token": "bar"}
+    team_id = str(create_team('My team', {"grafana": payload})['id'])
+    user_id = str(create_user('manager')['id'])
+    create_grant(team_id, user_id, 'manager')
+
+    client.login('manager')
+    resp = client.get('/v1/teams/{}/export/grafana'.format(team_id))
+
+    assert "metas" in resp.json
+    assert resp.json["metas"] == payload

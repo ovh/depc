@@ -607,6 +607,10 @@ highchart {
   border-radius: 0px;
 }
 
+.panel-depc .panel-heading .dropdown {
+  color: #333;
+}
+
 .panel-depc .small-box {
   border-radius: 0px;
 }

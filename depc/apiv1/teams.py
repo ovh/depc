@@ -176,3 +176,48 @@ def put_grants(team_id):
     payload = get_payload()
     grants = TeamController.put_grants(team_id=team_id, grants=payload["grants"])
     return jsonify(grants)
+
+
+@api.route("/teams/<team_id>/export/grafana")
+@login_required
+def team_export_grafana(team_id):
+    """Export the QoS into Grafana.
+
+    .. :quickref: GET; Export the QoS into Grafana.
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET /teams/76b96ead-a7ed-447b-8fa6-26b57bc571e5/export/grafana HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+
+      {
+        "metas": {
+          "url": "https://warp-endpoint.local",
+          "token": "foobar"
+        },
+        "grafana_template": {
+          // Grafana JSON format
+          // See: https://grafana.com/docs/reference/export_import/
+        }
+      }
+
+    :resheader Content-Type: application/json
+    :status 200: the JSON to import in Grafana
+    """
+    if not TeamPermission.is_manager(team_id):
+        abort(403)
+
+    view = request.args.get("view", "summary")
+    if view not in ["summary", "details"]:
+        view = "summary"
+
+    return jsonify(TeamController.export_grafana(team_id, view))

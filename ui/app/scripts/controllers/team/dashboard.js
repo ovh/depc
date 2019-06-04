@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('DashboardCtrl', function ($rootScope, $scope, $timeout, $filter, $interval, $anchorScroll, $location, $routeParams, teamsService, qosService, chartsService) {
+  .controller('DashboardCtrl', function ($rootScope, $scope, $filter, $anchorScroll, $location, $routeParams, teamsService, qosService, chartsService, modalService) {
     var self = this;
 
     self.teamName = $routeParams.team;
@@ -227,4 +227,29 @@ angular.module('depcwebuiApp')
             });
         }
     };
+
+    self.exportGrafanaSummary = function() {
+        teamsService.exportGrafana(self.team.id, "summary").then(function(response) {
+            var data = response.data;
+
+            modalService.displayJson(
+                "Export the summary view to Grafana",
+                "<div class='alert alert-info'><p>Here is your Grafana configuration :</p><br /><pre>" + JSON.stringify(data.metas) + "</pre></div>",
+                data.grafana_template
+            );
+        });
+    };
+
+    self.exportGrafanaDetails = function() {
+        teamsService.exportGrafana(self.team.id, "details").then(function(response) {
+            var data = response.data;
+            console.log(data.metas);
+            modalService.displayJson(
+                "Export the details view to Grafana",
+                "<div class='alert alert-info'><p>Here is your Grafana configuration :</p><br /><pre>" + JSON.stringify(data.metas) + "</pre></div>",
+                data.grafana_template
+            );
+        });
+    };
+
   });

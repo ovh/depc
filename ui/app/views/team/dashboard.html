@@ -25,7 +25,17 @@
     <div class="row" data-ng-if="!dashboardCtrl.chartLoading && dashboardCtrl.infra.length != 0">
         <div class="col-md-12">
             <div class="panel panel-default panel-depc">
-                <div class="panel-heading">Summary</div>
+                <div class="panel-heading">
+                    <span>Summary</span>
+                    <div class="btn-group dropdown pull-right" data-ng-if="checkGrants(dashboardCtrl.teamName, ['manager'])">
+                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> <i class="glyphicon glyphicon-export"></i> Export to Grafana <span class="caret"></span> </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a data-ng-click="dashboardCtrl.exportGrafanaSummary()">Summary view</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a data-ng-click="dashboardCtrl.exportGrafanaDetails()">Labels view</a></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-4" data-ng-repeat="n in [] | range:3">
