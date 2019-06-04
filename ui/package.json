@@ -52,6 +52,7 @@
     "requirejs": "^2.3.6",
     "shell-quote": ">=1.6.1",
     "tar-fs": ">=1.16.2",
-    "uglify-js": ">=2.6.0"
+    "uglify-js": ">=2.6.0",
+    "fstream": ">=1.0.12"
   }
 }
