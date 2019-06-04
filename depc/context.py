@@ -18,6 +18,7 @@ from depc.logs import setup_loggers
 
 
 class Config:
+    BASE_UI_URL = "http://127.0.0.1/"
     SECRET_KEY = os.environ.get("SECRET_KEY") or "mysecret"
     JSON_AS_ASCII = False
     DEBUG = False
@@ -42,6 +43,7 @@ class Config:
         }
     }
     JSONSCHEMA_DIR = str(Path(BASE_DIR) / "schemas")
+    STATIC_DIR = str(Path(BASE_DIR) / "static")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     @staticmethod

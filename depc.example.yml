@@ -4,6 +4,8 @@ SECRET: mysecretkey
 
 DB_ENCRYPTION_KEY: mydbencryptionkey
 
+BASE_UI_URL: http://127.0.0.1/
+
 FLOAT_DECIMAL: 3
 
 FORCE_INSECURE_ADMIN: false

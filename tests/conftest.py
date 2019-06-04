@@ -152,11 +152,12 @@ def skip_by_requirement(app, request):
 
 @pytest.fixture
 def create_team(app):
-    def _create_team(name):
+    def _create_team(name, metas={}):
+        data = {"name": name}
+        if metas:
+            data["metas"] = metas
         with app.app_context():
-            return TeamController.create({
-                'name': name
-            })
+            return TeamController.create(data)
     return _create_team
 
 

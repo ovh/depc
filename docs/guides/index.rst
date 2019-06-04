@@ -13,3 +13,4 @@ some of DepC features :
    queries
    sources
    variables
+   grafana

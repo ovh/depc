@@ -191,6 +191,20 @@ angular.module('depcwebuiApp')
     });
    };
 
+   var displayJson = function(title, description, json) {
+    return $uibModal.open({
+        size: 'lg',
+        templateUrl: 'views/modals/display_json.html',
+        controller: 'ModalDisplayJsonCtrl',
+        controllerAs: 'modalDisplayJsonCtrl',
+        resolve: {
+          title: function() {return title},
+          description: function() {return description},
+          json: function() {return json}
+        }
+    });
+   };
+
    return {
       changeFromToDate: changeFromToDate,
       displayFullLogs: displayFullLogs,
@@ -202,7 +216,8 @@ angular.module('depcwebuiApp')
       displayCheckParameters: displayCheckParameters,
       displayConfig: displayConfig,
       newConfig: newConfig,
-      relationshipPeriods: relationshipPeriods
+      relationshipPeriods: relationshipPeriods,
+      displayJson: displayJson
    };
 
   });

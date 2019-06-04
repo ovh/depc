@@ -2,6 +2,7 @@ from flask import abort
 from flask import current_app
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import JSONField
+from flask_admin import form
 from flask_login import current_user
 
 from depc.extensions import admin, db
@@ -143,7 +144,9 @@ class GrantModelView(ExtendedModelView):
 
 
 class TeamModelView(ExtendedModelView):
-    form_columns = ("name",)
+    column_list = ("name", "metas")
+    form_columns = ("name", "metas")
+    form_overrides = {"metas": form.JSONField}
     column_searchable_list = ["name"]
     column_default_sort = ("created_at", True)
 
