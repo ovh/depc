@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('TeamsCtrl', function ($rootScope, teamsService, usersService, config, modalService) {
+  .controller('TeamsCtrl', function (teamsService, usersService, config, modalService) {
   	var self = this;
 
   	self.teams = [];
@@ -54,6 +54,25 @@ angular.module('depcwebuiApp')
           count += team.rules[rule].checks.length;
         }
         return config.pluralize(count, 'check', 'checks', true);
+    };
+
+    this.displayManagers = function(team) {
+      teamsService.getTeamGrants(team.id).then(function(response) {
+        var grants = [];
+
+        // Keep the managers
+        for ( var i in response.data ) {
+          if ( response.data[i].role == "manager" ) {
+            grants.push(response.data[i].user);
+          }
+        }
+
+        modalService.displayJson(
+          "List of managers",
+          "<div class='alert alert-info'>Contact one of this people if you want to join the team.</div>",
+          grants
+        );
+      });
     };
 
   });

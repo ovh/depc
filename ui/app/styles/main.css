@@ -937,6 +937,10 @@ pre.white-space {
   text-decoration: none;
 }
 
+.team-container-disable i {
+  cursor: pointer !important;
+  pointer-events: all !important;
+}
 .team-container a:last-child{
   margin-right: 0;
 }
