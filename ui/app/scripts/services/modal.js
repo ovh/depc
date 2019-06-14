@@ -163,6 +163,8 @@ angular.module('depcwebuiApp')
    var newConfig = function(team, placeholder) {
     return $uibModal.open({
         size: 'lg',
+        backdrop: 'static',
+        keyboard: true,
         templateUrl: 'views/modals/new_config.html',
         controller: 'ModalNewConfigCtrl',
         controllerAs: 'modalNewConfigCtrl',
