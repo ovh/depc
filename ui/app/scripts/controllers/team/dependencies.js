@@ -77,21 +77,36 @@ angular.module('depcwebuiApp')
           self.resultTitle = null;
           dependenciesService.getTeamLabelNodes(self.team.id, self.selectedLabel, null, 10, true).then(function (response) {
               self.nodesResult = response.data;
-              self.resultTitle = 'random';
               self.loadNodes = false;
           });
       };
 
       // Search nodes by their name
       self.searchNode = function () {
-        self.loadNodes = true;
+          if ( !self.nodeSearched ) { return; }
+          self.loadNodes = true;
           self.selectedNode = null;
           self.nodesResult = [];
           self.resultTitle = null;
-          dependenciesService.getTeamLabelNodes(self.team.id, self.selectedLabel, self.nodeSearched).then(function (response) {
-              self.nodesResult = response.data;
-              self.resultTitle = self.nodesResult.length + ' nodes';
-              self.loadNodes = false;
+
+          // Try to find the node with the exact same name
+          dependenciesService.getTeamLabelNode(self.team.id, self.selectedLabel, self.nodeSearched).then(function (response) {
+            self.selectNode(response.data.name);
+            self.loadNodes = false;
+          }).catch(function(e) {
+
+              // Find nodes using pattern
+              dependenciesService.getTeamLabelNodes(self.team.id, self.selectedLabel, self.nodeSearched).then(function (response) {
+                self.nodesResult = response.data;
+
+                if ( self.nodesResult.length > 0 ) {
+                    self.resultTitle = 'Node not found, but got ' + self.nodesResult.length + ' node(s) containing "' + self.nodeSearched + '".';
+                } else {
+                    self.resultTitle = 'Node not found.';
+                }
+
+                self.loadNodes = false;
+              });
           });
       };
 

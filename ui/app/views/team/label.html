@@ -37,34 +37,44 @@
         <div class="col-lg-4">
         	<div class="row">
 				<div class="col-md-12">
+
                     <div class="panel panel-default panel-depc">
-                        <div class="panel-heading">Search</div>
+                        <div class="panel-heading">Search a node</div>
                         <div class="panel-body">
-                            <form role="search" id="search" data-ng-submit="labelCtrl.searchNode()">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search a node" data-ng-model="labelCtrl.nodeSearched">
-                                    <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" data-ng-click="labelCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
-                                  </span>
+                            <div class="row">
+                                    <div class="col-xs-9">
+                                        <form role="search" id="search" data-ng-submit="labelCtrl.searchNode()">
+                                            <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Node's name" data-ng-model="labelCtrl.nodeSearched">
+                                                <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button" data-ng-click="labelCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
+                                            </span>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-xs-3">
+                                    <button class="btn btn-default" data-ng-click="labelCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
+                                </div>
                                 </div>
                                 <div class="loader" data-ng-if="labelCtrl.loadNodes"></div>
                                 <div data-ng-if="labelCtrl.resultTitle">
-                                    <br />
                                     <div data-ng-if="labelCtrl.nodesResult.length > 0">
-                                        <h4>Result ({{ labelCtrl.resultTitle }}) :</h4>
+                                    <hr />
+                                    <div class="alert alert-info">{{ labelCtrl.resultTitle }}</div>
                                     </div>
                                     <div data-ng-if="labelCtrl.nodesResult.length == 0">
-                                        <div class="alert alert-info">No result.</div>
+                                    <hr />
+                                    <div class="alert alert-info">No result.</div>
                                     </div>
                                 </div>
-                                <div class="list-group" data-ng-if="labelCtrl.nodesResult.length > 0">
-                                  <a data-ng-repeat="node in labelCtrl.nodesResult track by $index" data-ng-href="#/teams/{{ labelCtrl.teamName }}/dashboard/{{ labelCtrl.label }}/{{ node }}{{ getDateUrlParams() }}" class="list-group-item">
-                                    {{ node }}
-                                  </a>
-                                </div>
-                            </form>
+                            <div class="list-group" data-ng-if="labelCtrl.nodesResult.length > 0">
+                                <a data-ng-repeat="node in labelCtrl.nodesResult track by $index" data-ng-href="#/teams/{{ labelCtrl.teamName }}/dashboard/{{ labelCtrl.label }}/{{ node }}{{ getDateUrlParams() }}" class="list-group-item">
+                                {{ node }}
+                                </a>
+                            </div>
                         </div>
                     </div>
+
 					<div class="panel panel-default panel-depc">
 		                <div class="panel-heading">Worst QOS for {{ labelCtrl.selectedWorstDay }} <i class="glyphicon glyphicon-info-sign" uib-tooltip="Click on a day to display its worst QOS." tooltip-append-to-body="true"></i></div>
 		                <div class="panel-body">

@@ -81,6 +81,23 @@ class DependenciesController(Controller):
         return [r[0] for r in results]
 
     @classmethod
+    def get_label_node(cls, team_id, label, node):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        neo = Neo4jClient()
+        query = "MATCH(n:{0}_{1}{{name: '{2}'}}) RETURN n".format(
+            team.kafka_topic, label, node
+        )
+        result = neo.query(query)
+
+        try:
+            data = list(result)[0][0]["data"]
+        except IndexError:
+            raise NotFoundError("Node {} does not exist".format(node))
+
+        return data
+
+    @classmethod
     def count_node_dependencies(cls, team_id, label, node):
         team = TeamController._get({"Team": {"id": team_id}})
 

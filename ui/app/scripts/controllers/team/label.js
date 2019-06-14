@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('LabelCtrl', function ($rootScope, $scope, $timeout, $routeParams, teamsService, qosService, dependenciesService, chartsService, config) {
+  .controller('LabelCtrl', function ($rootScope, $scope, $timeout, $routeParams, $location, teamsService, qosService, dependenciesService, chartsService, config) {
    var self = this;
 
    self.teamName = $routeParams.team;
@@ -140,17 +140,46 @@ angular.module('depcwebuiApp')
       }
     };
 
+    // Search nodes by their name
     self.searchNode = function () {
+        if ( !self.nodeSearched ) { return; }
+        self.loadNodes = true;
+        self.selectedNode = null;
+        self.nodesResult = [];
+        self.resultTitle = null;
+
+        // Try to find the node with the exact same name
+        dependenciesService.getTeamLabelNode(self.team.id, self.label, self.nodeSearched).then(function (response) {
+          self.loadNodes = false;
+          $location.path( "/teams/" + self.teamName + "/dashboard/" + self.label + "/" + self.nodeSearched );
+        }).catch(function(e) {
+
+            // Find nodes using pattern
+            dependenciesService.getTeamLabelNodes(self.team.id, self.label, self.nodeSearched).then(function (response) {
+              self.nodesResult = response.data;
+
+              if ( self.nodesResult.length > 0 ) {
+                  self.resultTitle = 'Node not found, but got ' + self.nodesResult.length + ' node(s) containing "' + self.nodeSearched + '".';
+              } else {
+                  self.resultTitle = 'Node not found.';
+              }
+
+              self.loadNodes = false;
+            });
+        });
+    };
+
+    // Fetch some nodes as examples for the user
+    self.loadExamples = function () {
       self.loadNodes = true;
       self.selectedNode = null;
       self.nodesResult = [];
       self.resultTitle = null;
-      dependenciesService.getTeamLabelNodes(self.team.id, self.label, self.nodeSearched).then(function (response) {
+      dependenciesService.getTeamLabelNodes(self.team.id, self.label, null, 10, true).then(function (response) {
           self.nodesResult = response.data;
-          self.resultTitle = self.nodesResult.length + ' nodes';
           self.loadNodes = false;
       });
-    };
+  };
 
     self.getStateByQos = function(qos) {
       return config.getStateByQos(qos);
