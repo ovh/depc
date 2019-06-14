@@ -173,21 +173,22 @@ def test_count_node_dependencies(number, app, client, create_team, create_user, 
     assert resp.json == {'count': number}
 
 
-def test_get_node_dependencies_authorization(client, create_team, create_user, create_grant):
-    team_id = str(create_team('My team')['id'])
+def test_get_node_dependencies_authorization(client, create_team, create_user, create_grant, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    neo_create("CREATE (n:acme_Cluster{name: 'cluster01'})")
 
-    resp = client.get('/v1/teams/{}/labels/MyLabel/nodes/foo'.format(team_id))
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
     assert resp.status_code == 401
 
     client.login('depc')
-    resp = client.get('/v1/teams/{}/labels/MyLabel/nodes/foo'.format(team_id))
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
     assert resp.status_code == 403
 
     for role in ['member', 'editor', 'manager']:
         user_id = str(create_user(role)['id'])
         create_grant(team_id, user_id, role)
         client.login(role)
-        resp = client.get('/v1/teams/{}/labels/MyLabel/nodes/foo'.format(team_id))
+        resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
         assert resp.status_code == 200
 
 
@@ -197,6 +198,24 @@ def test_get_node_dependencies_notfound(client):
     assert resp.status_code == 404
 
 
+def test_get_node_alone(client, create_team, create_user, create_grant, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    user_id = str(create_user('depc')['id'])
+    create_grant(team_id, user_id, 'member')
+    client.login('depc')
+
+    resp = client.get('/v1/teams/{}/labels/MyLabel/nodes/cluster01'.format(team_id))
+    assert resp.status_code == 404
+    assert resp.json == {'message': 'Node cluster01 does not exist'}
+
+    neo_create("CREATE (n:acme_Cluster{name: 'cluster01'})")
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?alone=1'.format(team_id))
+    assert resp.status_code == 200
+    assert resp.json == {'name': 'cluster01'}
+    assert "dependencies" not in resp.json
+    assert "graph" not in resp.json
+
+
 def test_get_node_dependencies_basic(client, create_team, create_user, create_grant, neo_create):
     team_id = str(create_team('Acme')['id'])
     user_id = str(create_user('depc')['id'])
@@ -204,10 +223,12 @@ def test_get_node_dependencies_basic(client, create_team, create_user, create_gr
     client.login('depc')
 
     resp = client.get('/v1/teams/{}/labels/MyLabel/nodes/cluster01'.format(team_id))
-    assert resp.json == {'dependencies': {}, 'graph': {'nodes': [], 'relationships': []}}
+    assert resp.status_code == 404
+    assert resp.json == {'message': 'Node cluster01 does not exist'}
 
     neo_create("CREATE (n:acme_Cluster{name: 'cluster01'})")
     resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01'.format(team_id))
+    assert resp.json['name'] == 'cluster01'
     assert resp.json['dependencies'] == {'Cluster': [{'name': 'cluster01'}]}
     assert resp.json['graph'] == {
         'nodes': [{'label': 'cluster01', 'title': 'Cluster'}],

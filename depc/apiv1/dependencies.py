@@ -142,7 +142,7 @@ def count_node_dependencies(team_id, label, node):
 
 @api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>")
 @login_required
-def get_node_dependencies(team_id, label, node):
+def get_node(team_id, label, node):
     """Get the dependencies of a node.
 
     .. :quickref: GET; Get the dependencies of a node.
@@ -204,9 +204,11 @@ def get_node_dependencies(team_id, label, node):
             "periods": [0],
             "to": 8226316
           }]
-        }
+        },
+        "name": "example.com"
       }
 
+    :param alone: Returns the node without its dependencies
     :param day: Filter by day (default is today)
     :param config: Only include labels used in configuration
     :param inactive: Include the inactive nodes
@@ -217,7 +219,13 @@ def get_node_dependencies(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
-    return jsonify(
+    # We just want to return the node
+    data = DependenciesController.get_label_node(team_id, label, node)
+    if request.args.get("alone", False):
+        return jsonify(data)
+
+    # We also want the dependencies
+    data.update(
         DependenciesController.get_node_dependencies(
             team_id=team_id,
             label=label,
@@ -228,6 +236,7 @@ def get_node_dependencies(team_id, label, node):
             display_downstream=request.args.get("downstream", False),
         )
     )
+    return jsonify(data)
 
 
 @api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>", methods=["DELETE"])
