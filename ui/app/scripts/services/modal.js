@@ -207,6 +207,16 @@ angular.module('depcwebuiApp')
     });
    };
 
+   var displayNews = function() {
+    return $uibModal.open({
+        size: 'lg',
+        templateUrl: 'views/modals/news.html',
+        controller: 'ModalNewsCtrl',
+        controllerAs: 'modalNewsCtrl',
+        resolve: {}
+    });
+   };
+
    return {
       changeFromToDate: changeFromToDate,
       displayFullLogs: displayFullLogs,
@@ -219,7 +229,8 @@ angular.module('depcwebuiApp')
       displayConfig: displayConfig,
       newConfig: newConfig,
       relationshipPeriods: relationshipPeriods,
-      displayJson: displayJson
+      displayJson: displayJson,
+      displayNews: displayNews
    };
 
   });

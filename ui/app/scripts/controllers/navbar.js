@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('NavbarCtrl', function ($rootScope, $scope, $location, $routeParams, $route) {
+  .controller('NavbarCtrl', function ($rootScope, $scope, $location, $route, modalService, newsService) {
 
     var updateMonth = function() {
       $rootScope.globals.view = 'month';
@@ -97,6 +97,13 @@ angular.module('depcwebuiApp')
             "firstDay": 1
         },
         alwaysShowCalendars: true
+    };
+
+    $scope.displayModalNews = function() {
+      modalService.displayNews().result.then(function(data) {}, function() {
+        newsService.clear();
+        $rootScope.globals['news'] = [];
+      });
     };
 
   });

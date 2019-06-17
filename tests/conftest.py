@@ -18,6 +18,7 @@ from depc.controllers.rules import RuleController
 from depc.controllers.sources import SourceController
 from depc.controllers.teams import TeamController
 from depc.controllers.users import UserController
+from depc.controllers.news import NewsController
 from depc.extensions import db
 from depc.utils.neo4j import get_records, set_records
 
@@ -241,6 +242,24 @@ def create_config(app):
                 'data': conf
             })
     return _create_config
+
+
+@pytest.fixture
+def create_news(app):
+    def _create_news(title, message=None, users=[]):
+        with app.app_context():
+            news = NewsController._create({
+                'title': title,
+                'message': message
+            })
+
+            if users:
+                news.users = users
+                db.session.add(news)
+                db.session.commit()
+
+            return NewsController.resource_to_dict(news)
+    return _create_news
 
 
 @pytest.fixture

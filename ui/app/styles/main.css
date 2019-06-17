@@ -56,6 +56,14 @@ body {
   border-radius: 0px;
 }
 
+.navbar-right li {
+  margin: 0 10px;
+}
+
+.navbar-right .btn-default .badge {
+  background-color: #b94a48;
+}
+
 .content {
   margin-bottom: 80px;
 }
@@ -994,4 +1002,17 @@ pre.white-space {
 
 .btn-primary:hover {
   background-color: #284559;
+}
+
+.news {
+  margin-bottom: 30px;
+}
+
+.news .title {
+  display: block;
+  color: #424242;
+  border-bottom: 1px solid #C8C7BB;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.6em;
 }
