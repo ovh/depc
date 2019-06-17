@@ -11,6 +11,7 @@ from depc.models.rules import Rule
 from depc.models.sources import Source
 from depc.models.teams import Team
 from depc.models.users import User, Grant
+from depc.models.news import News
 
 
 class AuthModelView(ModelView):
@@ -157,9 +158,14 @@ class UserModelView(ExtendedModelView):
     column_default_sort = ("created_at", True)
 
 
+class NewsModelView(ExtendedModelView):
+    form_columns = ("title", "message")
+
+
 admin.add_view(CheckModelView(Check, db.session))
 admin.add_view(SourceModelView(Source, db.session))
 admin.add_view(RuleModelView(Rule, db.session))
 admin.add_view(UserModelView(User, db.session))
 admin.add_view(TeamModelView(Team, db.session))
 admin.add_view(GrantModelView(Grant, db.session))
+admin.add_view(NewsModelView(News, db.session))

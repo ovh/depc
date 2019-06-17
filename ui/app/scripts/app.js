@@ -150,8 +150,8 @@ angular
       });
 
   })
-  .run(['$rootScope', '$anchorScroll', '$location', '$cookieStore', '$http', 'toastr', '$confirmModalDefaults', '$route', 'breadcrumbs', 'usersService',
-    function ($rootScope, $anchorScroll, $location, $cookieStore, $http, toastr, $confirmModalDefaults, $route, breadcrumbs, usersService) {
+  .run(['$rootScope', '$anchorScroll', '$location', 'toastr', '$confirmModalDefaults', '$route', 'breadcrumbs', 'usersService', 'newsService',
+    function ($rootScope, $anchorScroll, $location, toastr, $confirmModalDefaults, $route, breadcrumbs, usersService, newsService) {
       $rootScope.globals = {
         date: moment.utc()
       };
@@ -175,6 +175,11 @@ angular
           }
           return false;
         };
+      });
+
+      // Load the latest news for this user
+      newsService.getUnreadNews().then(function(response) {
+        $rootScope.globals['news'] = response.data.news;
       });
 
       $rootScope.getDateUrlParams = function() {

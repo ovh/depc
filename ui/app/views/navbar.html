@@ -57,14 +57,18 @@
                     </div>
                 </li>
             </ul>
-            <div class="dropdown pull-right">
-                <button class="btn btn-default top-button dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> <i class="glyphicon glyphicon-user"></i> {{$root.globals.currentUser.name}} <span class="caret"></span> </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                  <li data-ng-repeat-start="(team, grant) in $root.globals.currentUser.grants"><a href="#/teams/{{ team }}{{ getDateUrlParams() }}"> {{ team }} </span> ({{ grant }})</a></li>
-                  <li data-ng-repeat-end="(team, grant) in $root.globals.currentUser.grants" data-ng-if="!$last" role="separator" class="divider"></li>
-                  </ul>
-              </div>
-            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><button class="btn btn-default top-button" data-ng-click="displayModalNews()"><i class="glyphicon glyphicon-bell"></i> <span class="badge" data-ng-if="$root.globals.news.length">{{ $root.globals.news.length }}</span></button></li>
+                <li>
+                    <div class="dropdown pull-right">
+                        <button class="btn btn-default top-button dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> <i class="glyphicon glyphicon-user"></i> {{$root.globals.currentUser.name}} <span class="caret"></span> </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li data-ng-repeat-start="(team, grant) in $root.globals.currentUser.grants"><a href="#/teams/{{ team }}{{ getDateUrlParams() }}"> {{ team }} </span> ({{ grant }})</a></li>
+                        <li data-ng-repeat-end="(team, grant) in $root.globals.currentUser.grants" data-ng-if="!$last" role="separator" class="divider"></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
