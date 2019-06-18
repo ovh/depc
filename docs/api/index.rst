@@ -8,8 +8,8 @@ API
    checks
    configs
    dependencies
+   news
    qos
-   results
    rules
    sources
    statistics
