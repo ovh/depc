@@ -126,9 +126,23 @@ angular.module('depcwebuiApp')
 
     this.save = function() {
         if ( self.isReadyToSubmit() ) {
+            var params = {};
+
+            if (self.parameters.hasOwnProperty('script')) { params.script = self.parameters.script; }
+            else if (self.parameters.hasOwnProperty('query')) { params.query = self.parameters.query; }
+            else if (self.parameters.hasOwnProperty('metric')) { params.metric = self.parameters.metric; }
+
+            if (self.type.name === 'Interval') {
+                params.top_threshold = self.parameters.top_threshold;
+                params.bottom_threshold = self.parameters.bottom_threshold;
+            } else {
+                // Check is type Threshold
+                params.threshold = self.parameters.threshold;
+            }
+
             // Edit an existing check
             if ( self.mode == 'edit' ) {
-                sourcesService.editTeamCheck(self.team.id, self.source.id, self.check.id, self.name, self.type.name, self.parameters).then(function(response) {
+                sourcesService.editTeamCheck(self.team.id, self.source.id, self.check.id, self.name, self.type.name, params).then(function(response) {
                     var data = response.data;
                     var index = self.source.checks.indexOf(self.check);
                     if (index > -1) {
@@ -142,7 +156,7 @@ angular.module('depcwebuiApp')
 
             // Create a new check
             if ( self.mode == 'new' ) {
-                sourcesService.createTeamCheck(self.team.id, self.source.id, self.name, self.type.name, self.parameters).then(function(response) {
+                sourcesService.createTeamCheck(self.team.id, self.source.id, self.name, self.type.name, params).then(function(response) {
                     var data = response.data;
                     self.source.checks.push(data);
                     self.editCheck(data);

@@ -1,4 +1,5 @@
 import json
+import pytest
 
 
 def test_list_rules_authorization(client, create_team, create_user, create_grant):
@@ -325,3 +326,30 @@ def test_delete_rule_with_config(client, create_team, create_rule, create_user, 
     assert resp.json == {
         'message': 'Rule MyRule is used in your configuration, please remove it before.'
     }
+
+
+@pytest.mark.parametrize("test_input", ["'Test", "Test'", "'Test'", '"Test', 'Test"', '"Test"'])
+def test_post_rule_prohibited_quotes(client, create_team, create_user, create_grant, test_input):
+    team_id = str(create_team('My team')['id'])
+
+    role = 'editor'
+    user_id = str(create_user(role)['id'])
+    create_grant(team_id, user_id, role)
+    client.login(role)
+
+    resp = client.post('/v1/teams/{}/rules'.format(team_id), data=json.dumps({'name': test_input}))
+    assert resp.status_code == 400
+
+
+@pytest.mark.parametrize("test_input", ["'Test", "Test'", "'Test'", '"Test', 'Test"', '"Test"'])
+def test_put_rule_prohibited_quotes(client, create_team, create_user, create_grant, create_rule, test_input):
+    team_id = str(create_team('My team')['id'])
+    rule_id = str(create_rule('My rule', team_id)['id'])
+
+    role = 'editor'
+    user_id = str(create_user(role)['id'])
+    create_grant(team_id, user_id, role)
+    client.login(role)
+
+    resp = client.put('/v1/teams/{}/rules/{}'.format(team_id, rule_id), data=json.dumps({'name': test_input}))
+    assert resp.status_code == 400
