@@ -1,4 +1,5 @@
 import json
+import pytest
 
 
 def test_list_source_checks_authorization(client, create_team, create_source, create_user, create_grant):
@@ -68,21 +69,25 @@ def test_post_source_check_authorization(client, create_team, create_user, creat
     team_id = str(create_team('My team')['id'])
     source_id = str(create_source('My source', team_id)['id'])
 
-    post_data = {'name': 'My check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}}
+    post_data = [
+        {'name': 'My member check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}},
+        {'name': 'My editor check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}},
+        {'name': 'My manager check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}}
+    ]
 
-    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data[0]))
     assert resp.status_code == 401
 
     client.login('depc')
-    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data[0]))
     assert resp.status_code == 403
 
     roles = {'member': 403, 'editor': 201, 'manager': 201}
-    for role, status in roles.items():
+    for i, (role, status) in enumerate(roles.items()):
         user_id = str(create_user(role)['id'])
         create_grant(team_id, user_id, role)
         client.login(role)
-        resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+        resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data[i]))
         assert resp.status_code == status
 
 
@@ -132,3 +137,37 @@ def test_post_source_check(client, create_team, create_source, create_user, crea
         'parameters': {'metric': 'foo', 'threshold': 100},
         'type': 'Threshold'
     }
+
+
+def test_post_source_check_conflict(client, create_team, create_user, create_source, create_grant):
+    team_id = str(create_team('My team')['id'])
+    source_id = str(create_source('My source', team_id)['id'])
+
+    role = 'editor'
+    create_grant(team_id, str(create_user(role)['id']), role)
+    client.login(role)
+
+    post_data = {'name': 'My check', 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}}
+
+    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+    assert resp.status_code == 201
+
+    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+    assert resp.status_code == 409
+
+
+@pytest.mark.parametrize("test_input", ["'Test", "Test'", "'Test'", '"Test', 'Test"', '"Test"'])
+def test_post_source_check_prohibited_quotes(
+        client, create_team, create_user, create_source, create_grant, test_input
+):
+    team_id = str(create_team('My team')['id'])
+    source_id = str(create_source('My source', team_id)['id'])
+
+    role = 'editor'
+    create_grant(team_id, str(create_user(role)['id']), role)
+    client.login(role)
+
+    post_data = {'name': test_input, 'type': 'Threshold', 'parameters': {'metric': 'foo', 'threshold': 100}}
+
+    resp = client.post('/v1/teams/{}/sources/{}/checks'.format(team_id, source_id), data=json.dumps(post_data))
+    assert resp.status_code == 400

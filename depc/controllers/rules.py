@@ -7,6 +7,7 @@ from depc.controllers import (
     Controller,
     NotFoundError,
     RequirementsNotSatisfiedError,
+    IntegrityError,
 )
 from depc.controllers.checks import CheckController
 from depc.extensions import db, redis
@@ -242,3 +243,17 @@ class RuleController(Controller):
         )
 
         return qos
+
+    @classmethod
+    def ensure_rule(cls, obj):
+        # Name surrounded by quotes are prohibited
+        if obj.name.startswith(('"', "'")) or obj.name.endswith(('"', "'")):
+            raise IntegrityError("The rule name cannot begin or end with a quote")
+
+    @classmethod
+    def before_create(cls, obj):
+        cls.ensure_rule(obj)
+
+    @classmethod
+    def before_update(cls, obj):
+        cls.ensure_rule(obj)
