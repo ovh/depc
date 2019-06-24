@@ -10,9 +10,10 @@ Also, you need to setup your environment with these following software :
 
 - `Redis <https://redis.io/topics/quickstart>`__
 - `Kafka (1.1.0) <https://kafka.apache.org/11/documentation.html#quickstart>`__
-- `Neo4j (3.4) <https://nodejs.org/en/download/releases/>`__
+- The graph database `Neo4j (3.4) <https://neo4j.com/download/>`__
 - A RDBMS supported by SQLAlchemy (we suggest `PostgreSQL <https://www.postgresql.org/download/>`__)
 - The `Warp10 <https://www.warp10.io/content/02_Getting_started>`__ time series database
+- OVH `Beamium <https://github.com/ovh/beamium>`__ to send the computed QoS into Warp10
 
 Take a look on the ``depc.example.yml`` to set the required configuration fields accordingly.
 
