@@ -4,47 +4,6 @@ from airflow.utils.decorators import apply_defaults
 
 from scheduler.dags.operators import QosOperator
 
-MAX_WORST_ITEMS = 15
-
-MAX_DATAPOINTS = 2000000
-
-"""
-'{start}' 'start' STORE
-'{end}' 'end' STORE
-'{token}' 'token' STORE
-$token AUTHENTICATE
-{max_gts} MAXGTS
-
-"""
-
-WORST_ITEMS_PER_LABEL = """
-$COUNT$ 'topN' STORE
-$topN 1 - 'topN' STORE
-
-[   $token
-    'depc.qos.node'
-    { 'team' '$TEAM$' 'label' '$LABEL$' }
-    $start $end
-] FETCH
-
-// remove useless DATA
-{  '.app' '' 'label' '' } RELABEL
-
-// compute mean value over the whole timespan
-[ SWAP bucketizer.mean 0 0 1 ] BUCKETIZE
-
-// sort the GTS (based on their latest value)
-LASTSORT
-
-// return results if any, else an empty stack []
-DUP
-SIZE 'topSize' STORE
-
-<% $topSize 0 > %>
-<% [ 0 $topN ] SUBLIST %>
-IFT
-"""
-
 
 class DailyWorstOperator(QosOperator):
     @apply_defaults
@@ -55,38 +14,31 @@ class DailyWorstOperator(QosOperator):
         from depc.controllers import NotFoundError
         from depc.controllers.worst import WorstController
         from depc.models.worst import Periods
-        from depc.utils import get_start_end_ts
-        from depc.utils.warp10 import Warp10Client
 
         # get the right start and end with the date of the DAG
         ds = context["ds"]
-        start, end = get_start_end_ts(ds)
 
         with self.app.app_context():
-            client = Warp10Client(use_cache=True)
-            client.generate_script(
-                WORST_ITEMS_PER_LABEL,
-                start,
-                end,
-                max_gts=MAX_DATAPOINTS,
-                extra_params={
-                    "team": self.team_id,
-                    "label": self.label,
-                    "count": str(MAX_WORST_ITEMS),
-                },
+            from depc.extensions import redis_scheduler as redis
+
+            key = "{ds}.{team}.{label}.sorted".format(
+                ds=ds, team=self.team_name, label=self.label
             )
+
             start = time.time()
-            results = client.execute()
+            # E.g.: [(b'filer1', 99), (b'filer3', 99.7), (b'filer2', 99.99)]
+            data = redis.zrange(
+                key, 0, self.app.config["MAX_WORST_ITEMS"] - 1, withscores=True
+            )
             self.log.info(
-                "Warp10 script took {}s".format(round(time.time() - start, 3))
+                "Redis ZRANGE command took {}s".format(round(time.time() - start, 3))
             )
 
             # produce the data for the relational database
             worst_items = {}
-            for d in results[0]:
-                qos = d["v"][0][1]
+            for node, qos in data:
                 if qos < 100:
-                    worst_items[d["l"]["name"]] = qos
+                    worst_items[node.decode("utf-8")] = qos
 
             nb_worst_items = len(worst_items)
             if nb_worst_items:

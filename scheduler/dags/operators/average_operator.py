@@ -21,10 +21,10 @@ class AverageOperator(QosOperator):
         start, end = get_start_end_ts(ds)
 
         # Get the list of QOS for the label
-        key = "{ds}.{team}.{label}.average".format(
+        key = "{ds}.{team}.{label}.sorted".format(
             ds=ds, team=self.team_name, label=self.label
         )
-        all_qos = [float(qos) for qos in redis.lrange(key, 0, -1)]
+        all_qos = [qos for _, qos in redis.zrange(key, 0, -1, withscores=True)]
 
         if not all_qos:
             self.log.critical("No QOS found for any {}, aborting.".format(self.label))

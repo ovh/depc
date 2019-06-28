@@ -331,7 +331,7 @@ class DependenciesOperator(QosOperator):
                 key = "{ds}.{team}.{label}".format(
                     ds=ds, team=self.team_name, label=self.label
                 )
-                redis.lpush("{}.average".format(key), node_qos["qos"])
+                redis.zadd("{}.sorted".format(key), node, node_qos["qos"])
 
                 # Save information to reuse it later (`bools_dps` is used in
                 # OperationOperator and `qos` is used in AggregationOperator)
@@ -402,7 +402,7 @@ def delete_redis_avg(ds, **kwargs):
     from depc.extensions import redis_scheduler as redis
 
     app = kwargs["params"]["app"]
-    key = "{ds}.{team}.{label}.average".format(
+    key = "{ds}.{team}.{label}.sorted".format(
         ds=ds, team=kwargs["params"]["team"]["name"], label=kwargs["params"]["label"]
     )
 

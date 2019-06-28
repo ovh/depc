@@ -45,6 +45,7 @@ class Config:
     JSONSCHEMA_DIR = str(Path(BASE_DIR) / "schemas")
     STATIC_DIR = str(Path(BASE_DIR) / "static")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    MAX_WORST_ITEMS = 15
 
     @staticmethod
     def init_app(app):
