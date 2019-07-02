@@ -1,6 +1,7 @@
+.. _installation:
+
 Installation
 ============
-
 
 Preamble
 ~~~~~~~~
