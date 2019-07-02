@@ -5,14 +5,31 @@ from depc.controllers import (
     IntegrityError,
 )
 from depc.controllers.sources import SourceController
+from depc.extensions import db
 from depc.models.checks import Check
 from depc.models.rules import Rule
-from depc.sources import BaseSource
+from depc.models.sources import Source
+from depc.models.teams import Team
 
 
 class CheckController(Controller):
 
     model_cls = Check
+
+    @classmethod
+    def list_team_checks(cls, team_id):
+        from depc.controllers.teams import TeamController
+
+        _ = TeamController.get({"Team": {"id": team_id}})
+
+        checks = (
+            db.session.query(Check)
+            .join(Source, Source.id == Check.source_id)
+            .join(Team, Team.id == Source.team_id)
+            .filter(Team.id == team_id)
+            .all()
+        )
+        return [cls.resource_to_dict(c) for c in checks]
 
     @classmethod
     def _join_to(cls, query, object_class):
@@ -22,27 +39,21 @@ class CheckController(Controller):
 
     @classmethod
     def before_data_load(cls, data):
-        """Ensure that the source and checks exist."""
         if "source_id" in data:
             try:
-                source = SourceController.get(
-                    filters={"Source": {"id": data["source_id"]}}
-                )
+                SourceController.get(filters={"Source": {"id": data["source_id"]}})
             except NotFoundError:
                 raise NotFoundError("Source {} not found".format(data["source_id"]))
 
-            plugin = BaseSource.load_source(source["plugin"], {})
-            plugin.validate_check_parameters(data["type"], data["parameters"])
-
     @classmethod
     def ensure_check(cls, obj):
-        """Ensure check-source compatibility and validate configuration"""
         name = obj.name
 
         # Name surrounded by quotes are prohibited
         if name.startswith(('"', "'")) or name.endswith(('"', "'")):
             raise IntegrityError("The check name cannot begin or end with a quote")
 
+        # Ensure that the check does not exist in another source
         checks = cls._list(filters={"Check": {"name": name}})
         source = SourceController._get(filters={"Source": {"id": obj.source_id}})
 
@@ -52,8 +63,13 @@ class CheckController(Controller):
                     "The check {name} already exists.", {"name": name}
                 )
 
-        plugin = BaseSource.load_source(source.plugin, {})
-        plugin.validate_check_parameters(obj.type, obj.parameters)
+        # Ensure the type field
+        if ":" in obj.parameters["threshold"] and obj.type != "Interval":
+            raise IntegrityError(
+                "Threshold {} must be flagged as interval".format(
+                    obj.parameters["threshold"]
+                )
+            )
 
     @classmethod
     def before_create(cls, obj):

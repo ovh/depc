@@ -6,13 +6,7 @@
 		<div class="col-md-3">
 
 			<div class="panel panel-default panel-depc">
-				<div class="panel-heading">
-					Rules
-					<div class="btn-group pull-right">
-						<button data-ng-click="rulesCtrl.openNewRuleModal()" class="btn btn-default btn-xs" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-plus"></i> Create a new rule</button>
-					</div>
-					<div class="clearfix"></div>
-				</div>
+				<div class="panel-heading">Select a rule to execute</div>
 				<div class="panel-body" data-ng-if="rulesCtrl.selectedRule">
 					Rule selected : <strong>{{ rulesCtrl.selectedRule.name }}</strong> (<a data-ng-click="rulesCtrl.resetRule()">change</a>)
 				</div>
@@ -29,14 +23,7 @@
 			</div>
 
 			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
-				<div class="panel-heading">
-					Execute the rule
-					<div class="btn-group pull-right">
-						<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.openEditRuleModal()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-edit"></i> Edit</button>
-						<button class="btn btn-danger btn-xs" data-ng-click="rulesCtrl.deleteRule()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove-sign"></i> Delete</button>
-					</div>
-					<span class="clearfix"></span>
-				</div>
+				<div class="panel-heading">Execute the rule</div>
 				<div class="panel-body" data-ng-if="!rulesCtrl.ruleExecuting" >
 					<form class="form-horizontal">
 						<div class="form-group">
@@ -82,18 +69,21 @@
 				<div class="col-md-12">
 					<div class="panel panel-default panel-depc no-margin-bottom">
 						<div class="panel-heading" data-ng-if="rulesCtrl.selectedRule">
-							<strong>Rule {{ rulesCtrl.selectedRule.name }}</strong> (<strong>{{ rulesCtrl.selectedRule.checks.length }}</strong> checks)
+							{{ rulesCtrl.selectedRule.name }}
 							<div class="btn-group pull-right">
-								<button data-ng-click="rulesCtrl.openAssociateChecksModal()" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager'])" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-check"></i> Associate a check</button>
+								<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.logsEnableDebug()" data-ng-class="rulesCtrl.logsDebugEnabled ? 'active' : ''" type="button"><i class="glyphicon glyphicon-console"></i> Show debug logs</button>
+								<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.logsExpanded = !rulesCtrl.logsExpanded"><i class="glyphicon" data-ng-class="rulesCtrl.logsExpanded ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'"></i> {{ rulesCtrl.logsExpanded ? 'Reduce the logs' : 'Expand the logs' }}</button>
 							</div>
 							<div class="clearfix"></div>
 						</div>
 						<div class="panel-body" data-ng-if='!rulesCtrl.selectedRule && !rulesCtrl.ruleExecuting'>Please select a rule.</div>
-
+						<div class="panel-body" data-ng-if="rulesCtrl.ruleExecuting">
+							<div class="loader"></div>
+						</div>
 						<div class="row" data-ng-if="rulesCtrl.hasResult()">
 							<div class="col-md-12">
 								<div class="row">
-									<div class="col-lg-6 col-sm-12">
+									<div class="col-md-12">
 										<div class="panel-body text-center panel-top-rules" data-ng-class="rulesCtrl.getPanel('class')">
 											<div ng-init="images={
 												'unknown': 'images/panel-unknown.png',
@@ -101,42 +91,35 @@
 												'ok': 'images/panel-ok.png',
 												'warning': 'images/panel-warning.png',
 												'critical': 'images/panel-critical.png'}">
-												<img ng-src="{{ images[rulesCtrl.getPanel('key')] }}" alt="{{ rulesCtrl.getPanel('key') }}"/>
 												<h4>
-													<abbr data-ng-if="rulesCtrl.result.qos.qos != 'unknown'" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from the checks datapoints : every bad ticks in all checks are reported in the whole rule (we use the AND operation).'">{{ rulesCtrl.result.qos.qos }}%</abbr>
+													<img ng-src="{{ images[rulesCtrl.getPanel('key')] }}" alt="{{ rulesCtrl.getPanel('key') }}" style="width: 40px;"/>
+													<span data-ng-if="rulesCtrl.result.qos.qos != 'unknown'">The QoS of <strong>{{ rulesCtrl.nameCopy }}</strong> is <abbr class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'This QOS is computed from the checks datapoints : every bad ticks in all checks are reported in the whole rule (we use the AND operation).'"><strong>{{ rulesCtrl.result.qos.qos }}%</strong></abbr></span>
 													<span data-ng-if="rulesCtrl.result.qos.qos == 'unknown'">Unknown</span>
 												</h4>
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-4 col-sm-12">
-										<div class="panel-body text-center no-padding" style="padding-top: 15px;">
-											<canvas style="position: relative; height:50vh; width:85vw" id="base" class="chart chart-bar" chart-colors="rulesCtrl.chartColors" chart-data="rulesCtrl.chartData" chart-labels="rulesCtrl.chartLabels" chart-options="rulesCtrl.chartOptions" ></canvas>
-										</div>
-									</div>
-									<div class="col-lg-2 col-sm-12">
-										<div class="btn-group-vertical" style="margin-top: 25px;">
-											<button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsEnableDebug()" data-ng-class="rulesCtrl.logsDebugEnabled ? 'active' : ''" type="button"><i class="glyphicon glyphicon-console"></i> Show debug logs</button>
-									        <button class="btn btn-default btn-sm" data-ng-click="rulesCtrl.logsExpanded = !rulesCtrl.logsExpanded"><i class="glyphicon" data-ng-class="rulesCtrl.logsExpanded ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'"></i> {{ rulesCtrl.logsExpanded ? 'Reduce the logs' : 'Expand the logs' }}</button>
+								</div>
+								<div class="row">
+									<div class="col-lg-12 col-sm-12">
+										<div class="panel-body no-padding">
+											<div class="rule-logs" data-ng-if="rulesCtrl.logs.length > 0" ng-style="rulesCtrl.logsExpanded ? {'height': '600px'} : {'height': '150px'}">
+												<div class="row"
+														data-ng-repeat="log in rulesCtrl.logs |filter: rulesCtrl.logsFilterDebug | filter:rulesCtrl.logsFilterStr"
+														data-ng-class="{
+														'text-muted'  : log.level === 'DEBUG',
+														'text-primary' : log.level === 'INFO',
+														'text-warning' : log.level === 'WARNING',
+														'text-danger'  : log.level === 'ERROR' || log.level === 'CRITICAL'}">
+													<span class="col-sm-2 col-md-2 col-lg-1 hidden-xs hidden-sm" data-ng-bind="log.level"></span>
+													<span class="col-sm-10 col-md-10 col-lg-11" data-ng-bind="log.message"></span>
+												</div>
+												<div data-ng-if="rulesCtrl.logger.logs.length === 0">No logs available</div>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<div class="panel-body no-padding">
-							<div class="rule-logs" data-ng-if="rulesCtrl.logs.length > 0" ng-style="rulesCtrl.logsExpanded ? {'height': '600px'} : {'height': '150px'}">
-						        <div class="row"
-										data-ng-repeat="log in rulesCtrl.logs |filter: rulesCtrl.logsFilterDebug | filter:rulesCtrl.logsFilterStr"
-						                data-ng-class="{
-						                'text-muted'  : log.level === 'DEBUG',
-						                'text-primary' : log.level === 'INFO',
-						                'text-warning' : log.level === 'WARNING',
-						                'text-danger'  : log.level === 'ERROR' || log.level === 'CRITICAL'}">
-					                <span class="col-sm-2 col-md-2 col-lg-1 hidden-xs hidden-sm" data-ng-bind="log.level"></span>
-					                <span class="col-sm-10 col-md-10 col-lg-11" data-ng-bind="log.message"></span>
-					            </div>
-					            <div data-ng-if="rulesCtrl.logger.logs.length === 0">No logs available</div>
-						    </div>
 						</div>
 					</div>
 				</div>
@@ -172,12 +155,6 @@
 				</div>
 				<div class="panel-body" data-ng-if="(!rulesCtrl.result.qos && rulesCtrl.selectedRule.checks.length && !rulesCtrl.ruleExecuting) || rulesCtrl.result.qos.qos == 'unknown'">
 					<table class="table table-stripped">
-						<thead>
-							<tr>
-								<th>Check</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
 						<tbody>
 							<tr data-ng-repeat="check in rulesCtrl.selectedRule.checks" ng-class="{'no-top-border':$first}">
 								<td>{{ check.name }}</td>
@@ -190,39 +167,6 @@
 						</tbody>
 					</table>
 					<div class="alert alert-warning" data-ng-if="!rulesCtrl.selectedRule.checks.length">No check associated.</div>
-				</div>
-			</div>
-
-			<div class="panel panel-default panel-depc" data-ng-if="rulesCtrl.selectedRule">
-				<div class="panel-heading">
-					Variables
-					<div class="btn-group pull-right" data-ng-if="checkGrants(rulesCtrl.teamName, ['manager', 'editor'])">
-						<a href="#/teams/{{ rulesCtrl.teamName }}/variables?level=Rule&rule={{ rulesCtrl.selectedRule.name }}" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-new-window"></i> Manage</a>
-						<button class="btn btn-default btn-xs" data-ng-click="rulesCtrl.loadVariables()"><i class="glyphicon glyphicon-refresh"></i> Refresh</button>
-					</div>
-					<div class="clearfix"></div>
-				</div>
-				<div class="panel-body">
-					<div class="loader" data-ng-if="rulesCtrl.loadingVariables"></div>
-					<div class="alert alert-warning" data-ng-if="!rulesCtrl.loadingVariables && !rulesCtrl.variables.length">No variable declared.</div>
-					<table class="table table-hover" data-ng-if="!rulesCtrl.loadingVariables && rulesCtrl.variables.length">
-						<thead>
-							<tr>
-								<td><strong>Name</strong></td>
-								<td><strong>Type</strong></td>
-								<td><strong>Value</strong></td>
-								<td><strong>Expression</strong></td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr data-ng-repeat="variable in rulesCtrl.variables | orderBy: 'name'">
-								<td>{{ variable.name }}</td>
-								<td>{{ variable.type }}</td>
-								<td>{{ variable.value }}</td>
-								<td><code>{{ variable.expression }}</code></td>
-							</tr>
-						</tbody>
-					</table>
 				</div>
 			</div>
 

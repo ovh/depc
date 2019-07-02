@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('RulesCtrl', function (chartsService, rulesService, teamsService, variablesService, modalService, config, $location, $routeParams, toastr, $confirm) {
+  .controller('RulesCtrl', function (chartsService, rulesService, teamsService, modalService, config, $location, $routeParams, toastr, $confirm) {
     var self = this;
 
     self.teamName = $routeParams.team;
@@ -22,9 +22,6 @@ angular.module('depcwebuiApp')
     this.interval = null;
     this.result = null;
     self.day = moment.utc().format('YYYY-MM-DD');
-
-    self.loadingVariables = false;
-    self.variables = [];
     self.logs = [];
 
     // ChartJS
@@ -87,14 +84,6 @@ angular.module('depcwebuiApp')
 
     });
 
-    this.loadVariables = function() {
-        self.loadingVariables = true;
-        variablesService.getRuleVariables(self.team.id, self.selectedRule.id).then(function(response) {
-            self.variables = response.data;
-            self.loadingVariables = false;
-        });
-    };
-
     // fill UI based on parameters
     this.fillView = function() {
       if ($routeParams.name) {
@@ -117,7 +106,6 @@ angular.module('depcwebuiApp')
     this.selectRule = function(rule) {
         self.resetRule();
         self.selectedRule = rule;
-        self.loadVariables();
     };
 
     this.resetRule = function() {
@@ -132,7 +120,8 @@ angular.module('depcwebuiApp')
         $location.search('exec', null);
     };
 
-    this.executeRule = function(rule) {
+    this.executeRule = function() {
+
         self.result = null;
         self.checksResult = {};
         self.ruleExecuting = true;
@@ -164,13 +153,6 @@ angular.module('depcwebuiApp')
         // Handle each check
         for ( var i in result.qos.checks ) {
             var check = result.qos.checks[i];
-
-            // Statistics (Ok, Warning, Critical, Unknown)
-            if ( check.qos == null ) {
-                stats['unknown'] += 1;
-            } else {
-                stats[config.getStateByQos(check.qos)] += 1;
-            }
 
             // Add the chart for each check
             if ( check.timeseries != undefined && check.timeseries.length > 0 ) {
@@ -204,8 +186,8 @@ angular.module('depcwebuiApp')
         }
 
         // All checks are done
-        self.chartData = [stats['ok'], stats['warning'], stats['critical'], stats['unknown']];
         self.result = result;
+        self.nameCopy = self.name;
         self.ruleExecuting = false;
     };
 
@@ -242,61 +224,8 @@ angular.module('depcwebuiApp')
         modalService.displayCheckResult(c);
     };
 
-    this.openNewRuleModal = function() {
-        var modalInstance = modalService.newRuleForm(self.team);
-        modalInstance.result.then(function(rule) {
-            self.rules.push(rule);
-        });
-    };
-
-    this.openEditRuleModal = function() {
-        var modalInstance = modalService.editRuleForm(self.team, self.selectedRule);
-        modalInstance.result.then(function(rule) {
-            var index = self.rules.indexOf(self.selectedRule);
-            if (index > -1) {
-                self.rules.splice(index, 1);
-            }
-            self.rules.push(rule);
-            self.selectedRule = rule;
-        });
-    };
-
-    this.deleteRule = function() {
-        $confirm({
-            text: 'Are you sure you want to delete the rule "' + self.selectedRule.name + '"?',
-            title: 'Delete rule',
-            ok: 'Delete',
-            cancel: 'Back'
-        })
-        .then(function() {
-            teamsService.deleteTeamRule(self.team.id, self.selectedRule.id).then(function(data) {
-                var index = self.rules.indexOf(self.selectedRule);
-                if (index > -1) {
-                    self.rules.splice(index, 1);
-                }
-                toastr.success('The rule ' + self.selectedRule.name + ' has been removed.');
-                self.resetRule();
-            });
-        });
-    };
-
-    this.openAssociateChecksModal = function() {
-        var modalInstance = modalService.associateChecks(self.team, self.selectedRule);
-        modalInstance.result.then(function(data) {
-            self.selectedRule.checks = data.checks;
-        });
-    };
-
-    this.openManageGrantsModal = function() {
-        modalService.manageGrants(self.team);
-    };
-
     this.openCheckParametersModal = function(check) {
         modalService.displayCheckParameters(check);
-    };
-
-    this.openCheckResultModal = function(check) {
-        modalService.manageGrants(self.team);
     };
 
     this.getLabelClassByQos = function(qos) {

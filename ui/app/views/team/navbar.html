@@ -4,9 +4,8 @@
 			<ul class="nav nav-tabs">
 			  <li data-ng-class="data.menu == 'dashboard' ? 'active': ''"><a href="#/teams/{{ data.team }}{{ getDateUrlParams() }}"><i class="glyphicon glyphicon-home"></i> Dashboard</a></li>
 			  <li data-ng-class="data.menu == 'dependencies' ? 'active': ''"><a href="#/teams/{{ data.team }}/dependencies"><i class="glyphicon glyphicon-list-alt"></i> Dependencies</a></li>
-			  <li data-ng-class="data.menu == 'rules' ? 'active': ''"><a href="#/teams/{{ data.team }}/rules"><i class="glyphicon glyphicon-triangle-right"></i> Rules</a></li>
-			  <li data-ng-class="data.menu == 'sources' ? 'active': ''"><a href="#/teams/{{ data.team }}/sources"><i class="glyphicon glyphicon-hdd"></i> Sources</a></li>
-			  <li data-ng-class="data.menu == 'checks' ? 'active': ''"><a href="#/teams/{{ data.team }}/checks"><i class="glyphicon glyphicon-flash"></i> Checks</a></li>
+			  <li data-ng-class="data.menu == 'rules' ? 'active': ''"><a href="#/teams/{{ data.team }}/run"><i class="glyphicon glyphicon-triangle-right"></i> Run</a></li>
+			  <li data-ng-class="data.menu == 'checks' ? 'active': ''"><a href="#/teams/{{ data.team }}/indicators"><i class="glyphicon glyphicon-flash"></i> Indicators</a></li>
 			  <li data-ng-class="data.menu == 'variables' ? 'active': ''"><a href="#/teams/{{ data.team }}/variables"><i class="glyphicon glyphicon-font"></i> Variables</a></li>
 			  <li data-ng-class="data.menu == 'permissions' ? 'active': ''"><a href="#/teams/{{ data.team }}/permissions"><i class="glyphicon glyphicon-user"></i> Permissions</a></li>
 			  <li data-ng-class="data.menu == 'configuration' ? 'active': ''"><a href="#/teams/{{ data.team }}/configuration"><i class="glyphicon glyphicon-cog"></i> Configuration</a></li>

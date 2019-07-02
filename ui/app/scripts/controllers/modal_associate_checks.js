@@ -16,6 +16,7 @@ angular.module('depcwebuiApp')
     self.rule = rule;
     self.sources = [];
     self.activatedChecks = [];
+    self.loader = true;
 
     sourcesService.getTeamSources(self.team.id).then(function(response) {
       self.sources = response.data.sources;
@@ -23,6 +24,7 @@ angular.module('depcwebuiApp')
       for ( var check in self.rule.checks ) {
         self.activatedChecks.push(self.rule.checks[check].id);
       }
+      self.loader = false;
     });
 
     this.addCheck = function(check) {

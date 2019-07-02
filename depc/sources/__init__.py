@@ -1,8 +1,10 @@
-import copy
 import textwrap
 
-import arrow
 from jsonschema import validate
+import pandas as pd
+
+from depc.sources.exceptions import BadConfigurationException
+from depc.utils.qos import compute_qos_from_bools
 
 
 def validate_config(config_schema, config):
@@ -16,8 +18,6 @@ class SourceRegister(object):
     def __init__(self):
         self.name = None
         self.source_cls = None
-        self.configuration_model = {}
-        self.checks = {}
 
     def source(self, **options):
         def decorator(source):
@@ -25,22 +25,10 @@ class SourceRegister(object):
                 "source_cls": source,
                 "schema": options.pop("schema", {}),
                 "form": options.pop("form", {}),
-                "checks": self.checks,
             }
             return source
 
         return decorator
-
-    def check(self, **options):
-        def decoractor(check):
-            self.checks[check.name] = {
-                "check_cls": check,
-                "schema": options.pop("schema", {}),
-                "form": options.pop("form", {}),
-            }
-            return check
-
-        return decoractor
 
     @classmethod
     def get_source(cls, name):
@@ -48,29 +36,6 @@ class SourceRegister(object):
             return cls.sources[name]
         except KeyError:
             return None
-
-    @classmethod
-    def get_check(cls, source_name, check_name):
-        source = cls.get_source(source_name)
-        try:
-            return source["checks"][check_name]
-        except KeyError:
-            return None
-
-
-class Check(object):
-    def __init__(self, source, check_cls, parameters, name, start, end):
-        self.source = source
-        self.check_cls = check_cls
-        self.parameters = parameters
-        self.name = name
-        self.start = arrow.get(start)
-        self.end = arrow.get(end)
-
-    def execute(self):
-        check = self.check_cls(config=self.source.configuration)
-
-        return check.execute(self.parameters, self.name, self.start, self.end)
 
 
 class BaseSource(object):
@@ -82,35 +47,10 @@ class BaseSource(object):
         source = cls._get_source(source_name)
         return source["source_cls"](config)
 
-    def load_check(self, check_name, parameters, name, start, end):
-        check = self._get_check(check_name)
-        return Check(self, check["check_cls"], parameters, name, start, end)
-
     @classmethod
     def validate_source_config(cls, source_name, config):
         source = cls._get_source(source_name)
         return validate(config, source["schema"])
-
-    @classmethod
-    def validate_check_parameters(cls, check_name, parameters):
-        check = cls._get_check(check_name)
-        schema = copy.deepcopy(check["schema"])
-
-        # Check 'object' key to convert all strings to object
-        for field in check["form"]:
-            if "object" in field and field["object"] is True:
-                schema["properties"][field["key"]]["type"] = "object"
-
-        return validate(parameters, schema)
-
-    @classmethod
-    def _get_check(cls, check_name):
-        check = SourceRegister.get_check(cls.name, check_name)
-        if not check:
-            raise NotImplementedError(
-                "Check %s is not supported for source %s" % (check_name, cls.name)
-            )
-        return check
 
     @classmethod
     def _get_source(cls, source_name):
@@ -140,25 +80,53 @@ class BaseSource(object):
         return cls.format_source(source)
 
     @classmethod
-    def format_check(cls, check):
-        return {
-            "description": textwrap.dedent(check["check_cls"].__doc__).strip(),
-            "schema": check["schema"],
-            "form": check["form"],
-        }
+    def is_float(cls, threshold):
+        try:
+            return float(threshold)
+        except ValueError:
+            return False
 
     @classmethod
-    def available_checks(cls, source_name):
-        source = cls._get_source(source_name)
-        checks = []
-
-        for name, check in source["checks"].items():
-            checks.append({"name": name, **cls.format_check(check)})
-
-        return checks
+    def is_threshold(cls, threshold):
+        return cls.is_float(threshold)
 
     @classmethod
-    def check_information(cls, source_name, check_name):
-        source = cls._get_source(source_name)
-        check = source["source_cls"]._get_check(check_name)
-        return cls.format_check(check)
+    def is_interval(cls, threshold):
+        return (
+            len(threshold.split(":")) == 2
+            and cls.is_float(threshold.split(":")[0])
+            and cls.is_float(threshold.split(":")[1])
+        )
+
+    async def execute(self, parameters, name, start, end):
+        raise NotImplementedError
+
+    async def run(self, parameters, name, start, end):
+        timeseries = await self.execute(parameters, name, start, end)
+        threshold = parameters["threshold"]
+
+        # Handle a simple threshold
+        if self.is_threshold(parameters["threshold"]):
+            threshold = float(threshold)
+            bool_per_ts = [
+                pd.Series(ts["dps"]).apply(lambda x: x <= threshold)
+                for ts in timeseries
+            ]
+
+        # Handle an interval
+        elif self.is_interval(parameters["threshold"]):
+            bottom = float(threshold.split(":")[0])
+            top = float(threshold.split(":")[1])
+            bool_per_ts = [
+                pd.Series(ts["dps"]).apply(lambda x: bottom <= x <= top)
+                for ts in timeseries
+            ]
+        else:
+            raise BadConfigurationException(
+                "Bad threshold format : {}".format(parameters["threshold"])
+            )
+
+        result = compute_qos_from_bools(bool_per_ts, start, end)
+        result.update({"timeseries": timeseries})
+
+        return result

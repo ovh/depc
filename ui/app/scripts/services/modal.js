@@ -112,6 +112,37 @@ angular.module('depcwebuiApp')
     });
    };
 
+   var newSourceForm = function(team) {
+    return $uibModal.open({
+        size: 'md',
+        templateUrl: 'views/modals/new_source.html',
+        controller: 'ModalNewSourceCtrl',
+        controllerAs: 'modalNewSourceCtrl',
+        resolve: {
+          team: function() {
+            return team;
+          }
+        }
+    });
+   };
+
+   var editSourceForm = function(team, source) {
+    return $uibModal.open({
+        size: 'md',
+        templateUrl: 'views/modals/edit_source.html',
+        controller: 'ModalEditSourceCtrl',
+        controllerAs: 'modalEditSourceCtrl',
+        resolve: {
+          team: function() {
+            return team;
+          },
+          source: function() {
+            return source;
+          }
+        }
+    });
+   };
+
    var associateChecks = function(team, rule) {
     return $uibModal.open({
         size: 'lg',
@@ -222,6 +253,8 @@ angular.module('depcwebuiApp')
       displayFullLogs: displayFullLogs,
       displayCheckResult: displayCheckResult,
       displayGrants: displayGrants,
+      newSourceForm: newSourceForm,
+      editSourceForm: editSourceForm,
       newRuleForm: newRuleForm,
       editRuleForm: editRuleForm,
       associateChecks: associateChecks,

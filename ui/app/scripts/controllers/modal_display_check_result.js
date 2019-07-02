@@ -18,6 +18,13 @@ angular.module('depcwebuiApp')
         }
     };
 
+    this.cmOption = {
+        lineNumbers: false,
+        theme: 'twilight',
+        mode: 'javascript',
+        readOnly: false
+    };
+
     var processCheck = function(check) {
         // Create the highcharts data
         var chart = {
@@ -107,22 +114,22 @@ angular.module('depcwebuiApp')
         if(check.type === 'Interval') {
             chart['yAxis']['plotLines'] = [{
                 label: {
-                    text: 'Critical (' + check.parameters.top_threshold + ')'
+                    text: 'Critical (' + check.parameters.threshold.split(":")[1] + ')'
                 },
                 color: 'red',
                 width: 1,
                 zIndex: 9,
                 dashStyle: 'longdashdot',
-                value: check.parameters.top_threshold
+                value: check.parameters.threshold.split(":")[1]
             }, {
                 label: {
-                      text: 'Critical (' + check.parameters.bottom_threshold + ')'
+                      text: 'Critical (' + check.parameters.threshold.split(":")[0] + ')'
                 },
                 color: 'red',
                 width: 1,
                 zIndex: 9,
                 dashStyle: 'longdashdot',
-                value: check.parameters.bottom_threshold
+                value: check.parameters.threshold.split(":")[0]
             }];
         }
 
@@ -155,6 +162,11 @@ angular.module('depcwebuiApp')
         return check;
     };
     this.check = processCheck(result);
+
+    // Chart information is not wanted in the raw data
+    var rawData = Object.assign({}, this.check);
+    delete rawData.chart;
+    this.jsonRawData = JSON.stringify(rawData, null, ' ');
 
     this.getStateByQos = function(qos) {
         return config.getStateByQos(qos);

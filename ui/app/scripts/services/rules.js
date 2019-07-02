@@ -10,9 +10,9 @@
 angular.module('depcwebuiApp')
   .service('rulesService', function ($http, config) {
 
-    var getTeamRules = function(team_name) {
+    var getTeamRules = function(team_id) {
       return $http({
-        url: config.depc_endpoint() + '/teams/' + team_name + '/rules',
+        url: config.depc_endpoint() + '/teams/' + team_id + '/rules',
         method: "GET"
       });
     };
