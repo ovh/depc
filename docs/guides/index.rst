@@ -1,3 +1,5 @@
+.. _guides:
+
 Guides
 ======
 
@@ -10,6 +12,7 @@ some of DepC features :
 
    indicators
    kafka
+   difference-qos-sla
    queries
    sources
    variables
