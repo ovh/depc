@@ -15,16 +15,16 @@ service. This state is very subjective but in general it refers to the ability
 for a customer to consume its services in good conditions. So we can talk here
 about the **availability** of the service.
 
-For example in DepC, a website which is available **from 0:00 to 23:59:59**
+For example in DepC, a website which is available **from 0:00:00 to 23:59:59**
 will have a QoS of **100%**. This QoS can be decreased each time the website is
-not reachable. In the extreme case where he would not be reachable for the day,
-it's QoS will be **0%**.
+not reachable. In the extreme case where he would not be reachable for an entire
+day, it's QoS will be **0%**.
 
 SLA (Service Level Agreement)
 -----------------------------
 
-A SLA is a contract between a provider and its customers, telling him what is
-the waited quality of service. Being a commitment signed by both parties, the
+A SLA is a contract between a provider and its customers, telling it what is
+the awaited quality of service. Being a commitment signed by both parties, the
 SLA can also contains penalties if the quality is not good.
 
 So it's possible to see mentions about QoS in a SLA, for example "we commit
@@ -43,14 +43,14 @@ SLI (Service Level Indicator)
 
 The SLI is in the heart of DepC : an indicator is a measurement used to compute
 a QoS (and so to reach a SLO). It can be everything that can be measurable over
-a period :
+a period of time :
 
-- a HTTP Status Code,
+- an HTTP Status Code,
 - the response time of a Ping,
 - the RAM usage,
 - ... and so on.
 
-DepC uses TimeSeries database to retrieve raw data. The idea is pretty simple :
+DepC uses TimeSeries databases to retrieve raw data. The idea is pretty simple :
 let's imagine we need to compute the QoS of an API : we could analyse the HTTP
 status code and reject every status which is above 500 (internal server error).
 

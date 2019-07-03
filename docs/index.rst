@@ -35,8 +35,8 @@ QoS of our ``customers``, following the QoS of their ``servers``.
 
 .. note::
    QoS is not the same as SLA : please read :ref:`this guide <difference-qos-sla>`
-   to view the difference between them. Notions about SLO and Indicators (used by
-   DepC to compute the QoS) are also explained in it.
+   to understand the difference between them. Notions about SLO and Indicators
+   (used by DepC to compute the QoS) are also explained in it.
 
 Principles
 ----------
@@ -44,15 +44,15 @@ Principles
 - **Graph Dependency** : We use the *Neo4j* database to manage the nodes and
   their relationships (we already handle several million of nodes in our OVH
   internal instance). DepC provides some API calls and WebUI to easily request
-  a node and its relations.
+  a node and its relationships.
 - **QoS Computation** : DepC can compute a QoS for all nodes in the Graph, but
-  of course we must tell it how to do this. We created :ref:`different methods
+  of course we have to explain how we do it. We created :ref:`different methods
   <queries>` for that : some nodes will use the raw data stored in TimeSeries
   databases (for example a ``server`` node having a probe), other nodes will
   use their parents QoS to compute their own one. Finally the QoS can be
-  displayed in Grafana or in the DepC WebUI (this last allows some cool
+  displayed in Grafana or in the DepC WebUI (this last one allows some cool
   features, like display the worst nodes or even the root cause of a bad QoS).
-- **Scalability** : *Apache Kafka* is used to receive :ref:`payload <kafka>`
+- **Scalability** : *Apache Kafka* is used to receive :ref:`payloads <kafka>`
   and forward them to Neo4j, adding the wanted scalabily and high-availability
   management. Then *Apache Airflow* is responsible to automate the QoS
   computation, so DepC can benefit from its executors feature (Celery,
