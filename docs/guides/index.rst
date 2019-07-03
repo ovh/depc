@@ -8,7 +8,7 @@ some of DepC features :
    :titlesonly:
    :maxdepth: 2
 
-   checks
+   indicators
    kafka
    queries
    sources

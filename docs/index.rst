@@ -58,7 +58,7 @@ usage, its number of IO Waits, etc.
 Based on this principle, we have created a **Rule** system that queries
 the datapoints and computes a QOS from it. For example you can decide
 that any datapoints exceeding a given threshold will lower the QOS.
-These computing methods are explained in a :ref:`dedicated page <checks>`.
+These computing methods are explained in a :ref:`dedicated page <indicators>`.
 
 .. figure:: _static/images/quickstart/rule_details_server_ping.png
    :alt: QOS API

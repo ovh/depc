@@ -43,8 +43,8 @@ For example, you have some servers with these 3 probes :
 -  probeZ : ping the server.
 
 These probes send their results in a TimeSeries database. You can create
-a rule containing 3 checks, each of the check querying a probe. The
-:ref:`step 3 <qos>` of the tutorial explains how to do that.
+a rule containing 3 indicators, each indicator will query a probe metric.
+The :ref:`step 3 <qos>` of the tutorial explains how to do that.
 
 You can use the following syntaxes in your configuration :
 
@@ -54,11 +54,11 @@ You can use the following syntaxes in your configuration :
    rule.'My rule'
 
 .. note::
-    A rule is composed of 1 or multiple checks, usually a team uses one
-    check for one probe. Each check returns its own QoS (the method is
-    explained :ref:`here <checks>`.
+    A rule is composed of 1 or multiple indicators, usually a team uses one
+    indicator for one probe. Each indicator returns its own QoS (the method is
+    explained :ref:`here <indicators>`.
 
-    DepC uses a AND operation between every checks.
+    DepC uses a AND operation between every indicators.
 
 Operation-based QOS
 -------------------

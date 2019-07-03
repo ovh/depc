@@ -17,7 +17,7 @@ DepC needs 2 information to query an OpenTSDB database :
 - a URL : ``http://my-opentsdb.local``
 - the credentials separated by a colon : ``myuser:mypassword``
 
-Here is a really simple payload, to show you how to use it in your checks :
+Here is a really simple payload, to show you how to use it in your indicators :
 
 .. code:: json
 
@@ -43,7 +43,7 @@ DepC needs 2 information to query a Warp10 database :
 - a URL containing the API version : ``http://my-warp10.local/api/v0``
 - a read-only token : ``myrotoken``
 
-Here is a really simple payload, to show you how to use it in your checks :
+Here is a really simple payload, to show you how to use it in your indicators :
 
 .. code::
 
@@ -53,8 +53,8 @@ Here is a really simple payload, to show you how to use it in your checks :
         $start $end
     ] FETCH SORT
 
-As you can see you can access 3 variables populated by DepC when launching
-your check :
+As you can see you can access 3 variables populated by DepC when running
+your indicator :
 
 - ``$token`` : the token provided in the source configuration,
 - ``$start`` : the start time of the analysed period, in ISO8601 format,
