@@ -2,7 +2,7 @@ Variables
 =========
 
 DepC allows you to declare a variable that can be reused in
-your **checks parameters**.
+your **indicator parameters**.
 
 A variable can be of the following types :
 
@@ -13,12 +13,17 @@ A variable can be of the following types :
 You can create it in the **Variables** menu within your team, for
 example :
 
-.. figure:: ../_static/images/guides/variables/check_variable.png
-   :alt: Check Variable
+.. figure:: ../_static/images/guides/variables/indicator_variable.png
+   :alt: Indicator Variable
 
-Here we declare a variable in the **Check** level : it means that
-``{{ depc.check.location }}`` will be replaced by the *FR2* value in all
-uses.
+.. warning::
+
+   Checks are renamed **Indicators**. But the variable namespace prefix
+   remains ``depc.check.`` for now.
+
+Here we declare a variable in the **Indicator** level : it means
+``{{ depc.check.location }}`` will be replaced by the *FR2* value
+in all uses.
 
 Levels
 ------
@@ -28,7 +33,7 @@ To be as flexible as possible, DepC supports 4 levels of variables :
 -  Team : ``{{ depc.team.myTeamVar }}``
 -  Rule : ``{{ depc.rule.myRuleVar }}``
 -  Source : ``{{ depc.source.mySourceVar }}``
--  Check : ``{{ depc.check.myCheckVar }}``
+-  Indicator (previously Check) : ``{{ depc.check.myIndicatorVar }}``
 
 Builtins Variables
 ------------------
@@ -39,7 +44,7 @@ By default 3 builtins variables are available :
 -  Start: ``{{ depc.start }}``
 -  End: ``{{ depc.end }}``
 
-These variables represent the 3 arguments sent to every checks when
+These variables represent the 3 arguments sent to every indicators when
 launching a rule :
 
 .. figure:: ../_static/images/guides/variables/builtins_variables.png
