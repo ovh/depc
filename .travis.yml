@@ -1,0 +1,16 @@
+os: linux
+dist: trusty
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+
+services:
+  - neo4j
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - make tests

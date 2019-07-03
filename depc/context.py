@@ -29,7 +29,7 @@ class Config:
         "url": "http://127.0.0.1:7474",
         "uri": "bolt://127.0.0.1:7687",
         "username": "neo4j",
-        "password": "p4ssw0rd",
+        "password": "neo4j",
     }
     CONSUMER = {
         "kafka": {
