@@ -79,12 +79,19 @@ angular
         reloadOnSearch: false,
         label: 'Rules'
       })
-      .when('/teams/:team/sources', {
-        templateUrl: 'views/team/sources.html',
-        controller: 'SourcesCtrl',
-        controllerAs: 'sourcesCtrl',
+      .when('/teams/:team/run', {
+        templateUrl: 'views/team/rules.html',
+        controller: 'RulesCtrl',
+        controllerAs: 'rulesCtrl',
         reloadOnSearch: false,
-        label: 'Sources'
+        label: 'Rules'
+      })
+      .when('/teams/:team/indicators', {
+        templateUrl: 'views/team/checks.html',
+        controller: 'ChecksCtrl',
+        controllerAs: 'checksCtrl',
+        reloadOnSearch: false,
+        label: 'Checks'
       })
       .when('/teams/:team/checks', {
         templateUrl: 'views/team/checks.html',

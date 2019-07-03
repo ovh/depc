@@ -48,7 +48,7 @@ def test_list_rules(client, create_team, create_user, create_grant, create_rule,
     }
 
     source_id = str(create_source('My source', team_id)['id'])
-    check_id = str(create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': 100})['id'])
+    check_id = str(create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': "100"})['id'])
     add_check(rule_id, [check_id])
     resp = client.get('/v1/teams/{}/rules'.format(team_id))
     assert resp.status_code == 200
@@ -58,7 +58,7 @@ def test_list_rules(client, create_team, create_user, create_grant, create_rule,
             'description': None,
             'checks': [{
                 'name': 'My check',
-                'parameters': {'metric': 'foo', 'threshold': 100},
+                'parameters': {'metric': 'foo', 'threshold': "100"},
                 'source_id': source_id,
                 'type': 'Threshold'
             }]
@@ -117,7 +117,7 @@ def test_get_rule(client, create_team, create_rule, create_user, create_grant, c
     }
 
     source_id = str(create_source('My source', team_id)['id'])
-    check_id = str(create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': 100})['id'])
+    check_id = str(create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': "100"})['id'])
     add_check(rule_id, [check_id])
     resp = client.get('/v1/teams/{}/rules/{}'.format(team_id, rule_id))
     assert resp.status_code == 200
@@ -126,7 +126,7 @@ def test_get_rule(client, create_team, create_rule, create_user, create_grant, c
         'description': None,
         'checks': [{
             'name': 'My check',
-            'parameters': {'metric': 'foo', 'threshold': 100},
+            'parameters': {'metric': 'foo', 'threshold': "100"},
             'source_id': source_id,
             'type': 'Threshold'
         }]

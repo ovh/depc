@@ -227,8 +227,8 @@ class RuleController(Controller):
                 execute_asyncio_check(
                     check=check,
                     name=kwargs.get("name"),
-                    start=kwargs.get("start"),
-                    end=kwargs.get("end"),
+                    start=int(kwargs.get("start")),
+                    end=int(kwargs.get("end")),
                     key=key,
                     variables=kwargs.get("variables", {}),
                 )

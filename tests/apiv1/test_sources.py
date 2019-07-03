@@ -41,44 +41,6 @@ def test_get_source_info(client, is_mock_equal):
     assert is_mock_equal(resp.json, 'opentsdb_source')
 
 
-def test_list_available_checks_authorization(client):
-    resp = client.get('/v1/sources/OpenTSDB/checks')
-    assert resp.status_code == 401
-
-    client.login('depc')
-    resp = client.get('/v1/sources/OpenTSDB/checks')
-    assert resp.status_code == 200
-
-
-def test_list_available_checks(client, is_mock_equal):
-    client.login('depc')
-    resp = client.get('/v1/sources/OpenTSDB/checks')
-    assert resp.status_code == 200
-    assert is_mock_equal(resp.json, 'opentsdb_checks')
-
-
-def test_check_info_authorization(client):
-    resp = client.get('/v1/sources/OpenTSDB/checks/Threshold')
-    assert resp.status_code == 401
-
-    client.login('depc')
-    resp = client.get('/v1/sources/OpenTSDB/checks/Threshold')
-    assert resp.status_code == 200
-
-
-def test_check_info_notfound(client):
-    client.login('depc')
-    resp = client.get('/v1/sources/OpenTSDB/checks/notfound')
-    assert resp.status_code == 404
-
-
-def test_check_info(client, is_mock_equal):
-    client.login('depc')
-    resp = client.get('/v1/sources/OpenTSDB/checks/Threshold')
-    assert resp.status_code == 200
-    assert is_mock_equal(resp.json, 'opentsdb_threshold_check')
-
-
 def test_list_sources_authorization(client, create_team, create_user, create_grant):
     team_id = str(create_team('My team')['id'])
 
@@ -124,7 +86,7 @@ def test_list_sources(client, create_team, create_user, create_grant, create_sou
         }]
     }
 
-    create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': 100})
+    create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': "100"})
     resp = client.get('/v1/teams/{}/sources'.format(team_id))
     assert resp.status_code == 200
     assert resp.json == {
@@ -135,7 +97,7 @@ def test_list_sources(client, create_team, create_user, create_grant, create_sou
                 'name': 'My check',
                 'type': 'Threshold',
                 'source_id': source_id,
-                'parameters': {'metric': 'foo', 'threshold': 100},
+                'parameters': {'metric': 'foo', 'threshold': "100"},
             }]
         }]
     }
@@ -199,7 +161,7 @@ def test_get_source(client, create_team, create_source, create_user, create_gran
         'checks': []
     }
 
-    create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': 100})
+    create_check('My check', source_id, 'Threshold', {'metric': 'foo', 'threshold': "100"})
     resp = client.get('/v1/teams/{}/sources/{}'.format(team_id, source_id))
     assert resp.status_code == 200
     assert resp.json == {
@@ -209,7 +171,7 @@ def test_get_source(client, create_team, create_source, create_user, create_gran
             'name': 'My check',
             'type': 'Threshold',
             'source_id': source_id,
-            'parameters': {'metric': 'foo', 'threshold': 100}
+            'parameters': {'metric': 'foo', 'threshold': "100"}
         }]
     }
 

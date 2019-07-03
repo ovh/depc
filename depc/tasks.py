@@ -54,15 +54,10 @@ async def execute_asyncio_check(check, name, start, end, key, variables):
             "DEBUG",
         )
 
-        check_plugin = source_plugin.load_check(
-            check_name=check.type,
-            parameters=parameters,
-            name=name,
-            start=start,
-            end=end,
-        )
         try:
-            check_result = await check_plugin.execute()
+            check_result = await source_plugin.run(
+                parameters=parameters, name=name, start=start, end=end
+            )
         except UnknownStateException as e:
             error = e
             logs = write_log(logs, "[{0}] {1}".format(check.name, str(error)), "ERROR")

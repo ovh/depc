@@ -1,43 +1,30 @@
 <div class="modal-header">
     <h3 class="modal-title">
-    	{{ modalDisplayCheckResultCtrl.check.name }}
-		<span class="label label-{{ modalDisplayCheckResultCtrl.getStateByQos(modalDisplayCheckResultCtrl.check.qos) }} pull-right">QOS → {{ modalDisplayCheckResultCtrl.check.qos }}%</span>
+			{{ modalDisplayCheckResultCtrl.check.name }}
+		<div class="pull-right">
+			<span class="label label-primary">Threshold {{ modalDisplayCheckResultCtrl.check.parameters.threshold }}</span>
+			<span class="label label-{{ modalDisplayCheckResultCtrl.getStateByQos(modalDisplayCheckResultCtrl.check.qos) }}">QOS → {{ modalDisplayCheckResultCtrl.check.qos }}%</span>
+		</div>
 	</h3>
 </div>
 <div class="modal-body">
 	<div class="row">
 		<div class="col-md-12">
-			<highchart id="chart" class="custom-cursor-crosshair" config="modalDisplayCheckResultCtrl.check.chart"></highchart>
+				<uib-tabset active="active" data-ng-click="$event.stopPropagation()">
+					<uib-tab index="0" heading="Graph">
+						<p>&nbsp;</p>
+						<highchart id="chart" class="custom-cursor-crosshair" config="modalDisplayCheckResultCtrl.check.chart"></highchart>
+					</uib-tab>
+					<uib-tab index="1" heading="Query">
+							<p>&nbsp;</p>
+							<pre>{{ modalDisplayCheckResultCtrl.check.parameters.query }}</pre>
+					</uib-tab>
+					<uib-tab index="2" heading="Raw Data">
+							<p>&nbsp;</p>
+						  <pre>{{ modalDisplayCheckResultCtrl.jsonRawData }}</pre>
+					</uib-tab>
+			</uib-tabset>
 		</div>
 	</div>
 
-	<p>&nbsp;</p>
-
-	 <div class="panel-group">
-	  <div class="panel panel-default">
-	    <div class="panel-heading">
-	      <h4 class="panel-title">
-	        <span>Parameters</span>
-	        <i data-toggle="collapse" data-target="#params-{{ modalDisplayCheckResultCtrl.check.name | slugify }}" class="glyphicon pointer glyphicon-chevron-right pull-right"></i>
-	      </h4>
-	    </div>
-	    <div id="params-{{ modalDisplayCheckResultCtrl.check.name | slugify }}" class="panel-collapse collapse">
-	      <pre>{{ modalDisplayCheckResultCtrl.check.parameters | json }}</pre>
-	    </div>
-	  </div>
-	</div>
-
-	<div class="panel-group">
-	  <div class="panel panel-default">
-	    <div class="panel-heading">
-	      <h4 class="panel-title">
-	        <span>Raw data</span>
-	        <i data-toggle="collapse" data-target="#raw-{{ modalDisplayCheckResultCtrl.check.name | slugify }}" class="glyphicon pointer glyphicon-chevron-right pull-right"></i>
-	      </h4>
-	    </div>
-	    <div id="raw-{{ modalDisplayCheckResultCtrl.check.name | slugify }}" class="panel-collapse collapse">
-	      <pre>{{ modalDisplayCheckResultCtrl.check |json }}</pre>
-	    </div>
-	  </div>
-	</div>
 </div>

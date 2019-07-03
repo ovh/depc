@@ -15,6 +15,45 @@ def format_check(check):
     return s
 
 
+@api.route("/teams/<team_id>/checks")
+@login_required
+def list_team_checks(team_id):
+    """List the checks of a team.
+
+    .. :quickref: GET; List the checks of a team.
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET /teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/checks HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+
+        {
+          'checks': [{
+            'name': 'My check',
+            'parameters': {'metric': 'foo', 'threshold': 100},
+            'type': 'Threshold'
+          }]
+        }
+
+    :resheader Content-Type: application/json
+    :status 200: the list of checks
+    """
+    if not TeamPermission.is_user(team_id):
+        abort(403)
+
+    checks = CheckController.list_team_checks(team_id)
+    return jsonify({"checks": [format_check(c) for c in checks]}), 200
+
+
 @api.route("/teams/<team_id>/sources/<source_id>/checks")
 @login_required
 def list_source_checks(team_id, source_id):
