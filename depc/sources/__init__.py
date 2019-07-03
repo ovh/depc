@@ -82,9 +82,10 @@ class BaseSource(object):
     @classmethod
     def is_float(cls, threshold):
         try:
-            return float(threshold)
+            float(threshold)
         except ValueError:
             return False
+        return True
 
     @classmethod
     def is_threshold(cls, threshold):
