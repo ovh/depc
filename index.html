@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DepC Documentation &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#">
+          
+
+          
+            
+            <img src="_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/index.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>DepC Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="depc-documentation">
+<h1>DepC Documentation<a class="headerlink" href="#depc-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>DepC (Dependency Checker) is a <strong>Qos Measurement &amp; Dependency Graph Platform</strong>
+created by OVH. We use it to store and request our CMDB and to compute the QoS
+of our infrastructure, including our customers.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<div class="figure">
+<img alt="Dependencies QOS" src="_images/qos_dependencies.png" />
+</div>
+<p>DepC provides a CMDB component to store and request related nodes into a graph
+structure. These nodes can be anything : servers, products, customers or even
+web services. A typical use case would be to create some <code class="docutils literal notranslate"><span class="pre">customers</span></code> nodes,
+related to their <code class="docutils literal notranslate"><span class="pre">products</span></code>. We can also link these <code class="docutils literal notranslate"><span class="pre">products</span></code> to
+<code class="docutils literal notranslate"><span class="pre">servers</span></code>. that way it would be very easy to display the impacted customers
+when a problem occurs on a server.</p>
+<p>Once DepC knows your dependency graph, it then becomes possible to compute a
+QoS for every nodes. By taking up our previous example, Depc can compute the
+QoS of our <code class="docutils literal notranslate"><span class="pre">customers</span></code>, following the QoS of their <code class="docutils literal notranslate"><span class="pre">servers</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">QoS is not the same as SLA : please read <a class="reference internal" href="guides/difference-qos-sla.html#difference-qos-sla"><span class="std std-ref">this guide</span></a>
+to understand the difference between them. Notions about SLO and Indicators
+(used by DepC to compute the QoS) are also explained in it.</p>
+</div>
+</div>
+<div class="section" id="principles">
+<h2>Principles<a class="headerlink" href="#principles" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><strong>Graph Dependency</strong> : We use the <em>Neo4j</em> database to manage the nodes and
+their relationships (we already handle several million of nodes in our OVH
+internal instance). DepC provides some API calls and WebUI to easily request
+a node and its relationships.</li>
+<li><strong>QoS Computation</strong> : DepC can compute a QoS for all nodes in the Graph, but
+of course we have to explain how we do it. We created <a class="reference internal" href="guides/queries.html#queries"><span class="std std-ref">different methods</span></a> for that : some nodes will use the raw data stored in TimeSeries
+databases (for example a <code class="docutils literal notranslate"><span class="pre">server</span></code> node having a probe), other nodes will
+use their parents QoS to compute their own one. Finally the QoS can be
+displayed in Grafana or in the DepC WebUI (this last one allows some cool
+features, like display the worst nodes or even the root cause of a bad QoS).</li>
+<li><strong>Scalability</strong> : <em>Apache Kafka</em> is used to receive <a class="reference internal" href="guides/kafka.html#kafka"><span class="std std-ref">payloads</span></a>
+and forward them to Neo4j, adding the wanted scalabily and high-availability
+management. Then <em>Apache Airflow</em> is responsible to automate the QoS
+computation, so DepC can benefit from its executors feature (Celery,
+Kubernetes..) to scale horizontally.</li>
+</ul>
+</div>
+<div class="section" id="and-next">
+<h2>And Next ?<a class="headerlink" href="#and-next" title="Permalink to this headline">¶</a></h2>
+<p>You can now install your own DepC instance following this <a class="reference internal" href="installation.html#installation"><span class="std std-ref">this link</span></a>.</p>
+<p>The simple way to test the most features is to follow the <a class="reference internal" href="quickstart/index.html#quickstart"><span class="std std-ref">quickstart</span></a>. Then you can read the <a class="reference internal" href="guides/index.html#guides"><span class="std std-ref">guides</span></a> for the advanced
+features and to understand how DepC works internally.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

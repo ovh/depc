@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Queries &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sources Configuration" href="sources.html" />
+    <link rel="prev" title="QoS and SLA" href="difference-qos-sla.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="indicators.html">Indicators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="difference-qos-sla.html">QoS and SLA</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Queries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rule-based-qos">Rule-based QOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-based-qos">Operation-based QOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aggregation-based-qos">Aggregation-based QOS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Sources Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grafana.html">Grafana</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Guides</a> &raquo;</li>
+        
+      <li>Queries</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/queries.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="queries">
+<span id="id1"></span><h1>Queries<a class="headerlink" href="#queries" title="Permalink to this headline">¶</a></h1>
+<p>DepC provides 3 methods to compute the QOS of a node : using a <strong>rule</strong>,
+an <strong>operation</strong> or an <strong>aggregation</strong>.</p>
+<p>You have to indicate your methods for each labels in your <strong>configuration</strong>.
+The following example is directly taken from the <a class="reference internal" href="../quickstart/index.html#quickstart"><span class="std std-ref">quickstart</span></a> :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;Apache&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>   <span class="o">&lt;--</span> <span class="n">rule</span><span class="o">-</span><span class="n">based</span> <span class="n">QOS</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Filer&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>   <span class="o">&lt;--</span> <span class="n">rule</span><span class="o">-</span><span class="n">based</span> <span class="n">QOS</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Offer&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;aggregation.AVERAGE[Website]&quot;</span>   <span class="o">&lt;--</span> <span class="n">aggregation</span><span class="o">-</span><span class="n">based</span> <span class="n">QOS</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Website&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;operation.AND[Filer, Apache]&quot;</span>   <span class="o">&lt;--</span> <span class="n">operation</span><span class="o">-</span><span class="n">based</span> <span class="n">QOS</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It’s important to understand the difference between these different
+methods.</p>
+<div class="section" id="rule-based-qos">
+<h2>Rule-based QOS<a class="headerlink" href="#rule-based-qos" title="Permalink to this headline">¶</a></h2>
+<p>This QoS is based on datapoints available in a TimeSeries database :
+your nodes are monitored with some probes (CPU, RAM, HTTP Status Code…),
+and DepC analyses the result.</p>
+<p>For example, you have some servers with these 3 probes :</p>
+<ul class="simple">
+<li>probeX : retrieve the CPU load of the server,</li>
+<li>probeY : retrieve the RAM usage of the server,</li>
+<li>probeZ : ping the server.</li>
+</ul>
+<p>These probes send their results in a TimeSeries database. You can create
+a rule containing 3 indicators, each indicator will query a probe metric.
+The <a class="reference internal" href="../quickstart/qos.html#qos"><span class="std std-ref">step 3</span></a> of the tutorial explains how to do that.</p>
+<p>You can use the following syntaxes in your configuration :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rule</span><span class="o">.</span><span class="n">MyRule</span>
+<span class="n">rule</span><span class="o">.</span><span class="s1">&#39;My rule&#39;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>A rule is composed of 1 or multiple indicators, usually a team uses one
+indicator for one probe. Each indicator returns its own QoS (the method is
+explained <a class="reference internal" href="indicators.html#indicators"><span class="std std-ref">here</span></a>.</p>
+<p class="last">DepC uses a AND operation between every indicators.</p>
+</div>
+</div>
+<div class="section" id="operation-based-qos">
+<h2>Operation-based QOS<a class="headerlink" href="#operation-based-qos" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you can not use a rule-based QoS because there is no datapoint to
+analyse. In this case DepC can compute the QoS of a node using its parents
+QoS.</p>
+<p>For example a <strong>Cluster</strong> is a virtual node, its QOS must be
+computed from its <strong>servers</strong> :</p>
+
+            <style>
+            /* mermaid issue 527 workaround */
+            .section {
+                opacity: 1.0 !important;
+            }
+            </style>
+            <script>mermaid.initialize({startOnLoad:true});</script><div align="center" class="mermaid align-center">
+            graph TD;
+    C{Cluster A};
+    C --&gt; D[Server 1];
+    C --&gt; E[Server 2];
+    C --&gt; F[Server 3]:
+        </div>
+        <p>Here the servers could have a rule-based QoS, and you can use an operation QoS for
+the cluster.</p>
+<p>We provide 4 types of operations :</p>
+<ul class="simple">
+<li><strong>AND</strong> : the cluster is OK if every servers are OK.</li>
+<li><strong>OR</strong> : the cluster is OK if only 1 server is OK.</li>
+<li><strong>RATIO</strong> : the cluster is OK if N% of the servers is OK.</li>
+<li><strong>ATLEAST</strong> : the cluster is OK if N servers are OK.</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>Consider you choose an AND operation : during the same time (or at the
+same timestamp if you prefer), the servers 1 and 2 were OK, but a
+problem occurred on the server3. The QOS of the ClusterA will be
+impacted. DepC repeats this using a lot of timestamps, so the QOS of the
+cluster can be computed.</p>
+<p>You can use the following syntaxes in your configuration :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">operation</span><span class="o">.</span><span class="n">AND</span><span class="p">()[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">OR</span><span class="p">[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">OR</span><span class="p">()[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">AND</span><span class="p">()[</span><span class="n">Foo</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">AND</span><span class="p">[</span><span class="n">Foo</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">AND</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">OR</span><span class="p">()[</span><span class="n">A</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">OR</span><span class="p">[</span><span class="n">A</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">OR</span><span class="p">()[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">RATIO</span><span class="p">(</span><span class="mf">0.35</span><span class="p">)[</span><span class="n">Foo</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">RATIO</span><span class="p">(</span><span class="mf">0.35</span><span class="p">)[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">ATLEAST</span><span class="p">(</span><span class="mi">10</span><span class="p">)[</span><span class="n">Foo</span><span class="p">]</span>
+<span class="n">operation</span><span class="o">.</span><span class="n">ATLEAST</span><span class="p">(</span><span class="mi">10</span><span class="p">)[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="aggregation-based-qos">
+<h2>Aggregation-based QOS<a class="headerlink" href="#aggregation-based-qos" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you don’t want to compare the states of different nodes
+because it’s not adapted. It can be useful when you have a lot’s of nodes.</p>
+<p>For example imagine an <strong>Offer</strong> nodes containing 100 000 websites. It’s not useful
+to use an AND operation (“if one customer is not ok, so the offer is not
+ok”). Instead, we would rather compute the average QOS using an <strong>aggregation method</strong> :</p>
+<ul class="simple">
+<li><strong>AVERAGE</strong> : computes the average QoS,</li>
+<li><strong>MIN</strong> : returns the minimum QoS,</li>
+<li><strong>MAX</strong> : returns the maximum QoS.</li>
+</ul>
+<p>You can use the following syntaxes in your configuration :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aggregation</span><span class="o">.</span><span class="n">AVERAGE</span><span class="p">[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">aggregation</span><span class="o">.</span><span class="n">MAX</span><span class="p">()[</span><span class="n">Foo</span><span class="p">]</span>
+<span class="n">aggregation</span><span class="o">.</span><span class="n">MIN</span><span class="p">()[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+<span class="n">aggregation</span><span class="o">.</span><span class="n">MIN</span><span class="p">[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">Bar</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>It’s important to note that an aggregation QoS can
+not be followed by an operation QoS.</strong></p>
+<p class="last">Internally a rule or operation based QoS transform <em>values</em> datapoints
+into booleans datapoints (a list of <em>timestamp:value</em> becomes a list of <em>timestamp:boolean</em>).
+An aggregation QoS simply computes multiple floats into a single float, so we lose the list
+of <em>timestamp:boolean</em> DPS.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sources.html" class="btn btn-neutral float-right" title="Sources Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="difference-qos-sla.html" class="btn btn-neutral" title="QoS and SLA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

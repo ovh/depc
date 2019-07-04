@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Kafka &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="QoS and SLA" href="difference-qos-sla.html" />
+    <link rel="prev" title="Indicators" href="indicators.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="indicators.html">Indicators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Kafka</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nested-message">Nested message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flat-message">Flat message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#messages-validation">Messages validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-script">Example script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="difference-qos-sla.html">QoS and SLA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Sources Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grafana.html">Grafana</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Guides</a> &raquo;</li>
+        
+      <li>Kafka</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/kafka.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="kafka">
+<span id="id1"></span><h1>Kafka<a class="headerlink" href="#kafka" title="Permalink to this headline">¶</a></h1>
+<p>DepC uses Kafka to manage the graph in Neo4j. Each team has its own
+topic and can push messages in it using its own credentials.</p>
+<div class="section" id="nested-message">
+<h2>Nested message<a class="headerlink" href="#nested-message" title="Permalink to this headline">¶</a></h2>
+<p>You can create new nodes and relationships using the following format :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="mi">1515241242</span><span class="p">,</span>
+      <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="mi">1515244850</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="mi">1533636245</span><span class="p">,</span>
+      <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="mi">1533643445</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;rel&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="mi">1527847440</span><span class="p">,</span>
+    <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="mi">1527854640</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This message will create 2 linked nodes :</p>
+<div class="figure align-center">
+<img alt="DepC Kafka 1" src="../_images/kafka1.png" />
+</div>
+<p>Only the <strong>source</strong> key is mandatory, it means the <strong>target</strong>, <strong>rel</strong>
+and <strong>props</strong> keys are optionals. So the smallest message can be the
+following one :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="DepC Kafka 2" src="../_images/kafka2.png" />
+</div>
+</div>
+<div class="section" id="flat-message">
+<h2>Flat message<a class="headerlink" href="#flat-message" title="Permalink to this headline">¶</a></h2>
+<p>If you Kafka client does not support the nested structure for your
+message, or if your prefer this form, you can also send us a flat
+message :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;source_label&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;source_name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;source_from&quot;</span><span class="p">:</span> <span class="mi">1515241242</span><span class="p">,</span>
+  <span class="s2">&quot;source_to&quot;</span><span class="p">:</span> <span class="mi">1515244850</span><span class="p">,</span>
+  <span class="s2">&quot;target_label&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;target_name&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;target_from&quot;</span><span class="p">:</span> <span class="mi">1533636245</span><span class="p">,</span>
+  <span class="s2">&quot;target_to&quot;</span><span class="p">:</span> <span class="mi">1533643445</span><span class="p">,</span>
+  <span class="s2">&quot;rel_from&quot;</span><span class="p">:</span> <span class="mi">1527847440</span><span class="p">,</span>
+  <span class="s2">&quot;rel_to&quot;</span><span class="p">:</span> <span class="mi">1527854640</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The only mandatory keys are <strong>source_label</strong> and <strong>source_name</strong>.</p>
+</div>
+<div class="section" id="messages-validation">
+<h2>Messages validation<a class="headerlink" href="#messages-validation" title="Permalink to this headline">¶</a></h2>
+<p>DepC validates messages before converting them into Neo4j format. Here
+are the rules :</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="54%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field</th>
+<th class="head">Rule</th>
+<th class="head">Examples</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Label</td>
+<td>{“type”: “string”, “pattern”: “<code class="docutils literal notranslate"><span class="pre">^[A-Z]+[a-zA-Z0-9]*$</span></code>”}</td>
+<td><code class="docutils literal notranslate"><span class="pre">MyLabel</span></code>, <code class="docutils literal notranslate"><span class="pre">Mylabel</span></code>, <code class="docutils literal notranslate"><span class="pre">My123Label</span></code></td>
+</tr>
+<tr class="row-odd"><td>Name</td>
+<td>{“type”: “string”, “pattern”: “<code class="docutils literal notranslate"><span class="pre">^[!#-&amp;(-[\]-_a-~]+$</span></code>”}</td>
+<td><code class="docutils literal notranslate"><span class="pre">Foo</span></code>, <code class="docutils literal notranslate"><span class="pre">foo</span></code>, <code class="docutils literal notranslate"><span class="pre">foo123bar</span></code>, <code class="docutils literal notranslate"><span class="pre">#F$o%ob&amp;/a-r.</span></code></td>
+</tr>
+<tr class="row-even"><td>From</td>
+<td>{“type”: “integer”, “minimum”: 0}</td>
+<td><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">100</span></code>, <code class="docutils literal notranslate"><span class="pre">10000</span></code></td>
+</tr>
+<tr class="row-odd"><td>To</td>
+<td>{“type”: “integer”, “minimum”: 1}</td>
+<td><code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">100</span></code>, <code class="docutils literal notranslate"><span class="pre">10000</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-script">
+<h2>Example script<a class="headerlink" href="#example-script" title="Permalink to this headline">¶</a></h2>
+<p>Here is a simple example in Python :</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kafka</span> <span class="k">import</span> <span class="n">KafkaProducer</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s1">&#39;bootstrap_servers&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_HOST&#39;</span><span class="p">),</span>
+   <span class="s1">&#39;security_protocol&#39;</span><span class="p">:</span> <span class="s1">&#39;SASL_SSL&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;sasl_mechanism&#39;</span><span class="p">:</span> <span class="s1">&#39;PLAIN&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;sasl_plain_username&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_USERNAME&#39;</span><span class="p">),</span>
+   <span class="s1">&#39;sasl_plain_password&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_PASSWORD&#39;</span><span class="p">),</span>
+   <span class="s1">&#39;ssl_context&#39;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_SSLv23</span><span class="p">),</span>
+   <span class="s1">&#39;ssl_check_hostname&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+   <span class="s1">&#39;client_id&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_TOPIC&#39;</span><span class="p">),</span>
+   <span class="s1">&#39;value_serializer&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">KafkaProducer</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+
+<span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Cluster&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster020.ovh.net&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ns375001.ip-xx-xxx-xx.eu&#39;</span><span class="p">,</span> <span class="s1">&#39;ns375002.ip-xx-xxx-xx.eu&#39;</span><span class="p">,</span> <span class="s1">&#39;ns375003.ip-xx-xxx-xx.eu&#39;</span><span class="p">]:</span>
+    <span class="n">message</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;depc.myteam&#39;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The following graph will be created :</p>
+<div class="figure align-center">
+<img alt="DepC Kafka 3" src="../_images/kafka3.png" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="difference-qos-sla.html" class="btn btn-neutral float-right" title="QoS and SLA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="indicators.html" class="btn btn-neutral" title="Indicators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

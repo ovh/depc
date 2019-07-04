@@ -1,0 +1,425 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Variables &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Users" href="users.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checks.html">Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs.html">Configs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html">News</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qos.html">Qos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teams.html">Teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Variables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">API</a> &raquo;</li>
+        
+      <li>Variables</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/variables.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="variables">
+<h1>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="45%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Resource</th>
+<th class="head">Operation</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DELETE</td>
+<td><a class="reference external" href="#delete--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">DELETE /v1/teams/(team_id)/sources/(source_id)/checks/(check_id)/variables/(variable_id)</a></td>
+<td>Lorem ipsum.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#delete--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">DELETE /v1/teams/(team_id)/sources/(source_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#delete--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">DELETE /v1/teams/(team_id)/rules/(rule_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#delete--v1-teams-(team_id)-variables-(variable_id)">DELETE /v1/teams/(team_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>GET</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">GET /v1/teams/(team_id)/sources/(source_id)/checks/(check_id)/variables/(variable_id)</a></td>
+<td>Lorem ipsum.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables">GET /v1/teams/(team_id)/sources/(source_id)/checks/(check_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">GET /v1/teams/(team_id)/sources/(source_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-sources-(source_id)-variables">GET /v1/teams/(team_id)/sources/(source_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">GET /v1/teams/(team_id)/rules/(rule_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-rules-(rule_id)-variables">GET /v1/teams/(team_id)/rules/(rule_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-variables-(variable_id)">GET /v1/teams/(team_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-variables">GET /v1/teams/(team_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>POST</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables">POST /v1/teams/(team_id)/sources/(source_id)/checks/(check_id)/variables</a></td>
+<td>Lorem ipsum.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-sources-(source_id)-variables">POST /v1/teams/(team_id)/sources/(source_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-rules-(rule_id)-variables">POST /v1/teams/(team_id)/rules/(rule_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-variables">POST /v1/teams/(team_id)/variables</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>PUT</td>
+<td><a class="reference external" href="#put--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">PUT /v1/teams/(team_id)/sources/(source_id)/checks/(check_id)/variables/(variable_id)</a></td>
+<td>Lorem ipsum.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#put--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">PUT /v1/teams/(team_id)/sources/(source_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#put--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">PUT /v1/teams/(team_id)/rules/(rule_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#put--v1-teams-(team_id)-variables-(variable_id)">PUT /v1/teams/(team_id)/variables/(variable_id)</a></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/checks/</code><span class="sig-paren">(</span><em>check_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="put">
+<dt id="put--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">
+<code class="descname">PUT </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/checks/</code><span class="sig-paren">(</span><em>check_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="delete">
+<dt id="delete--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)">
+<code class="descname">DELETE </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/checks/</code><span class="sig-paren">(</span><em>check_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/checks/</code><span class="sig-paren">(</span><em>check_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#get--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/checks/</code><span class="sig-paren">(</span><em>check_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#post--v1-teams-(team_id)-sources-(source_id)-checks-(check_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="put">
+<dt id="put--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">
+<code class="descname">PUT </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="delete">
+<dt id="delete--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)">
+<code class="descname">DELETE </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--v1-teams-(team_id)-sources-(source_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-sources-(source_id)-variables">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#get--v1-teams-(team_id)-sources-(source_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-sources-(source_id)-variables">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/sources/</code><span class="sig-paren">(</span><em>source_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#post--v1-teams-(team_id)-sources-(source_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="put">
+<dt id="put--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">
+<code class="descname">PUT </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="delete">
+<dt id="delete--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)">
+<code class="descname">DELETE </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--v1-teams-(team_id)-rules-(rule_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-rules-(rule_id)-variables">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#get--v1-teams-(team_id)-rules-(rule_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-rules-(rule_id)-variables">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#post--v1-teams-(team_id)-rules-(rule_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-variables-(variable_id)">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--v1-teams-(team_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="put">
+<dt id="put--v1-teams-(team_id)-variables-(variable_id)">
+<code class="descname">PUT </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--v1-teams-(team_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="delete">
+<dt id="delete--v1-teams-(team_id)-variables-(variable_id)">
+<code class="descname">DELETE </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/variables/</code><span class="sig-paren">(</span><em>variable_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--v1-teams-(team_id)-variables-(variable_id)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-variables">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#get--v1-teams-(team_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-variables">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/variables</code><a class="headerlink" href="#post--v1-teams-(team_id)-variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="users.html" class="btn btn-neutral" title="Users" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

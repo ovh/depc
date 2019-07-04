@@ -1,0 +1,491 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rules &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sources" href="sources.html" />
+    <link rel="prev" title="Qos" href="qos.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checks.html">Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs.html">Configs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html">News</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qos.html">Qos</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="teams.html">Teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">API</a> &raquo;</li>
+        
+      <li>Rules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/rules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rules">
+<h1>Rules<a class="headerlink" href="#rules" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="45%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Resource</th>
+<th class="head">Operation</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DELETE</td>
+<td><a class="reference external" href="#delete--v1-teams-(team_id)-rules-(rule_id)">DELETE /v1/teams/(team_id)/rules/(rule_id)</a></td>
+<td>Delete a rule.</td>
+</tr>
+<tr class="row-odd"><td>GET</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-rules-(rule_id)">GET /v1/teams/(team_id)/rules/(rule_id)</a></td>
+<td>Return a specific rule.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-rules">GET /v1/teams/(team_id)/rules</a></td>
+<td>List the rules of a team.</td>
+</tr>
+<tr class="row-odd"><td>POST</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-rules-(rule_id)-execute">POST /v1/teams/(team_id)/rules/(rule_id)/execute</a></td>
+<td>Lorem ipsum.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#post--v1-teams-(team_id)-rules">POST /v1/teams/(team_id)/rules</a></td>
+<td>Add a new rule.</td>
+</tr>
+<tr class="row-odd"><td>PUT</td>
+<td><a class="reference external" href="#put--v1-teams-(team_id)-rules-(rule_id)">PUT /v1/teams/(team_id)/rules/(rule_id)</a></td>
+<td>Edit an existing rule.</td>
+</tr>
+</tbody>
+</table>
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-rules-(rule_id)-execute">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><code class="descname">/execute</code><a class="headerlink" href="#post--v1-teams-(team_id)-rules-(rule_id)-execute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-rules-(rule_id)">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--v1-teams-(team_id)-rules-(rule_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a specific rule.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/rules/ff130e9b-d226-4465-9612-a93e12799091</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+{
+  &quot;checks&quot;: [],
+  &quot;createdAt&quot;: &quot;2018-05-17T12:01:09Z&quot;,
+  &quot;description&quot;: &quot;Compute the QOS of our servers&quot;,
+  &quot;id&quot;: &quot;ff130e9b-d226-4465-9612-a93e12799091&quot;,
+  &quot;name&quot;: &quot;Servers&quot;,
+  &quot;updatedAt&quot;: &quot;2018-11-09T15:33:06Z&quot;
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the rule</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--v1-teams-(team_id)-rules-(rule_id)">
+<code class="descname">PUT </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--v1-teams-(team_id)-rules-(rule_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit an existing rule.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">PUT</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/rules/ff130e9b-d226-4465-9612-a93e12799091</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+
+{
+  &quot;name&quot;: &quot;My edited rule&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+{
+  &quot;checks&quot;: [],
+  &quot;createdAt&quot;: &quot;2018-05-17T12:01:09Z&quot;,
+  &quot;description&quot;: &quot;Compute the QOS of our servers&quot;,
+  &quot;id&quot;: &quot;ff130e9b-d226-4465-9612-a93e12799091&quot;,
+  &quot;name&quot;: &quot;My edited rule&quot;,
+  &quot;updatedAt&quot;: &quot;2018-11-09T15:33:06Z&quot;
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the edited rule</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--v1-teams-(team_id)-rules-(rule_id)">
+<code class="descname">DELETE </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules/</code><span class="sig-paren">(</span><em>rule_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--v1-teams-(team_id)-rules-(rule_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a rule.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/rules/ff130e9b-d226-4465-9612-a93e12799091</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+{}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the rule has been deleted</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-rules">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules</code><a class="headerlink" href="#get--v1-teams-(team_id)-rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the rules of a team.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/rules</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+{
+  &quot;rules&quot;: [{
+    &quot;checks&quot;: [],
+    &quot;createdAt&quot;: &quot;2018-05-17T12:01:09Z&quot;,
+    &quot;description&quot;: &quot;Compute the QOS of our servers&quot;,
+    &quot;id&quot;: &quot;ff130e9b-d226-4465-9612-a93e12799091&quot;,
+    &quot;name&quot;: &quot;Servers&quot;,
+    &quot;updatedAt&quot;: &quot;2018-11-09T15:33:06Z&quot;
+  }]
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the list of rules</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--v1-teams-(team_id)-rules">
+<code class="descname">POST </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/rules</code><a class="headerlink" href="#post--v1-teams-(team_id)-rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new rule.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/rules</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+
+{
+  &quot;name&quot;: &quot;Servers&quot;,
+  &quot;description&quot;: &quot;Compute the QOS of our servers&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">CREATED</span>
+
+{
+  &quot;checks&quot;: [],
+  &quot;createdAt&quot;: &quot;2018-05-17T12:01:09Z&quot;,
+  &quot;description&quot;: &quot;Compute the QOS of our servers&quot;,
+  &quot;id&quot;: &quot;ff130e9b-d226-4465-9612-a93e12799091&quot;,
+  &quot;name&quot;: &quot;Servers&quot;,
+  &quot;updatedAt&quot;: &quot;2018-11-09T15:33:06Z&quot;
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – the created rule</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sources.html" class="btn btn-neutral float-right" title="Sources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="qos.html" class="btn btn-neutral" title="Qos" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

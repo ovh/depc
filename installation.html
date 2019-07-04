@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart" href="quickstart/index.html" />
+    <link rel="prev" title="DepC Documentation" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preamble">Preamble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-your-virtual-environment">Create your virtual environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-the-requirements">Install the requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-your-environment">Configure your environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-the-api">Launch the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-the-web-ui">Setup the Web UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-airflow">Setup Airflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#start-the-kafka-consumer">Start the Kafka consumer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/index.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="preamble">
+<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline">¶</a></h2>
+<p>In order to fully run DepC you have to follow several steps described below.
+Also, you need to setup your environment with these following software :</p>
+<ul class="simple">
+<li><a class="reference external" href="https://redis.io/topics/quickstart">Redis</a></li>
+<li><a class="reference external" href="https://kafka.apache.org/11/documentation.html#quickstart">Kafka (1.1.0)</a></li>
+<li>The graph database <a class="reference external" href="https://neo4j.com/download/">Neo4j (3.4)</a></li>
+<li>A RDBMS supported by SQLAlchemy (we suggest <a class="reference external" href="https://www.postgresql.org/download/">PostgreSQL</a>)</li>
+<li>The <a class="reference external" href="https://www.warp10.io/content/02_Getting_started">Warp10</a> time series database</li>
+<li>OVH <a class="reference external" href="https://github.com/ovh/beamium">Beamium</a> to send the computed QoS into Warp10</li>
+</ul>
+<p>Take a look on the <code class="docutils literal notranslate"><span class="pre">depc.example.yml</span></code> to set the required configuration fields accordingly.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Even if DepC supports also OpenTSDB to compute the QOS, it currently requires the Warp10 database
+to store its own metrics. We are working to make Warp10 optional to run DepC.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">We are aware this installation guide requires multiple manual configuration steps.
+We plan to improve the installation process in a future release.</p>
+</div>
+</div>
+<div class="section" id="create-your-virtual-environment">
+<h2>Create your virtual environment<a class="headerlink" href="#create-your-virtual-environment" title="Permalink to this headline">¶</a></h2>
+<p>You may need to install Python 3.5+ first, this step can differ depending on your operating system,
+please refer to the official <a class="reference external" href="https://docs.python.org/3/using/index.html">Python documentation</a>
+for further details.</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
+<span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="n">python3</span> <span class="n">venv</span>
+<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-the-requirements">
+<h2>Install the requirements<a class="headerlink" href="#install-the-requirements" title="Permalink to this headline">¶</a></h2>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-your-environment">
+<h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>
+<p>In DepC the root directory, you have to create a new configuration file for your environment
+using the provided configuration sample in <code class="docutils literal notranslate"><span class="pre">depc.example.yml</span></code>.
+Name the configuration file <code class="docutils literal notranslate"><span class="pre">depc.&lt;env&gt;.yml</span></code> where you should replace <code class="docutils literal notranslate"><span class="pre">&lt;env&gt;</span></code> with the
+<code class="docutils literal notranslate"><span class="pre">DEPC_ENV</span></code> value.</p>
+<p>Set these environment variables :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">DEPC_HOME</span><span class="o">=</span><span class="s2">&quot;$(pwd)&quot;</span>
+
+<span class="c1"># Then export, one of the following environment variable</span>
+
+<span class="c1"># Development environment will use a depc.dev.yml file</span>
+<span class="n">export</span> <span class="n">DEPC_ENV</span><span class="o">=</span><span class="n">dev</span>
+
+<span class="c1"># Testing environment will use a depc.test.yml file</span>
+<span class="n">export</span> <span class="n">DEPC_ENV</span><span class="o">=</span><span class="n">test</span>
+
+<span class="c1"># Production environment will use a depc.prod.yml file</span>
+<span class="n">export</span> <span class="n">DEPC_ENV</span><span class="o">=</span><span class="n">prod</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="launch-the-api">
+<h2>Launch the API<a class="headerlink" href="#launch-the-api" title="Permalink to this headline">¶</a></h2>
+<p>Using the Flask development server :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">api</span>
+</pre></div>
+</div>
+<p>Using Gunicorn :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gunicorn</span> <span class="o">--</span><span class="n">bind</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">5000</span> <span class="n">manage</span><span class="p">:</span><span class="n">app</span>
+</pre></div>
+</div>
+<p>Now you can reach the API to this URL :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">ping</span>
+</pre></div>
+</div>
+<p>You should have this response :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;pong&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">During development, you may want to create a new team, grant users, etc…
+To force the access to the DepC admin panel at: <code class="docutils literal notranslate"><span class="pre">http://localhost:5000/admin</span></code>.
+Put the <code class="docutils literal notranslate"><span class="pre">FORCE_INSECURE_ADMIN:</span> <span class="pre">true</span></code> value into your configuration file.</p>
+</div>
+</div>
+<div class="section" id="setup-the-web-ui">
+<h2>Setup the Web UI<a class="headerlink" href="#setup-the-web-ui" title="Permalink to this headline">¶</a></h2>
+<p>To install and run the Web UI you need to install <a class="reference external" href="https://nodejs.org/en/download/releases/">Node.js 8</a>.
+Then you will be able to run the NPM command-line tool packaged with your Node.js installation.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">ui/</span></code> directory :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span>
+<span class="n">npm</span> <span class="n">install</span> <span class="n">bower</span> <span class="n">grunt</span> <span class="n">grunt</span><span class="o">-</span><span class="n">cli</span> <span class="o">-</span><span class="n">g</span>
+<span class="n">bower</span> <span class="n">install</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In your development environment, you need to fake the authentication gateway, in this case,
+edit the file <code class="docutils literal notranslate"><span class="pre">app/scripts/services/httpinterceptor.js</span></code> and lookup for the line below.
+Uncomment this line and replace <code class="docutils literal notranslate"><span class="pre">username</span></code> with your own desired user.</p>
+<div class="code javascript last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">config</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-Remote-User&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;username&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>To start the Web UI :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">ui</span>
+</pre></div>
+</div>
+<p>Now, you ca reach the DepC Web UI at : <code class="docutils literal notranslate"><span class="pre">http://localhost:9000/#/teams</span></code></p>
+</div>
+<div class="section" id="setup-airflow">
+<h2>Setup Airflow<a class="headerlink" href="#setup-airflow" title="Permalink to this headline">¶</a></h2>
+<p>To get more details about how to setup Airflow,
+please read the <a class="reference external" href="https://airflow.apache.org/index.html">official documentation</a>.</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add the DepC root directory to the PYTHONPATH</span>
+<span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;$(pwd)/:$PYTHONPATH&quot;</span>
+
+<span class="c1"># Specify the DepC scheduler directory as the Airflow root directory</span>
+<span class="n">export</span> <span class="n">AIRFLOW_HOME</span><span class="o">=</span><span class="s2">&quot;$(pwd)/scheduler&quot;</span>
+
+<span class="c1"># Before this step, remember, you have to generate/configure the airflow.cfg</span>
+<span class="n">make</span> <span class="n">webserver</span>
+
+<span class="c1"># In another terminal</span>
+<span class="n">make</span> <span class="n">scheduler</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-the-kafka-consumer">
+<h2>Start the Kafka consumer<a class="headerlink" href="#start-the-kafka-consumer" title="Permalink to this headline">¶</a></h2>
+<p>You have to configure the appropriate fields into your configuration file (section <code class="docutils literal notranslate"><span class="pre">CONSUMER</span></code>).</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">consumer</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="quickstart/index.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="DepC Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

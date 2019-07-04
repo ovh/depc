@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>QoS and SLA &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Queries" href="queries.html" />
+    <link rel="prev" title="Kafka" href="kafka.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="indicators.html">Indicators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">QoS and SLA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qos-quality-of-service">QoS (Quality of Service)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sla-service-level-agreement">SLA (Service Level Agreement)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slo-service-level-objectif">SLO (Service Level Objectif)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sli-service-level-indicator">SLI (Service Level Indicator)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Sources Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grafana.html">Grafana</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Guides</a> &raquo;</li>
+        
+      <li>QoS and SLA</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/difference-qos-sla.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="qos-and-sla">
+<span id="difference-qos-sla"></span><h1>QoS and SLA<a class="headerlink" href="#qos-and-sla" title="Permalink to this headline">¶</a></h1>
+<p>One of the feature provided by DepC is to compute the QoS of your nodes,
+whether servers, web services or even customers. So it’s important to know
+the difference between QoS and SLA, but also what are SLO and SLI.</p>
+<div class="section" id="qos-quality-of-service">
+<h2>QoS (Quality of Service)<a class="headerlink" href="#qos-quality-of-service" title="Permalink to this headline">¶</a></h2>
+<p>A QoS is a percentage telling you what is (or what was) the state of a specific
+service. This state is very subjective but in general it refers to the ability
+for a customer to consume its services in good conditions. So we can talk here
+about the <strong>availability</strong> of the service.</p>
+<p>For example in DepC, a website which is available <strong>from 0:00:00 to 23:59:59</strong>
+will have a QoS of <strong>100%</strong>. This QoS can be decreased each time the website is
+not reachable. In the extreme case where he would not be reachable for an entire
+day, it’s QoS will be <strong>0%</strong>.</p>
+</div>
+<div class="section" id="sla-service-level-agreement">
+<h2>SLA (Service Level Agreement)<a class="headerlink" href="#sla-service-level-agreement" title="Permalink to this headline">¶</a></h2>
+<p>A SLA is a contract between a provider and its customers, telling it what is
+the awaited quality of service. Being a commitment signed by both parties, the
+SLA can also contains penalties if the quality is not good.</p>
+<p>So it’s possible to see mentions about QoS in a SLA, for example “we commit
+ourselves to provide an uptime of 99.99% for the product XXX”. But keep in mind
+that a <strong>QoS is not the same as a SLA</strong>.</p>
+</div>
+<div class="section" id="slo-service-level-objectif">
+<h2>SLO (Service Level Objectif)<a class="headerlink" href="#slo-service-level-objectif" title="Permalink to this headline">¶</a></h2>
+<p>The SLO refers to the objective that a provider wants to reach in term of QoS.
+Let’s imagine the QoS of a specific service is 99.95% : the provider may
+want to improve this percentage and give a SLO of 99.99%.</p>
+</div>
+<div class="section" id="sli-service-level-indicator">
+<h2>SLI (Service Level Indicator)<a class="headerlink" href="#sli-service-level-indicator" title="Permalink to this headline">¶</a></h2>
+<p>The SLI is in the heart of DepC : an indicator is a measurement used to compute
+a QoS (and so to reach a SLO). It can be everything that can be measurable over
+a period of time :</p>
+<ul class="simple">
+<li>an HTTP Status Code,</li>
+<li>the response time of a Ping,</li>
+<li>the RAM usage,</li>
+<li>… and so on.</li>
+</ul>
+<p>DepC uses TimeSeries databases to retrieve raw data. The idea is pretty simple :
+let’s imagine we need to compute the QoS of an API : we could analyse the HTTP
+status code and reject every status which is above 500 (internal server error).</p>
+<p>If we analyse a period containing 100 HTTP status code (called datapoints in a
+Time Series DB) with 20 status above 500, the QoS will be <strong>80%</strong> (100 - 20).</p>
+<p>DepC is able to combine multiple <a class="reference internal" href="indicators.html#indicators"><span class="std std-ref">indicators</span></a> to compute a
+QoS.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="queries.html" class="btn btn-neutral float-right" title="Queries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="kafka.html" class="btn btn-neutral" title="Kafka" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
