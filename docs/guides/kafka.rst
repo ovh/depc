@@ -38,7 +38,7 @@ You can create new nodes and relationships using the following format :
 
 This message will create 2 linked nodes :
 
-.. figure:: ../_static/images/quickstart/kafka1.png
+.. figure:: ../_static/images/tutorial/kafka1.png
    :alt: DepC Kafka 1
    :align: center
 
@@ -55,7 +55,7 @@ following one :
      }
    }
 
-.. figure:: ../_static/images/quickstart/kafka2.png
+.. figure:: ../_static/images/tutorial/kafka2.png
    :alt: DepC Kafka 2
    :align: center
 
@@ -143,6 +143,6 @@ Here is a simple example in Python :
 
 The following graph will be created :
 
-.. figure:: ../_static/images/quickstart/kafka3.png
+.. figure:: ../_static/images/tutorial/kafka3.png
    :alt: DepC Kafka 3
    :align: center

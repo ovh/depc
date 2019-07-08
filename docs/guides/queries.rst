@@ -7,7 +7,7 @@ DepC provides 3 methods to compute the QOS of a node : using a **rule**,
 an **operation** or an **aggregation**.
 
 You have to indicate your methods for each labels in your **configuration**.
-The following example is directly taken from the :ref:`quickstart <quickstart>` :
+The following example is directly taken from the :ref:`tutorial <tutorial>` :
 
 .. code:: json
 
@@ -44,7 +44,7 @@ For example, you have some servers with these 3 probes :
 
 These probes send their results in a TimeSeries database. You can create
 a rule containing 3 indicators, each indicator will query a probe metric.
-The :ref:`step 3 <qos>` of the tutorial explains how to do that.
+The step 3 of the tutorial explains how to do that.
 
 You can use the following syntaxes in your configuration :
 
