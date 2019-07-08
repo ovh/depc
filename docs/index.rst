@@ -8,7 +8,7 @@ DepC Documentation
    Overview <self>
 
    installation
-   quickstart/index
+   tutorial
    guides/index
    api/index
 
@@ -64,6 +64,6 @@ And Next ?
 You can now install your own DepC instance following this :ref:`this link
 <installation>`.
 
-The simple way to test the most features is to follow the :ref:`quickstart
-<quickstart>`. Then you can read the :ref:`guides <guides>` for the advanced
+The simple way to test the most features is to follow the :ref:`tutorial
+<tutorial>`. Then you can read the :ref:`guides <guides>` for the advanced
 features and to understand how DepC works internally.
