@@ -1,0 +1,463 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; DepC  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Guides" href="guides/index.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/depc-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-push-your-dependencies">Step 1 : Push your Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-compute-your-qos">Step 2 : Compute your QOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-create-the-configuration">Step 3 : Create the Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-play-with-the-dashboard">Step 4 : Play with the Dashboard</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/index.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DepC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The goal of this tutorial is to show you the main
+usage of DepC : manage your dependencies and compute their QOS.</p>
+</div>
+<p>We are member of the ACME team. Our role is to host the websites of our
+customers. So we manage the storage of their files and some web servers.</p>
+<p>We split our nodes into four different categories : <strong>Offer</strong>,
+<strong>Webhosting</strong>, <strong>Filer</strong> and <strong>Apache</strong>. In DepC a category is called a
+<strong>label</strong> (this term comes directly from the Neo4J
+<a class="reference external" href="https://neo4j.com/docs/developer-manual/current/introduction/graphdb-concepts/#graphdb-neo4j-labels">terminology</a>).</p>
+<p>The relationships between our labels are represented with the following
+graph :</p>
+
+            <style>
+            /* mermaid issue 527 workaround */
+            .section {
+                opacity: 1.0 !important;
+            }
+            </style>
+            <script>mermaid.initialize({startOnLoad:true});</script><div align="center" class="mermaid align-center">
+            graph TB;
+    A(Offer)--&gt;B(Website);
+    B--&gt;C(Filer);
+    B--&gt;D(Apache);
+        </div>
+        <p>Most actions in DepC are done within a team, so you must already be part
+of one or multiple teams to play with DepC. A user can be a member, an
+editor or a manager of a team.</p>
+<p>Only DepC administrators can create new teams for now, so please ask your
+admin to do it.</p>
+<div class="section" id="step-1-push-your-dependencies">
+<h2>Step 1 : Push your Dependencies<a class="headerlink" href="#step-1-push-your-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>DepC uses <strong>Kafka</strong> to manage your dependencies inside the Neo4j database,
+so you need to push messages inside your own topic.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The format of the Kafka messages is defined in this
+<a class="reference internal" href="guides/kafka.html#kafka"><span class="std std-ref">dedicated guide</span></a>, please read it to know the
+required and optionals keys.</p>
+</div>
+<p>We are going to create 7 nodes and their relationships : 2 <strong>Website</strong>,
+2 <strong>Filer</strong>, 2 <strong>Apache</strong> and 1 <strong>Offer</strong>. We’ll use this simple Python
+script to easily send our message in the Kafka topic, but of course you
+can use your own library / language :</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+
+<span class="kn">from</span> <span class="nn">kafka</span> <span class="k">import</span> <span class="n">KafkaProducer</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;bootstrap_servers&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_HOST&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;security_protocol&#39;</span><span class="p">:</span> <span class="s1">&#39;SASL_SSL&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sasl_mechanism&#39;</span><span class="p">:</span> <span class="s1">&#39;PLAIN&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sasl_plain_username&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_USERNAME&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;sasl_plain_password&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_PASSWORD&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;ssl_context&#39;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_SSLv23</span><span class="p">),</span>
+    <span class="s1">&#39;ssl_check_hostname&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;client_id&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_TOPIC&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;value_serializer&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">KafkaProducer</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># Nodes for the Premium offer</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Offer&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;premium&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;foo.com&#39;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Offer&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;premium&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bar.com&#39;</span><span class="p">}},</span>
+    <span class="c1"># Nodes for foo.com</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;foo.com&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Filer&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;filer1&#39;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;foo.com&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Apache&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;apache1&#39;</span><span class="p">}},</span>
+    <span class="c1"># Nodes for bar.com</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bar.com&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Filer&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;filer2&#39;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Website&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bar.com&#39;</span><span class="p">},</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Apache&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;apache2&#39;</span><span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DEPC_KAFKA_TOPIC&#39;</span><span class="p">),</span> <span class="n">m</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After executing it (don’t forget to set your environment variables), you
+can use <strong>Dependencies</strong> tab to explore your nodes :</p>
+<div class="figure">
+<img alt="Dependencies Graph" src="_images/dependencies.png" />
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can remove the nodes and their relationships with
+the <strong>Delete node</strong> button when you’re done with this tutorial.</p>
+</div>
+</div>
+<div class="section" id="step-2-compute-your-qos">
+<h2>Step 2 : Compute your QOS<a class="headerlink" href="#step-2-compute-your-qos" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>Apache</strong> and <strong>Filer</strong> nodes represent some servers in real life. In
+this case we can analyse data in TimeSeries databases, populated by some
+probes.</p>
+<p><strong>Create the Source</strong></p>
+<p>The first step is to declare a <strong>Source</strong> : it’s basically an URL and a
+token used to communicate with the Timeseries database.</p>
+<p>DepC only supports <strong>OpenTSDB</strong> and <strong>Warp10</strong> databases for now. In this
+tutorial we’ll use a third type of database : the <strong>Fake</strong> one, specifically
+created for the purpose of this tutorial. This source generates data on the
+fly, so you can test DepC without having real probes sending datapoints into
+a TimeSeries database.</p>
+<p>Go to the <em>Indicators</em> tab and click on the “New source” button to create it:</p>
+<div class="figure">
+<img alt="Fake Source" src="_images/new_fake_source.png" />
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please note you don’t have to add extra parameters, like the url of the
+source or a read-only token, but it will be the case for the OpenTSDB and
+Warp10 sources.</p>
+</div>
+<p><strong>Create the Indicators</strong></p>
+<p>An indicator is a Python function that queries a source, retrieves the
+datapoints and uses it to compute a QoS percentage. Please read the
+<a class="reference internal" href="guides/indicators.html#indicators"><span class="std std-ref">dedicated guide</span></a> for more information about the indicators.</p>
+<p>Thanks to the Fake source we already have access to the <strong>depc.tutorial.ping</strong>
+metric, which represents the response time of the ping command launched every
+minute.</p>
+<p>Click on the “New indicator” button and fill the form to create the Server Ping
+indicator.</p>
+<div class="figure">
+<img alt="Server Ping" src="_images/check_server_ping.png" />
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here we use the Fake source, so the query is really simple. It will be a
+JSON payload for the OpenTSDB source, and a warpscript for the Warp10
+source.</p>
+</div>
+<p><strong>Create the Rule</strong></p>
+<p>A rule is a group of indicators (an indicator can be added in
+multiple rules). We are going to create the <strong>Servers</strong> rule which will
+contain our <strong>Server Ping</strong> indicator.</p>
+<p>Click on the <em>New rule</em> button and create the <strong>Servers</strong> rule. Then add
+our indicator to it by using the <em>Associate indicators</em> button.</p>
+<p>The rule is now ready and can be launched. In the <em>Run</em> tab, fill the
+name with <strong>filer1</strong> and click on the <strong>Run</strong> button to
+execute the rule :</p>
+<div class="figure">
+<img alt="Rule Filers Result" src="_images/rule_launched_summary.png" />
+</div>
+<p>Click on the <strong>Display details</strong> button to get more information about the
+indicator :</p>
+<div class="figure">
+<img alt="Indicator Server Ping Details" src="_images/rule_details_server_ping.png" />
+</div>
+<p>We can see that the Ping response time <strong>exceed our threshold</strong> for some time,
+so the QOS of <strong>filer1</strong> decreased during this period.</p>
+</div>
+<div class="section" id="step-3-create-the-configuration">
+<h2>Step 3 : Create the Configuration<a class="headerlink" href="#step-3-create-the-configuration" title="Permalink to this headline">¶</a></h2>
+<p>We must now indicate to DepC how to compute the QoS for each kind of nodes.
+Depending on whether you have metrics to analyze or not, DepC can use 2 methods
+to compute the QoS of a node :</p>
+<ol class="arabic simple">
+<li>analysing datapoints available in a TimeSeries database,</li>
+<li>using the QoS of its parent(s).</li>
+</ol>
+<p>As a reminder the ACME team has 4 labels :</p>
+
+            <style>
+            /* mermaid issue 527 workaround */
+            .section {
+                opacity: 1.0 !important;
+            }
+            </style>
+            <div align="center" class="mermaid align-center">
+            graph TB;
+   A(Offer)--&gt;B(Website);
+   B--&gt;C(Filer);
+   B--&gt;D(Apache);
+        </div>
+        <p>The <strong>Apache</strong> and <strong>Filer</strong> nodes will use the <strong>Servers</strong> rule.
+The <strong>Website</strong> and <strong>Offer</strong> nodes will use their parents QoS to
+compute their own one.</p>
+<p>This information is given in the team’s configuration using this <strong>JSON
+representation</strong> :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;Apache&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Filer&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Offer&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;aggregation.AVERAGE[Website]&quot;</span>
+ <span class="p">},</span>
+ <span class="s2">&quot;Website&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;operation.AND[Filer, Apache]&quot;</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Go to the <strong>Configuration</strong> tab of your team, click on the <strong>Update the
+configuration</strong> button and fill it with this JSON :</p>
+<div class="figure">
+<img alt="Update Configuration" src="_images/update_configuration.png" />
+</div>
+<p>The graph represents how DepC will compute your QoS :</p>
+<ol class="arabic simple">
+<li>First the <strong>Filer</strong> and <strong>Apache</strong> nodes QoS will be computed in parallel
+using the <strong>Servers</strong> rule.</li>
+<li>Then the QoS of the <strong>Website</strong> nodes will be computed by applying a AND
+operation between their parents.</li>
+<li>Finally DepC will compute the QoS of the <strong>Offer</strong> nodes using the average
+of their websites.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can find more information about the different methods to compute
+a QOS and their syntax in the <a class="reference internal" href="guides/queries.html#queries"><span class="std std-ref">dedicated guide</span></a>.</p>
+</div>
+</div>
+<div class="section" id="step-4-play-with-the-dashboard">
+<h2>Step 4 : Play with the Dashboard<a class="headerlink" href="#step-4-play-with-the-dashboard" title="Permalink to this headline">¶</a></h2>
+<p>DepC computes the QoS of your nodes every nights for the day before.
+So you need to wait a little bit to view the result on your dashboard.</p>
+<p>Here is a real example taken from one of our teams :</p>
+<div class="figure">
+<img alt="Dashboard 1" src="_images/dashboard1.png" />
+</div>
+<p>By clicking on a label, we can select a specific node and analyses its
+dependencies to understand where a problem comes from :</p>
+<div class="figure">
+<img alt="Dashboard 2" src="_images/dashboard2.png" />
+</div>
+<p>Finally we can find when occurs the problem by analysing the indicators
+(see step 2 of this tutorial).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can also display your QoS into Grafana following this
+<a class="reference internal" href="guides/grafana.html#grafana"><span class="std std-ref">guide</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="guides/index.html" class="btn btn-neutral float-right" title="Guides" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, OVH SAS
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

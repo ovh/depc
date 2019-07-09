@@ -85,7 +85,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Guides</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="indicators.html">Indicators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
@@ -173,7 +173,7 @@
 <p>DepC provides 3 methods to compute the QOS of a node : using a <strong>rule</strong>,
 an <strong>operation</strong> or an <strong>aggregation</strong>.</p>
 <p>You have to indicate your methods for each labels in your <strong>configuration</strong>.
-The following example is directly taken from the <a class="reference internal" href="../quickstart/index.html#quickstart"><span class="std std-ref">quickstart</span></a> :</p>
+The following example is directly taken from the <a class="reference internal" href="../tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a> :</p>
 <div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
  <span class="s2">&quot;Apache&quot;</span><span class="p">:</span> <span class="p">{</span>
   <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>   <span class="o">&lt;--</span> <span class="n">rule</span><span class="o">-</span><span class="n">based</span> <span class="n">QOS</span>
@@ -205,7 +205,7 @@ and DepC analyses the result.</p>
 </ul>
 <p>These probes send their results in a TimeSeries database. You can create
 a rule containing 3 indicators, each indicator will query a probe metric.
-The <a class="reference internal" href="../quickstart/qos.html#qos"><span class="std std-ref">step 3</span></a> of the tutorial explains how to do that.</p>
+The step 3 of the tutorial explains how to do that.</p>
 <p>You can use the following syntaxes in your configuration :</p>
 <div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rule</span><span class="o">.</span><span class="n">MyRule</span>
 <span class="n">rule</span><span class="o">.</span><span class="s1">&#39;My rule&#39;</span>
