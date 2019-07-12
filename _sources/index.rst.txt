@@ -19,7 +19,8 @@ of our infrastructure, including our customers.
 Overview
 --------
 
-.. figure:: _static/images/qos_dependencies.png
+.. figure:: _static/images/depc_screenshots.gif
+   :target: _static/images/depc_screenshots.gif
    :alt: Dependencies QOS
 
 DepC provides a CMDB component to store and request related nodes into a graph
