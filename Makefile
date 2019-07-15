@@ -1,7 +1,7 @@
 .PHONY: ui tests docs scheduler consumer
 
 api:
-	python manage.py runserver
+	export FLASK_ENV=development && export FLASK_APP=manage:app && flask run
 
 ui:
 	cd ui/ && grunt serve
