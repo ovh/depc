@@ -11,12 +11,13 @@ def setup_loggers(app):
     logging_config = app.config["LOGGING"]
     logging_level = logging.getLevelName(logging_config["level"])
 
+    # Avoid duplicate Flask logs
+    werkzeug_logger = logging.getLogger("werkzeug")
+    werkzeug_logger.handlers = []
+
     root_logger = logging.getLogger()
     root_logger.addHandler(InterceptHandler())
     root_logger.setLevel(logging_level)
-
-    app.logger.handlers = []
-    app.logger.propagate = True
 
     # Match some Flask messages
     # e.g.: '127.0.0.1 - - [01/Mar/2019 11:11:32] "GET /v1/teams/
