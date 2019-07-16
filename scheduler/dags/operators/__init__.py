@@ -165,7 +165,7 @@ class DependenciesOperator(QosOperator):
                 continue
 
             # Transform the records
-            data[node["name"]] = {}
+            data[node["name"]] = []
             for dependency in dependencies:
 
                 # For each dependency in this label
@@ -183,7 +183,9 @@ class DependenciesOperator(QosOperator):
                         continue
 
                     # This dependency can be used to compute the QOS of the main node
-                    data[node["name"]][n["node"]["name"]] = dependency["label"]
+                    data[node["name"]].append(
+                        {"label": dependency["label"], "name": n["node"]["name"]}
+                    )
 
         # Remove nodes without any dependency
         data = {k: v for k, v in data.items() if v}
@@ -268,7 +270,9 @@ class DependenciesOperator(QosOperator):
             )
 
             node_deps = []
-            for dep_name, dep_label in deps.items():
+            for d in deps:
+                dep_name = d["name"]
+                dep_label = d["label"]
 
                 # The label contains the topic but not the redis key
                 dep = "{0}.{1}".format(dep_label.split("_")[1], dep_name)
