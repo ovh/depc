@@ -120,23 +120,11 @@
 					  </form>
 				</div>
 			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
-				<div class="panel panel-heading">Legend</div>
-				<div class="panel-body">
-					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
-					<div class="list-group">
-					  <a data-ng-repeat="(label, color) in dependenciesCtrl.legend" class="list-group-item">
-					  	{{ label }}
-					  	<div class="pull-right" id="circle" style="background-color: {{ color }}"></div>
-					  </a>
-					</div>
-				</div>
-			</div>
 		</div>
 		<div class="col-md-8">
 			<div class="panel panel-default panel-depc">
 				<div class="panel-heading">
-					Dependencies
+					Direct dependencies
 				</div>
 				<div class="panel-body">
 					<div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
@@ -144,60 +132,62 @@
 					<span data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
 						No dependency.
 					</span>
-					<table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
-						<thead>
-							<tr>
-								<th class="no-border-left"></th>
-								<th class="border-top">Name</th>
-								<th class="text-center border-top col-md-2">From</th>
-								<th class="text-center border-top col-md-2">To</th >
-								<th class="text-center border-top col-md-1">Relationship</th >
-								<th class="text-center border-top col-md-2">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].inactive ? 'danger' : ''">
-								<th class="align-middle text-center active" rowspan="{{val.nodes.length}}">
-									<abbr data-ng-if="val.rule" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'The QoS of <strong>{{ key }}</strong> is computed using the following query : <code>{{ val.rule }}</code>'">{{ key }}</abbr>
-									<span data-ng-if="!val.rule">{{ key }}</span>
-								</th>
-								<td class="col-md-4">{{val.nodes[0].name}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].from)}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].to)}}</td>
-								<td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(val.nodes[0].periods)" uib-tooltip="Display periods" tooltip-append-to-body="true"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
-								<td class="col-md-2 text-center">
-									<div class="btn-group">
-										<a data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{val.nodes[0].name}}" class="btn btn-xs btn-default">QoS</a>
-										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{val.nodes[0].name}}" class="btn btn-default btn-xs">Graph</a>
-										<a data-ng-click="dependenciesCtrl.deleteNode(key, val.nodes[0].name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
-									</div>
-								</td>
-							</tr>
-							<tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.inactive ? 'danger' : ''">
-								<td class="col-md-4">{{value.name}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.from)}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.to)}}</td>
-								<td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(value.periods)"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
-								<td class="col-md-2 text-center">
-									<div class="btn-group">
-										<a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{value.name}}" class="btn btn-xs btn-default">QoS</a>
-										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{ value.name }}" class="btn btn-default btn-xs">Graph</a>
-										<a data-ng-click="dependenciesCtrl.deleteNode(key, value.name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<div class="panel panel-default panel-depc">
-				<div class="panel-heading">Graph</div>
-				<div class="panel-body">
-					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
-					<div data-ng-if="!dependenciesCtrl.selectedNode">Please select a node.</div>
-					<vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
-				</div>
+                    <div data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
+                        <h4>List</h4>
+                        <table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
+                            <thead>
+                            <tr>
+                                <th class="no-border-left"></th>
+                                <th class="border-top">Name</th>
+                                <th class="text-center border-top col-md-2">From</th>
+                                <th class="text-center border-top col-md-2">To</th >
+                                <th class="text-center border-top col-md-1">Relationship</th >
+                                <th class="text-center border-top col-md-2">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].inactive ? 'danger' : ''">
+                                <th class="align-middle text-center active" rowspan="{{val.nodes.length}}">
+                                    <abbr data-ng-if="val.rule" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'The QoS of <strong>{{ key }}</strong> is computed using the following query : <code>{{ val.rule }}</code>'">{{ key }}</abbr>
+                                    <span data-ng-if="!val.rule">{{ key }}</span>
+                                </th>
+                                <td class="col-md-4">{{val.nodes[0].name}}</td>
+                                <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].from)}}</td>
+                                <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].to)}}</td>
+                                <td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(val.nodes[0].periods)" uib-tooltip="Display periods" tooltip-append-to-body="true"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
+                                <td class="col-md-2 text-center">
+                                    <div class="btn-group">
+                                        <a data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{val.nodes[0].name}}" class="btn btn-xs btn-default">QoS</a>
+                                        <a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{val.nodes[0].name}}" class="btn btn-default btn-xs">Graph</a>
+                                        <a data-ng-click="dependenciesCtrl.deleteNode(key, val.nodes[0].name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.inactive ? 'danger' : ''">
+                                <td class="col-md-4">{{value.name}}</td>
+                                <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.from)}}</td>
+                                <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.to)}}</td>
+                                <td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(value.periods)"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
+                                <td class="col-md-2 text-center">
+                                    <div class="btn-group">
+                                        <a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{value.name}}" class="btn btn-xs btn-default">QoS</a>
+                                        <a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{ value.name }}" class="btn btn-default btn-xs">Graph</a>
+                                        <a data-ng-click="dependenciesCtrl.deleteNode(key, value.name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        <h4>Graph</h4>
+                        <vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
+                        <hr>
+                        <h4>Legend</h4>
+                        <div class="col-md-3" data-ng-repeat="(label, color) in dependenciesCtrl.legend">
+                            <div class="pull-left" id="circle" style="background-color: {{ color }}"></div><p>&nbsp{{ label }}</p>
+                        </div>
+                    </div>
+                </div>
 			</div>
 		</div>
 	</div>
