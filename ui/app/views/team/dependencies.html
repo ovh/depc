@@ -114,7 +114,7 @@
 						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeInactive"> Display inactive nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Inactive nodes are peer nodes that were not linked to the main node on the requested day." tooltip-append-to-body="true"></i></label>
 						</div>
 						<div class="checkbox">
-						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.displayDownstreamNodes"> Display downstream nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Downstream nodes are dependencies which depend of the main node (so upstream nodes are dependencies which impact the main node QoS)." tooltip-append-to-body="true"></i></label>
+						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.displayImpactedNodes"> Display impacted nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Impacted nodes are nodes which need the currently selected node to run properly (because if the currently selected node is down it will impact them directly)." tooltip-append-to-body="true"></i></label>
 						</div>
 						<button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.loadDependencies()"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
 					  </form>
@@ -124,7 +124,7 @@
 		<div class="col-md-8">
 			<div class="panel panel-default panel-depc">
 				<div class="panel-heading">
-					Direct dependencies
+					Direct relations
 				</div>
 				<div class="panel-body">
 					<div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
