@@ -277,3 +277,46 @@ def delete_node(team_id, label, node):
             detach=request.args.get("detach", False),
         )
     )
+
+
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes")
+@login_required
+def get_impacted_nodes(team_id, label, node):
+    """Get the nodes impacted by a given node.
+
+    .. :quickref: GET; Get the nodes impacted by a given node.
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com?impactedLabel=Offer HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+
+      [
+        "premium"
+      ]
+
+    :param impactedLabel: impacted nodes for the given label
+    :resheader Content-Type: application/json
+    :status 200: the array of impacted nodes
+    """
+
+    if not TeamPermission.is_user(team_id):
+        abort(403)
+
+    return jsonify(
+        DependenciesController.get_impacted_nodes(
+            team_id,
+            label,
+            node,
+            request.args.get("impactedLabel", None),
+        )
+    )

@@ -3,6 +3,7 @@ import re
 import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
+from neo4jrestclient import client
 
 from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError
 from depc.controllers.configs import ConfigController
@@ -302,3 +303,18 @@ class DependenciesController(Controller):
         return query.format(
             where=where, order=order, topic=topic, label=label, name=node
         )
+
+    @classmethod
+    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        neo = Neo4jClient()
+        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN n".format(
+            topic=team.kafka_topic, impacted_label=impacted_label, label=label, name=node
+        )
+
+        impacted_nodes = []
+        results = neo.query(query, returns=client.Node)
+        for result in results:
+            impacted_nodes.append(result[0]['name'])
+        return impacted_nodes
