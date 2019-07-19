@@ -310,11 +310,14 @@ class DependenciesController(Controller):
 
         neo = Neo4jClient()
         query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN n".format(
-            topic=team.kafka_topic, impacted_label=impacted_label, label=label, name=node
+            topic=team.kafka_topic,
+            impacted_label=impacted_label,
+            label=label,
+            name=node,
         )
 
         impacted_nodes = []
         results = neo.query(query, returns=client.Node)
         for result in results:
-            impacted_nodes.append(result[0]['name'])
+            impacted_nodes.append(result[0]["name"])
         return impacted_nodes

@@ -314,9 +314,6 @@ def get_impacted_nodes(team_id, label, node):
 
     return jsonify(
         DependenciesController.get_impacted_nodes(
-            team_id,
-            label,
-            node,
-            request.args.get("impactedLabel", None),
+            team_id, label, node, request.args.get("impactedLabel", None)
         )
     )
