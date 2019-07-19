@@ -189,6 +189,36 @@
                     </div>
                 </div>
 			</div>
+      <div class="panel panel-default panel-depc">
+        <div class="panel-heading">
+          Impacted nodes
+        </div>
+        <div class="panel-body">
+          <div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
+          <div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
+          <div data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
+            <div class="col-md-4">
+              <h4>Impacted label selection</h4>
+              <label>Please select a label impacted by the currently selected node
+                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.getImpactedNodes()">
+                  <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <h4>Impacted nodes list</h4>
+              <div class="loader" data-ng-if="dependenciesCtrl.impactedNodesLoading"></div>
+              <p data-ng-if="!dependenciesCtrl.impactedLabel && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</p>
+              <p data-ng-if="dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                No impacted nodes found for the selected label.
+              </p>
+              <ul class="list-group" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                <li class="list-group-item" data-ng-repeat="impactedNode in dependenciesCtrl.impactedNodes | orderBy">{{ impactedNode }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 		</div>
 	</div>
 </div>

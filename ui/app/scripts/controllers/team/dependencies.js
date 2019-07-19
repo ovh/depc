@@ -29,6 +29,10 @@ angular.module('depcwebuiApp')
     self.dependenciesLoading = false;
     self.dependencies = {};
 
+    self.impactedLabel = null;
+    self.impactedNodesLoading = false;
+    self.impactedNodes = [];
+
       self.init = function () {
           self.labels = [];
           self.labelsLoading = true;
@@ -52,11 +56,15 @@ angular.module('depcwebuiApp')
                   self.labels = response.data;
                   self.labelsLoading = false;
 
+                  if ($routeParams.impactedLabel) {
+                    self.impactedLabel = $routeParams.impactedLabel;
+                  }
+
                   if ($routeParams.label) {
                       self.selectLabel($routeParams.label);
 
                       if ($routeParams.node) {
-                          self.selectNode($routeParams.node);
+                        self.selectNode($routeParams.node);
                       }
                   }
               });
@@ -210,11 +218,19 @@ angular.module('depcwebuiApp')
           self.selectedNode = node;
           self.loadDependencies();
 
+          // Refresh the impacted nodes when selecting a new node if a target label has already been selected before
+          if (self.impactedLabel) {
+            self.getImpactedNodes();
+          }
       };
 
       self.hasDependencies = function () {
           return Object.keys(self.dependencies).length > 0;
       }
+
+      self.hasImpactedNodes = function () {
+        return self.impactedNodes.length > 0;
+      };
 
       self.getNodeDate = function(d) {
           if (!d) {
@@ -262,4 +278,12 @@ angular.module('depcwebuiApp')
         });
       }
 
+      self.getImpactedNodes = function() {
+        $location.search('impactedLabel', self.impactedLabel);
+        self.impactedNodesLoading = true;
+        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel).then(function(response) {
+          self.impactedNodes = response.data;
+          self.impactedNodesLoading = false;
+        });
+      };
   });

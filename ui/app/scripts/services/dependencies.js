@@ -93,10 +93,24 @@ angular.module('depcwebuiApp')
       });
     }
 
+    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes';
+
+      if (impactedLabel) {
+        url += "?impactedLabel=" + impactedLabel;
+      }
+
+      return $http({
+        url: url,
+        method: "GET"
+      });
+    };
+
     return {
       getTeamLabels: getTeamLabels,
       getTeamLabelNodes: getTeamLabelNodes,
       getTeamLabelNode: getTeamLabelNode,
+      getTeamImpactedNodes: getTeamImpactedNodes,
       countNodeDependencies: countNodeDependencies,
       getNodeDependencies: getNodeDependencies,
       deleteNode: deleteNode
