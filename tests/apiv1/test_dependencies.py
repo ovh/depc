@@ -500,7 +500,7 @@ def test_get_node_dependencies_with_config(client, create_team, create_user, cre
     ]
 
 
-def test_get_node_dependencies_with_downstream(client, create_team, create_user, create_grant, create_rule, create_config, neo_create):
+def test_get_node_dependencies_with_impacted_nodes(client, create_team, create_user, create_grant, create_rule, create_config, neo_create):
     team_id = str(create_team('Acme')['id'])
     user_id = str(create_user('depc')['id'])
     create_grant(team_id, user_id, 'member')
@@ -528,13 +528,13 @@ def test_get_node_dependencies_with_downstream(client, create_team, create_user,
         'Server': [{'name': 'server001'}]
     }
 
-    # Display downstream nodes
-    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?downstream=1'.format(team_id))
+    # Display impacted nodes
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?impacted=1'.format(team_id))
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}]
     }
 
-    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001?downstream=1'.format(team_id))
+    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001?impacted=1'.format(team_id))
     assert resp.json['dependencies'] == {
         'Server': [{'name': 'server001'}],
         'Cluster': [{'inactive': False, 'name': 'cluster01', 'periods': [0]}]

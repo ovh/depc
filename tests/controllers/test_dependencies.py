@@ -39,7 +39,7 @@ def test_build_dependencies_query_rule(app, create_team, create_rule, create_con
                      "RETURN n,r,m ORDER BY m.name LIMIT 10")
 
 
-def test_build_dependencies_query_with_downstream(app, create_team, create_rule, create_config):
+def test_build_dependencies_query_with_impacted_nodes(app, create_team, create_rule, create_config):
     team_id = str(create_team('My team')['id'])
     create_rule('Servers', team_id)
     create_config(team_id, {
@@ -53,7 +53,7 @@ def test_build_dependencies_query_with_downstream(app, create_team, create_rule,
             label='Server',
             node='server.ovh.net',
             filter_on_config=True,
-            downstream=True
+            impacted=True
         )
     assert query == ("MATCH(n:acme_Server{name: 'server.ovh.net'}) "
                      "OPTIONAL MATCH (n)<-[r]-(m) "

@@ -120,11 +120,11 @@ class DependenciesController(Controller):
         day=None,
         filter_on_config=False,
         include_inactive=False,
-        display_downstream=False,
+        display_impacted=False,
     ):
         topic = TeamController._get({"Team": {"id": team_id}}).kafka_topic
         query = cls._build_dependencies_query(
-            team_id, topic, label, node, filter_on_config, display_downstream
+            team_id, topic, label, node, filter_on_config, display_impacted
         )
         dependencies = {"dependencies": {}, "graph": {"nodes": [], "relationships": []}}
         records = get_records(query)
@@ -151,7 +151,7 @@ class DependenciesController(Controller):
                 continue
 
             # Check inactive nodes
-            if display_downstream:
+            if display_impacted:
                 start_node = rel.end_node
                 end_node = rel.start_node
             else:
@@ -195,8 +195,8 @@ class DependenciesController(Controller):
             dependencies["graph"]["relationships"].append(
                 {
                     "id": rel.id,
-                    "from": end_node.id if display_downstream else start_node.id,
-                    "to": start_node.id if display_downstream else end_node.id,
+                    "from": end_node.id if display_impacted else start_node.id,
+                    "to": start_node.id if display_impacted else end_node.id,
                     "arrows": "to",
                     "periods": list(rel.get("periods")),
                 }
@@ -275,11 +275,11 @@ class DependenciesController(Controller):
 
     @classmethod
     def _build_dependencies_query(
-        cls, team_id, topic, label, node, filter_on_config=False, downstream=False
+        cls, team_id, topic, label, node, filter_on_config=False, impacted=False
     ):
         """Build a Cypher query based on given parameters."""
         where = ""
-        order = "(n)<-[r]-(m)" if downstream else "(n)-[r]->(m)"
+        order = "(n)<-[r]-(m)" if impacted else "(n)-[r]->(m)"
         query = (
             "MATCH(n:{topic}_{label}{{name: '{name}'}}) "
             "OPTIONAL MATCH {order} {where}"
