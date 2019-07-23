@@ -290,7 +290,7 @@ def get_impacted_nodes(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com?impactedLabel=Offer HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted-nodes?impactedLabel=Offer HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -305,6 +305,8 @@ def get_impacted_nodes(team_id, label, node):
       ]
 
     :param impactedLabel: impacted nodes for the given label
+    :param skip: skip the given number of values
+    :param limit: limit to the given number of values
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
     """
@@ -314,6 +316,6 @@ def get_impacted_nodes(team_id, label, node):
 
     return jsonify(
         DependenciesController.get_impacted_nodes(
-            team_id, label, node, request.args.get("impactedLabel", None)
+            team_id, label, node, request.args.get("impactedLabel", None), request.args.get("skip", None), request.args.get("limit", None)
         )
     )

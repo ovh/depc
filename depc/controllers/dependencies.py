@@ -305,15 +305,17 @@ class DependenciesController(Controller):
         )
 
     @classmethod
-    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None):
+    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None, skip=None, limit=None):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN n".format(
+        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN n SKIP {skip} LIMIT {limit}".format(
             topic=team.kafka_topic,
             impacted_label=impacted_label,
             label=label,
             name=node,
+            skip=skip,
+            limit=limit
         )
 
         impacted_nodes = []
