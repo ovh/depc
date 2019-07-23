@@ -323,3 +323,18 @@ class DependenciesController(Controller):
         for result in results:
             impacted_nodes.append(result[0]["name"])
         return impacted_nodes
+
+    @classmethod
+    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        neo = Neo4jClient()
+        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN count(*)".format(
+            topic=team.kafka_topic,
+            impacted_label=impacted_label,
+            label=label,
+            name=node
+        )
+
+        results = neo.query(query)
+        return {"count": results[0][0]}
