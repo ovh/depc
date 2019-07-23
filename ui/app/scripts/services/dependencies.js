@@ -93,11 +93,35 @@ angular.module('depcwebuiApp')
       });
     }
 
-    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel) {
+    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit) {
       var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes';
 
+      // We do not know the order of parameters, so this dirty patch abstracts it
+      url += '?1=1';
+
       if (impactedLabel) {
-        url += "?impactedLabel=" + impactedLabel;
+        url += '&impactedLabel=' + impactedLabel;
+      }
+
+      if (skip || skip === 0) {
+        url += '&skip=' + skip;
+      }
+
+      if (limit || limit === 0) {
+        url += '&limit=' + limit;
+      }
+
+      return $http({
+        url: url,
+        method: "GET"
+      });
+    };
+
+    var getTeamImpactedNodesCount = function(teamId, label, node, impactedLabel) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/count';
+
+      if (impactedLabel) {
+        url += '?impactedLabel=' + impactedLabel;
       }
 
       return $http({
@@ -111,6 +135,7 @@ angular.module('depcwebuiApp')
       getTeamLabelNodes: getTeamLabelNodes,
       getTeamLabelNode: getTeamLabelNode,
       getTeamImpactedNodes: getTeamImpactedNodes,
+      getTeamImpactedNodesCount: getTeamImpactedNodesCount,
       countNodeDependencies: countNodeDependencies,
       getNodeDependencies: getNodeDependencies,
       deleteNode: deleteNode

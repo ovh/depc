@@ -32,6 +32,9 @@ angular.module('depcwebuiApp')
     self.impactedLabel = null;
     self.impactedNodesLoading = false;
     self.impactedNodes = [];
+    self.impactedCurrentPage = 1;
+    self.impactedTotalNumberOfNodes = 0;
+    self.impactedDefaultLimit = 25;
 
       self.init = function () {
           self.labels = [];
@@ -220,7 +223,7 @@ angular.module('depcwebuiApp')
 
           // Refresh the impacted nodes when selecting a new node if a target label has already been selected before
           if (self.impactedLabel) {
-            self.getImpactedNodes();
+            self.selectImpactedLabel();
           }
       };
 
@@ -278,10 +281,23 @@ angular.module('depcwebuiApp')
         });
       }
 
-      self.getImpactedNodes = function() {
-        $location.search('impactedLabel', self.impactedLabel);
+      self.selectImpactedLabel = function() {
         self.impactedNodesLoading = true;
-        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel).then(function(response) {
+        $location.search('impactedLabel', self.impactedLabel);
+        self.impactedCurrentPage = 1;
+        self.impactedTotalNumberOfNodes = 0;
+
+        dependenciesService.getTeamImpactedNodesCount(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel).then(function(response) {
+          self.impactedTotalNumberOfNodes = response.data.count;
+          self.getImpactedNodes(self.impactedCurrentPage);
+        });
+      };
+
+      self.getImpactedNodes = function(page) {
+        self.impactedNodesLoading = true;
+        var skip = (page - 1) * self.impactedDefaultLimit;
+
+        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit).then(function(response) {
           self.impactedNodes = response.data;
           self.impactedNodesLoading = false;
         });

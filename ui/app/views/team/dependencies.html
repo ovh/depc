@@ -133,7 +133,6 @@
 						No dependency.
 					</span>
                     <div data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
-                        <h4>List</h4>
                         <table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
                             <thead>
                             <tr>
@@ -179,10 +178,8 @@
                             </tbody>
                         </table>
                         <hr>
-                        <h4>Graph</h4>
                         <vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
                         <hr>
-                        <h4>Legend</h4>
                         <div class="col-md-3" data-ng-repeat="(label, color) in dependenciesCtrl.legend">
                             <div class="pull-left" id="circle" style="background-color: {{ color }}"></div><p>&nbsp{{ label }}</p>
                         </div>
@@ -200,7 +197,7 @@
             <div class="col-md-4">
               <h4>Impacted label selection</h4>
               <label>Please select a label impacted by the currently selected node
-                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.getImpactedNodes()">
+                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.selectImpactedLabel()">
                   <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
                 </select>
               </label>
@@ -215,6 +212,7 @@
               <ul class="list-group" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
                 <li class="list-group-item" data-ng-repeat="impactedNode in dependenciesCtrl.impactedNodes | orderBy">{{ impactedNode }}</li>
               </ul>
+              <ul uib-pagination data-total-items="dependenciesCtrl.impactedTotalNumberOfNodes" data-ng-model="dependenciesCtrl.impactedCurrentPage" data-ng-change="dependenciesCtrl.getImpactedNodes(dependenciesCtrl.impactedCurrentPage)" data-items-per-page="dependenciesCtrl.impactedDefaultLimit" data-max-size="5" data-boundary-link-numbers="true" data-rotate="false"></ul>
             </div>
           </div>
         </div>
