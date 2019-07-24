@@ -316,7 +316,12 @@ def get_impacted_nodes(team_id, label, node):
 
     return jsonify(
         DependenciesController.get_impacted_nodes(
-            team_id, label, node, request.args.get("impactedLabel", None), request.args.get("skip", None), request.args.get("limit", None)
+            team_id,
+            label,
+            node,
+            request.args.get("impactedLabel", None),
+            request.args.get("skip", None),
+            request.args.get("limit", None),
         )
     )
 
