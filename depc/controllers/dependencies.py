@@ -305,18 +305,26 @@ class DependenciesController(Controller):
         )
 
     @classmethod
+    def _build_impacted_nodes_queries(cls, topic, label, node, impacted_label=None, skip=None, limit=None, count=False):
+        query_common = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}})"
+        query_common = query_common.format(topic=topic, impacted_label=impacted_label, label=label, name=node)
+
+        if count:
+            query_return = "RETURN count(DISTINCT n)"
+        else:
+            query_return = "RETURN DISTINCT n ORDER BY n.name SKIP {skip} LIMIT {limit}"
+            query_return = query_return.format(skip=skip, limit=limit)
+
+        query = "{query_common} {query_return}"
+
+        return query.format(query_common=query_common, query_return=query_return)
+
+    @classmethod
     def get_impacted_nodes(cls, team_id, label, node, impacted_label=None, skip=None, limit=None):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN DISTINCT n ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
-            topic=team.kafka_topic,
-            impacted_label=impacted_label,
-            label=label,
-            name=node,
-            skip=skip,
-            limit=limit
-        )
+        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, skip=skip, limit=limit, count=False)
 
         impacted_nodes = []
         results = neo.query(query, returns=client.Node)
@@ -329,12 +337,7 @@ class DependenciesController(Controller):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN count(DISTINCT n)".format(
-            topic=team.kafka_topic,
-            impacted_label=impacted_label,
-            label=label,
-            name=node
-        )
+        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, count=True)
 
         results = neo.query(query)
         return {"count": results[0][0]}
