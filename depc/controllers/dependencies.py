@@ -235,6 +235,29 @@ class DependenciesController(Controller):
         return {}
 
     @classmethod
+    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None, skip=None, limit=None):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        neo = Neo4jClient()
+        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, skip=skip, limit=limit, count=False)
+
+        impacted_nodes = []
+        results = neo.query(query, returns=client.Node)
+        for result in results:
+            impacted_nodes.append(result[0]["name"])
+        return impacted_nodes
+
+    @classmethod
+    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        neo = Neo4jClient()
+        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, count=True)
+
+        results = neo.query(query)
+        return {"count": results[0][0]}
+
+    @classmethod
     def _build_query_count_nodes(cls, topic, labels):
         query = (
             "MATCH (n:{team}_{label}) "
@@ -318,26 +341,3 @@ class DependenciesController(Controller):
         query = "{query_common} {query_return}"
 
         return query.format(query_common=query_common, query_return=query_return)
-
-    @classmethod
-    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None, skip=None, limit=None):
-        team = TeamController._get({"Team": {"id": team_id}})
-
-        neo = Neo4jClient()
-        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, skip=skip, limit=limit, count=False)
-
-        impacted_nodes = []
-        results = neo.query(query, returns=client.Node)
-        for result in results:
-            impacted_nodes.append(result[0]["name"])
-        return impacted_nodes
-
-    @classmethod
-    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
-        team = TeamController._get({"Team": {"id": team_id}})
-
-        neo = Neo4jClient()
-        query = cls._build_impacted_nodes_queries(topic=team.kafka_topic, label=label, node=node, impacted_label=impacted_label, count=True)
-
-        results = neo.query(query)
-        return {"count": results[0][0]}
