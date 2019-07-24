@@ -309,7 +309,7 @@ class DependenciesController(Controller):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN n SKIP {skip} LIMIT {limit}".format(
+        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN DISTINCT n ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
             topic=team.kafka_topic,
             impacted_label=impacted_label,
             label=label,
@@ -329,7 +329,7 @@ class DependenciesController(Controller):
         team = TeamController._get({"Team": {"id": team_id}})
 
         neo = Neo4jClient()
-        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN count(*)".format(
+        query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN count(DISTINCT n)".format(
             topic=team.kafka_topic,
             impacted_label=impacted_label,
             label=label,
