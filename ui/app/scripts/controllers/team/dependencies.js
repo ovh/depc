@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, toastr, config, modalService, teamsService, dependenciesService) {
+  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, $q, toastr, config, modalService, teamsService, dependenciesService) {
     var self = this;
     self.teamName = $routeParams.team;
 
@@ -300,6 +300,25 @@ angular.module('depcwebuiApp')
         dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit).then(function(response) {
           self.impactedNodes = response.data;
           self.impactedNodesLoading = false;
+        });
+      };
+
+      self.extractAllImpactedNodes = function() {
+        var allImpactedNodes = [];
+        var impactedNodesPromises = [];
+        for (var skip = 0; skip < self.impactedTotalNumberOfNodes; skip += self.impactedDefaultLimit) {
+          impactedNodesPromises.push(dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit))
+        }
+        $q.all(impactedNodesPromises).then(function(responses) {
+          responses.forEach(function(response) {
+            allImpactedNodes = allImpactedNodes.concat(response.data);
+          });
+
+          var downloadData = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allImpactedNodes));
+          var impactedNodesDownload = document.createElement('a');
+          impactedNodesDownload.setAttribute('href', downloadData);
+          impactedNodesDownload.setAttribute('download', 'impacted-nodes.json');
+          impactedNodesDownload.click();
         });
       };
   });
