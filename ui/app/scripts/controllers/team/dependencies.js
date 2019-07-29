@@ -298,27 +298,16 @@ angular.module('depcwebuiApp')
         var skip = (page - 1) * self.impactedDefaultLimit;
 
         dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit).then(function(response) {
-          self.impactedNodes = response.data;
+          self.impactedNodes = response.data.map(function (node) { return node['name'] });
           self.impactedNodesLoading = false;
         });
       };
 
       self.extractAllImpactedNodes = function() {
-        var allImpactedNodes = [];
-        var impactedNodesPromises = [];
-        for (var skip = 0; skip < self.impactedTotalNumberOfNodes; skip += self.impactedDefaultLimit) {
-          impactedNodesPromises.push(dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit))
-        }
-        $q.all(impactedNodesPromises).then(function(responses) {
-          responses.forEach(function(response) {
-            allImpactedNodes = allImpactedNodes.concat(response.data);
-          });
-
-          var downloadData = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allImpactedNodes));
-          var impactedNodesDownload = document.createElement('a');
-          impactedNodesDownload.setAttribute('href', downloadData);
-          impactedNodesDownload.setAttribute('download', 'impacted-nodes.json');
-          impactedNodesDownload.click();
-        });
+        var impactedDownloadUrl= dependenciesService.getTeamImpactedNodesDownloadUrl(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel);
+        var impactedNodesDownload = document.createElement('a');
+        impactedNodesDownload.setAttribute('href', impactedDownloadUrl);
+        impactedNodesDownload.setAttribute('download', '');
+        impactedNodesDownload.click();
       };
   });

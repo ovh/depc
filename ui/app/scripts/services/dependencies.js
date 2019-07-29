@@ -130,11 +130,22 @@ angular.module('depcwebuiApp')
       });
     };
 
+    var getTeamImpactedNodesDownloadUrl = function(teamId, label, node, impactedLabel) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/download';
+
+      if (impactedLabel) {
+        url += '?impactedLabel=' + impactedLabel;
+      }
+
+      return url
+    };
+
     return {
       getTeamLabels: getTeamLabels,
       getTeamLabelNodes: getTeamLabelNodes,
       getTeamLabelNode: getTeamLabelNode,
       getTeamImpactedNodes: getTeamImpactedNodes,
+      getTeamImpactedNodesDownloadUrl: getTeamImpactedNodesDownloadUrl,
       getTeamImpactedNodesCount: getTeamImpactedNodesCount,
       countNodeDependencies: countNodeDependencies,
       getNodeDependencies: getNodeDependencies,
