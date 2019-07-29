@@ -1,9 +1,10 @@
+import io
+import json
 import re
 
 import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
-from neo4jrestclient import client
 
 from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError
 from depc.controllers.configs import ConfigController
@@ -240,7 +241,6 @@ class DependenciesController(Controller):
     ):
         team = TeamController._get({"Team": {"id": team_id}})
 
-        neo = Neo4jClient()
         query = cls._build_impacted_nodes_queries(
             topic=team.kafka_topic,
             label=label,
@@ -251,17 +251,13 @@ class DependenciesController(Controller):
             count=False,
         )
 
-        impacted_nodes = []
-        results = neo.query(query, returns=client.Node)
-        for result in results:
-            impacted_nodes.append(result[0]["name"])
-        return impacted_nodes
+        results = get_records(query)
+        return results.data()
 
     @classmethod
     def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
         team = TeamController._get({"Team": {"id": team_id}})
 
-        neo = Neo4jClient()
         query = cls._build_impacted_nodes_queries(
             topic=team.kafka_topic,
             label=label,
@@ -270,8 +266,41 @@ class DependenciesController(Controller):
             count=True,
         )
 
-        results = neo.query(query)
-        return {"count": results[0][0]}
+        results = get_records(query)
+        return {"count": results.value()[0]}
+
+    @classmethod
+    def get_impacted_nodes_download(cls, team_id, label, node, impacted_label=None):
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        impacted_nodes = []
+        nodes_batch = 100000
+        skip = 0
+        total_count = cls.get_impacted_nodes_count(team_id, label, node, impacted_label)["count"]
+
+        while skip < total_count:
+            query = cls._build_impacted_nodes_queries(
+                topic=team.kafka_topic,
+                label=label,
+                node=node,
+                impacted_label=impacted_label,
+                skip=skip,
+                limit=nodes_batch,
+                count=False,
+            )
+
+            results = get_records(query)
+            impacted_nodes += results.data()
+            skip += nodes_batch
+
+        json_string = json.dumps(impacted_nodes, indent=4)
+        json_bytearray = bytearray(json_string, 'utf-8')
+
+        json_bytes_stream = io.BytesIO()
+        json_bytes_stream.write(json_bytearray)
+        json_bytes_stream.seek(0)
+
+        return json_bytes_stream
 
     @classmethod
     def _build_query_count_nodes(cls, topic, labels):
@@ -355,7 +384,7 @@ class DependenciesController(Controller):
         if count:
             query_return = "RETURN count(DISTINCT n)"
         else:
-            query_return = "RETURN DISTINCT n ORDER BY n.name SKIP {skip} LIMIT {limit}"
+            query_return = "RETURN DISTINCT n.name AS name, n.from AS from, n.to AS to ORDER BY n.name SKIP {skip} LIMIT {limit}"
             query_return = query_return.format(skip=skip, limit=limit)
 
         query = "{query_common} {query_return}"

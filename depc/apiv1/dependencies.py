@@ -1,5 +1,5 @@
 import arrow
-from flask import abort, jsonify, request
+from flask import abort, jsonify, request, send_file
 from flask_login import login_required
 
 from depc.apiv1 import api
@@ -301,7 +301,11 @@ def get_impacted_nodes(team_id, label, node):
       HTTP/1.1 200 OK
 
       [
-        "premium"
+        {
+          "from": null,
+          "name": "premium",
+          "to": null
+        }
       ]
 
     :param impactedLabel: impacted nodes for the given label
@@ -364,3 +368,47 @@ def get_impacted_nodes_count(team_id, label, node):
             team_id, label, node, request.args.get("impactedLabel", None)
         )
     )
+
+
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/download")
+@login_required
+def get_impacted_nodes_download(team_id, label, node):
+    """Download a JSON file containing all nodes impacted by a given node.
+
+    .. :quickref: GET; Download a JSON file containing all nodes impacted by a given node.
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted-nodes/download?impactedLabel=Offer HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+
+      [
+        {
+          "from": null,
+          "name": "premium",
+          "to": null
+        }
+      ]
+
+    :param impactedLabel: impacted nodes for the given label
+    :resheader Content-Type: application/json
+    :status 200: the array of impacted nodes
+    """
+
+    if not TeamPermission.is_user(team_id):
+        abort(403)
+
+    all_impacted_nodes_bytes_stream = DependenciesController.get_impacted_nodes_download(
+        team_id, label, node, request.args.get("impactedLabel", None)
+    )
+
+    return send_file(all_impacted_nodes_bytes_stream, 'text/html', True, 'impacted_' + request.args.get("impactedLabel", None) + '_list.json')
