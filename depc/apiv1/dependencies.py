@@ -411,4 +411,9 @@ def get_impacted_nodes_download(team_id, label, node):
         team_id, label, node, request.args.get("impactedLabel", None)
     )
 
-    return send_file(all_impacted_nodes_bytes_stream, 'text/html', True, 'impacted_' + request.args.get("impactedLabel", None) + '_list.json')
+    return send_file(
+        all_impacted_nodes_bytes_stream,
+        "text/html",
+        True,
+        "impacted_" + request.args.get("impactedLabel", None) + "_list.json",
+    )

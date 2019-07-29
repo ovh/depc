@@ -276,7 +276,9 @@ class DependenciesController(Controller):
         impacted_nodes = []
         nodes_batch = 100000
         skip = 0
-        total_count = cls.get_impacted_nodes_count(team_id, label, node, impacted_label)["count"]
+        total_count = cls.get_impacted_nodes_count(
+            team_id, label, node, impacted_label
+        )["count"]
 
         while skip < total_count:
             query = cls._build_impacted_nodes_queries(
@@ -294,7 +296,7 @@ class DependenciesController(Controller):
             skip += nodes_batch
 
         json_string = json.dumps(impacted_nodes, indent=4)
-        json_bytearray = bytearray(json_string, 'utf-8')
+        json_bytearray = bytearray(json_string, "utf-8")
 
         json_bytes_stream = io.BytesIO()
         json_bytes_stream.write(json_bytearray)
