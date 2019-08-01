@@ -238,7 +238,9 @@ class DependenciesController(Controller):
         return {}
 
     @classmethod
-    def get_impacted_nodes(cls, team_id, label, node, impacted_label=None, skip=None, limit=None, ts=None):
+    def get_impacted_nodes(
+        cls, team_id, label, node, impacted_label=None, skip=None, limit=None, ts=None
+    ):
         team = TeamController._get({"Team": {"id": team_id}})
 
         query = cls._build_impacted_nodes_queries(
@@ -255,7 +257,9 @@ class DependenciesController(Controller):
         impacted_nodes_data = results.data()
 
         # Return all impacted nodes (active and inactive) with metadata indicating if they are active or not
-        return cls._compute_impacted_nodes_from_data(impacted_nodes_data, ts, with_inactive_nodes=True)
+        return cls._compute_impacted_nodes_from_data(
+            impacted_nodes_data, ts, with_inactive_nodes=True
+        )
 
     @classmethod
     def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
@@ -273,7 +277,15 @@ class DependenciesController(Controller):
         return {"count": results.value()[0]}
 
     @classmethod
-    def get_impacted_nodes_download(cls, team_id, label, node, impacted_label=None, ts=None, with_inactive_nodes=None):
+    def get_impacted_nodes_download(
+        cls,
+        team_id,
+        label,
+        node,
+        impacted_label=None,
+        ts=None,
+        with_inactive_nodes=None,
+    ):
         team = TeamController._get({"Team": {"id": team_id}})
 
         impacted_nodes_data = []
@@ -300,7 +312,9 @@ class DependenciesController(Controller):
             skip += nodes_batch
 
         # Get the impacted nodes list (with or without inactive nodes given the with_inactive_nodes parameter)
-        impacted_nodes = cls._compute_impacted_nodes_from_data(impacted_nodes_data, ts, with_inactive_nodes=with_inactive_nodes)
+        impacted_nodes = cls._compute_impacted_nodes_from_data(
+            impacted_nodes_data, ts, with_inactive_nodes=with_inactive_nodes
+        )
 
         # Convert the data to a JSON string and stream it as a bytes stream
         json_string = json.dumps(impacted_nodes, indent=4)
@@ -382,10 +396,17 @@ class DependenciesController(Controller):
         )
 
     @classmethod
-    def _build_impacted_nodes_queries(cls, topic, label, node, impacted_label=None, skip=None, limit=None, count=False):
+    def _build_impacted_nodes_queries(
+        cls, topic, label, node, impacted_label=None, skip=None, limit=None, count=False
+    ):
         # Get the standard impacted nodes query
         query = "MATCH p = (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) WITH *, relationships(p) AS r_list WITH *, nodes(p) as n_sub_list RETURN DISTINCT n AS impacted_node, collect({{ relationships: r_list, nodes: n_sub_list }}) AS all_path_elements ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
-            topic=topic, impacted_label=impacted_label, label=label, name=node, skip=skip, limit=limit
+            topic=topic,
+            impacted_label=impacted_label,
+            label=label,
+            name=node,
+            skip=skip,
+            limit=limit,
         )
 
         # If we want to count, get the impacted nodes count query
@@ -397,14 +418,30 @@ class DependenciesController(Controller):
         return query
 
     @classmethod
-    def _compute_impacted_nodes_from_data(cls, impacted_nodes_data, ts, with_inactive_nodes):
+    def _compute_impacted_nodes_from_data(
+        cls, impacted_nodes_data, ts, with_inactive_nodes
+    ):
         """Return the list of impacted nodes adding metadata about if they are active or not (this function can also filter out inactive impacted nodes)"""
         impacted_nodes = []
         for impacted_node_data in impacted_nodes_data:
             if cls._is_impacted_node_active(impacted_node_data, ts):
-                impacted_nodes.append({"name": impacted_node_data["impacted_node"].get("name", ""), "from": impacted_node_data["impacted_node"].get("from", None), "to": impacted_node_data["impacted_node"].get("to", None), "active": True})
+                impacted_nodes.append(
+                    {
+                        "name": impacted_node_data["impacted_node"].get("name", ""),
+                        "from": impacted_node_data["impacted_node"].get("from", None),
+                        "to": impacted_node_data["impacted_node"].get("to", None),
+                        "active": True,
+                    }
+                )
             elif with_inactive_nodes:
-                impacted_nodes.append({"name": impacted_node_data["impacted_node"].get("name", ""), "from": impacted_node_data["impacted_node"].get("from", None), "to": impacted_node_data["impacted_node"].get("to", None), "active": False})
+                impacted_nodes.append(
+                    {
+                        "name": impacted_node_data["impacted_node"].get("name", ""),
+                        "from": impacted_node_data["impacted_node"].get("from", None),
+                        "to": impacted_node_data["impacted_node"].get("to", None),
+                        "active": False,
+                    }
+                )
         return impacted_nodes
 
     @classmethod

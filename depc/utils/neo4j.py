@@ -95,6 +95,7 @@ def has_active_relationship(start, end, periods):
 
 def is_relationship_active_at_timestamp(relationship, ts):
     """Check if a relationship is active at a given timestamp"""
+
     def _check_period(p_start, p_end):
         """Check if a given timestamp is inside a period"""
         if p_start <= ts <= p_end:
