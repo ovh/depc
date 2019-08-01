@@ -297,14 +297,14 @@ angular.module('depcwebuiApp')
         self.impactedNodesLoading = true;
         var skip = (page - 1) * self.impactedDefaultLimit;
 
-        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit).then(function(response) {
-          self.impactedNodes = response.data.map(function (node) { return node['name'] });
+        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, moment().unix()).then(function(response) {
+          self.impactedNodes = response.data;
           self.impactedNodesLoading = false;
         });
       };
 
-      self.extractAllImpactedNodes = function() {
-        var impactedDownloadUrl= dependenciesService.getTeamImpactedNodesDownloadUrl(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel);
+      self.extractAllImpactedNodes = function(withInactiveNodes) {
+        var impactedDownloadUrl= dependenciesService.getTeamImpactedNodesDownloadUrl(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes);
         var impactedNodesDownload = document.createElement('a');
         impactedNodesDownload.setAttribute('href', impactedDownloadUrl);
         impactedNodesDownload.setAttribute('download', '');

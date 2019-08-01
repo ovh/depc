@@ -93,7 +93,7 @@ angular.module('depcwebuiApp')
       });
     }
 
-    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit) {
+    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit, unixTs) {
       var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
@@ -109,6 +109,10 @@ angular.module('depcwebuiApp')
 
       if (limit || limit === 0) {
         url += '&limit=' + limit;
+      }
+
+      if (unixTs || unixTs === 0) {
+        url += '&ts=' + unixTs;
       }
 
       return $http({
@@ -130,11 +134,22 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getTeamImpactedNodesDownloadUrl = function(teamId, label, node, impactedLabel) {
+    var getTeamImpactedNodesDownloadUrl = function(teamId, label, node, impactedLabel, unixTs, withInactiveNodes) {
       var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/download';
 
+      // We do not know the order of parameters, so this dirty patch abstracts it
+      url += '?1=1';
+
       if (impactedLabel) {
-        url += '?impactedLabel=' + impactedLabel;
+        url += '&impactedLabel=' + impactedLabel;
+      }
+
+      if (unixTs || unixTs === 0) {
+        url += '&ts=' + unixTs;
+      }
+
+      if (withInactiveNodes || withInactiveNodes === false) {
+        url += '&withInactiveNodes=' + withInactiveNodes;
       }
 
       return url
