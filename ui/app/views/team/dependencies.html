@@ -194,7 +194,7 @@
           <div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
           <div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
           <div data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
-            <div class="col-md-4">
+            <div class="col-md-12">
               <h4>Impacted label selection</h4>
               <label>Please select a label impacted by the currently selected node
                 <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.selectImpactedLabel()">
@@ -202,23 +202,43 @@
                 </select>
               </label>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-12">
               <div class="row">
-                <h4 class="col-sm-9">Impacted nodes list</h4>
+                <h4 class="col-sm-6">Impacted nodes list</h4>
                 <div class="col-sm-3">
-                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes()" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes()">Extract all</button>
+                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes()">Extract all (without inactive)</button>
+                </div>
+                <div class="col-sm-3">
+                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes()">Extract all (with inactive)</button>
                 </div>
               </div>
 
-              <div class="loader" data-ng-if="dependenciesCtrl.impactedNodesLoading"></div>
-              <p data-ng-if="!dependenciesCtrl.impactedLabel && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</p>
-              <p data-ng-if="dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
-                No impacted nodes found for the selected label.
-              </p>
-              <ul class="list-group" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
-                <li class="list-group-item" data-ng-repeat="impactedNode in dependenciesCtrl.impactedNodes">{{ impactedNode }}</li>
-              </ul>
-              <ul uib-pagination data-total-items="dependenciesCtrl.impactedTotalNumberOfNodes" data-ng-model="dependenciesCtrl.impactedCurrentPage" data-ng-change="dependenciesCtrl.getImpactedNodes(dependenciesCtrl.impactedCurrentPage)" data-items-per-page="dependenciesCtrl.impactedDefaultLimit" data-max-size="5" data-boundary-link-numbers="true" data-rotate="false"></ul>
+              <div class="row">
+                <div class="loader col-md-12" data-ng-if="dependenciesCtrl.impactedNodesLoading"></div>
+                <div class="col-md-12" data-ng-if="!dependenciesCtrl.impactedLabel && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</div>
+                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                  No impacted nodes found for the selected label.
+                </div>
+                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                  <table class="table table-bordered no-border-left table-condensed">
+                    <thead>
+                    <tr>
+                      <th class="border-top">Name</th>
+                      <th class="text-center border-top">From</th>
+                      <th class="text-center border-top">To</th >
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="impactedNode in dependenciesCtrl.impactedNodes" ng-class="{'inactive': !impactedNode.active}">
+                      <td>{{ impactedNode.name }} <i ng-if="!impactedNode.active" class="glyphicon glyphicon-info-sign pointer" uib-tooltip="This impacted node is tagged as inactive (either because the node itself is inactive or because one of the path elements is inactive)" tooltip-append-to-body="true"></i></td>
+                      <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.from) }}</td>
+                      <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.to) }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <ul uib-pagination data-total-items="dependenciesCtrl.impactedTotalNumberOfNodes" data-ng-model="dependenciesCtrl.impactedCurrentPage" data-ng-change="dependenciesCtrl.getImpactedNodes(dependenciesCtrl.impactedCurrentPage)" data-items-per-page="dependenciesCtrl.impactedDefaultLimit" data-max-size="5" data-boundary-link-numbers="true" data-rotate="false"></ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>

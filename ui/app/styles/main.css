@@ -1044,3 +1044,7 @@ pre.white-space {
   margin-bottom: 20px;
   font-size: 1.6em;
 }
+
+tr.inactive {
+  background-color: #bbbbbb;
+}
