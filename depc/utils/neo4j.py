@@ -45,6 +45,11 @@ def is_active_node(start, end, node):
     )
 
 
+def is_node_active_at_timestamp(node, ts):
+    """Check if a node is active at a given timestamp"""
+    return node.get("from", 0) <= ts <= node.get("to", float("inf"))
+
+
 def compute_active_periods(start, end, periods):
     active_periods = {}
 
@@ -86,6 +91,50 @@ def compute_active_periods(start, end, periods):
 def has_active_relationship(start, end, periods):
     active_periods = compute_active_periods(start, end, periods)
     return len(active_periods) > 0
+
+
+def is_relationship_active_at_timestamp(relationship, ts):
+    """Check if a relationship is active at a given timestamp"""
+    def _check_period(p_start, p_end):
+        """Check if a given timestamp is inside a period"""
+        if p_start <= ts <= p_end:
+            return True
+        return False
+
+    # Iterate over an even list of timestamps
+    def _iterate_over_periods(periods_ts_list):
+        """Check if a given timestamp is inside one of the periods of a relationship"""
+        iter_periods = iter(periods_ts_list)
+        for p in iter_periods:
+            if _check_period(p, next(iter_periods)):
+                return True
+        return False
+
+    relationship_periods = relationship.get("periods", [])
+
+    # If no periods are found, consider the relationship active
+    if len(relationship_periods) == 0:
+        return True
+
+    # If we only have one timestamp inside the periods, that means that the period is started without an end,
+    # which means we just need to check if the given timestamp is after this period start or not
+    if len(relationship_periods) == 1:
+        if ts >= relationship_periods[0]:
+            return True
+        return False
+
+    if len(relationship_periods) % 2 == 0:
+        # If we have an even number of periods, we have an array of finished periods and we need to
+        # iterate over them to determine if the given timestamp is inside one of them
+        return _iterate_over_periods(relationship_periods)
+    else:
+        # If we have an odd number of periods, we have an array of finished period and a last period started
+        # without an end, so we need to check first if the timestamp is after the last period without and end
+        # and if not, iterate over the other periods
+        last_period_ts = relationship_periods[-1]
+        if ts >= last_period_ts:
+            return True
+        return _iterate_over_periods(relationship_periods[:-1])
 
 
 def get_records(query, params={}):

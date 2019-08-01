@@ -290,7 +290,7 @@ def get_impacted_nodes(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted-nodes?impactedLabel=Offer HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes?impactedLabel=Offer&skip=0&limit=25&ts=1564645111 HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -302,6 +302,7 @@ def get_impacted_nodes(team_id, label, node):
 
       [
         {
+          "active": true,
           "from": null,
           "name": "premium",
           "to": null
@@ -311,6 +312,7 @@ def get_impacted_nodes(team_id, label, node):
     :param impactedLabel: impacted nodes for the given label
     :param skip: skip the given number of values
     :param limit: limit to the given number of values
+    :param ts: unix timestamp to check if the nodes are active or not at this timestamp
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
     """
@@ -318,6 +320,7 @@ def get_impacted_nodes(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
+    ts = int(request.args.get("ts", None))
     return jsonify(
         DependenciesController.get_impacted_nodes(
             team_id,
@@ -326,6 +329,7 @@ def get_impacted_nodes(team_id, label, node):
             request.args.get("impactedLabel", None),
             request.args.get("skip", None),
             request.args.get("limit", None),
+            ts
         )
     )
 
@@ -381,7 +385,7 @@ def get_impacted_nodes_download(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted-nodes/download?impactedLabel=Offer HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes/download?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -393,6 +397,7 @@ def get_impacted_nodes_download(team_id, label, node):
 
       [
         {
+          "active": true,
           "from": null,
           "name": "premium",
           "to": null
@@ -400,6 +405,8 @@ def get_impacted_nodes_download(team_id, label, node):
       ]
 
     :param impactedLabel: impacted nodes for the given label
+    :param ts: unix timestamp to check if the nodes are active or not at this timestamp
+    :param withInactiveNodes: return inactive impacted nodes in the downloaded file or not
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
     """
@@ -407,13 +414,20 @@ def get_impacted_nodes_download(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
+    ts = int(request.args.get("ts", None))
+    with_inactive_nodes = request.args.get("withInactiveNodes", None) == "true"
     all_impacted_nodes_bytes_stream = DependenciesController.get_impacted_nodes_download(
-        team_id, label, node, request.args.get("impactedLabel", None)
+        team_id, label, node, request.args.get("impactedLabel", None), ts, with_inactive_nodes
     )
+
+    filename = "impacted_" + request.args.get("impactedLabel", None) + "_list"
+    if with_inactive_nodes:
+        filename += "_with_inactive"
+    filename += ".json"
 
     return send_file(
         all_impacted_nodes_bytes_stream,
         "text/html",
         True,
-        "impacted_" + request.args.get("impactedLabel", None) + "_list.json",
+        filename,
     )
