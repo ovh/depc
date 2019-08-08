@@ -19,6 +19,7 @@ class QosOperator(BaseOperator):
     def __init__(self, params, *args, **kwargs):
         super(QosOperator, self).__init__(*args, **kwargs)
         self.app = params["app"]
+        self.neo_session = params.get("neo_session")
         self.team = params["team"]
         self.label = params["label"]
         self.skip = params.get("skip")
@@ -209,7 +210,7 @@ class DependenciesOperator(QosOperator):
         # Retrieve the node and its dependencies
         start_time = time.time()
         with self.app.app_context():
-            records = get_records(query)
+            records = get_records(query, self.neo_session)
         nodes = self.filter_records(
             start=start,
             end=end,

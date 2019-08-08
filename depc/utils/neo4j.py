@@ -88,23 +88,22 @@ def has_active_relationship(start, end, periods):
     return len(active_periods) > 0
 
 
-def get_records(query, params={}):
+def get_session():
     config = app.config["NEO4J"]
 
     driver = BoltGraphDatabase.driver(
         config["uri"], auth=(config["username"], config["password"])
     )
-    session = driver.session()
+    return driver.session()
 
+
+def get_records(query, params={}, session=None):
+    if not session:
+        session = get_session()
     return session.read_transaction(lambda tx: tx.run(query, params))
 
 
-def set_records(query, params={}):
-    config = app.config["NEO4J"]
-
-    driver = BoltGraphDatabase.driver(
-        config["uri"], auth=(config["username"], config["password"])
-    )
-    session = driver.session()
-
+def set_records(query, params={}, session=None):
+    if not session:
+        session = get_session()
     return session.write_transaction(lambda tx: tx.run(query, params))

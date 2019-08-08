@@ -10,7 +10,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.subdag_operator import SubDagOperator
 
-from scheduler.dags import app
+from scheduler.dags import app, neo_session
 from scheduler.dags.operators import delete_redis_avg
 from scheduler.dags.operators.after_subdag_operator import AfterSubdagOperator
 from scheduler.dags.operators.aggregation_operator import AggregationOperator
@@ -153,6 +153,7 @@ def create_subdag(dag_parent, label, team):
         # All custom operators share these parameters
         params = {
             "app": app,
+            "neo_session": neo_session,
             "team": team,
             "label": label,
             "skip": skip,

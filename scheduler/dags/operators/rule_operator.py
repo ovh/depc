@@ -36,7 +36,7 @@ class RuleOperator(QosOperator):
                 label=self.full_label, skip=self.skip, limit=int(self.length)
             )
 
-            records = get_records(query)
+            records = get_records(query, self.neo_session)
             nodes = [dict(record.get("Node").items()) for record in records]
 
             # Remove old nodes

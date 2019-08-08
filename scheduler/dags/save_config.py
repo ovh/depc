@@ -5,7 +5,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 
-from scheduler.dags import app
+from scheduler.dags import app, neo_session
 from depc.utils.neo4j import get_records
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,8 @@ def get_teams_schema(ds, **kwargs):
                     records = get_records(
                         "MATCH (n:{label}) RETURN count(n) AS Count".format(
                             label=neo_key
-                        )
+                        ),
+                        session=neo_session,
                     )
                     count = list(records)[0].get("Count")
 
