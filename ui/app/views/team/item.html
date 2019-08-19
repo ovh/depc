@@ -5,24 +5,12 @@
     <div style="text-align: center"><h3>Querying the Warp10 database...</h3></div>
 </div>
 
-<div class="col-md-6 col-md-offset-3" data-ng-if="itemCtrl.average == 'unknown'">
-    <div class="small-box bg-unknown">
-        <div class="inner">
-            <div class="row text-center">
-                <img src="images/empty.png" alt="Empty"/>
-                <br />
-                <h3>No QOS for {{ itemCtrl.name }}</h3>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="col-md-12" data-ng-if="!itemCtrl.loading && itemCtrl.average != 'unknown'">
+<div class="col-md-12" data-ng-if="!itemCtrl.loading">
     <div class="row">
         <div class="col-md-7">
             <div class="panel panel-default panel-depc" style="height: 480px;">
                 <div class="panel-heading">QOS Evolution</div>
-                <div class="small-box" data-ng-class="itemCtrl.getSlideBg(itemCtrl.average)">
+                <div class="small-box" data-ng-class="itemCtrl.getSlideBg(itemCtrl.average)" data-ng-if="itemCtrl.average != 'unknown'">
                     <div class="inner">
                         <div class="row text-center">
                             <div class="col-md-4">
@@ -40,9 +28,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-stats">
+                <div class="panel-stats" data-ng-if="itemCtrl.average != 'unknown'">
                     <highchart id="chart" data-ng-if="itemCtrl.lineChart" config="itemCtrl.lineChart"></highchart>
                 </div>
+                <span data-ng-if="itemCtrl.average == 'unknown'" style="line-height: 120px;">
+                    <div class="row text-center" style="vertical-align: middle;">
+                        <br />
+                        <img src="images/empty.png" alt="Empty"/>
+                        <br />
+                        <h4>No QOS for {{ itemCtrl.name }}</h4>
+                    </div>
+                </span>
             </div>
         </div>
 
@@ -119,7 +115,7 @@
     </div>
 </div>
 
-<div class="col-md-12" data-ng-if="!itemCtrl.loading && itemCtrl.average != 'unknown' && itemCtrl.qosQuery.type == 'dependencies'">
+<div class="col-md-12" data-ng-if="!itemCtrl.loading && itemCtrl.qosQuery.type == 'dependencies'">
     <div class="row">
         <div class="col-md-12">
             <h3 class="title-bordered">First Dependencies QOS <i class="glyphicon glyphicon-info-sign" uib-tooltip="This list will changed in a next release to show you the dependencies with the worst QOS." tooltip-append-to-body="true"></i></h3>
