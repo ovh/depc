@@ -117,21 +117,15 @@ def is_relationship_active_at_timestamp(relationship, ts):
     if len(relationship_periods) == 0:
         return True
 
-    # If we only have one timestamp inside the periods, that means that the period is started without an end,
-    # which means we just need to check if the given timestamp is after this period start or not
-    if len(relationship_periods) == 1:
-        if ts >= relationship_periods[0]:
-            return True
-        return False
-
     if len(relationship_periods) % 2 == 0:
         # If we have an even number of periods, we have an array of finished periods and we need to
         # iterate over them to determine if the given timestamp is inside one of them
         return _iterate_over_periods(relationship_periods)
     else:
-        # If we have an odd number of periods, we have an array of finished period and a last period started
-        # without an end, so we need to check first if the timestamp is after the last period without and end
-        # and if not, iterate over the other periods
+        # If we have an odd number of periods, we have an array of finished periods and a last period started
+        # without an end, so we need to check first if the timestamp is after the last period without an end
+        # and if not, iterate over the other periods (this code also works when we only have one timestamp inside
+        # the periods
         last_period_ts = relationship_periods[-1]
         if ts >= last_period_ts:
             return True
