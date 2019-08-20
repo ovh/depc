@@ -229,8 +229,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="impactedNode in dependenciesCtrl.impactedNodes" ng-class="{'inactive': !impactedNode.active}">
-                      <td>{{ impactedNode.name }} <i ng-if="!impactedNode.active" class="glyphicon glyphicon-info-sign pointer" uib-tooltip="This impacted node is tagged as inactive (either because the node itself is inactive or because one of the path elements is inactive)" tooltip-append-to-body="true"></i></td>
+                    <tr data-ng-repeat="impactedNode in dependenciesCtrl.impactedNodes" data-ng-class="{'inactive': !impactedNode.active}">
+                      <td>{{ impactedNode.name }} <i data-ng-if="!impactedNode.active" class="glyphicon glyphicon-info-sign pointer" uib-tooltip="This impacted node is tagged as inactive (either because the node itself is inactive or because one of the path elements is inactive)" tooltip-append-to-body="true"></i></td>
                       <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.from) }}</td>
                       <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.to) }}</td>
                     </tr>
