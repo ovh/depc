@@ -373,9 +373,9 @@ def get_impacted_nodes_count(team_id, label, node):
     )
 
 
-@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/download")
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/all")
 @login_required
-def get_all_impacted_nodes(team_id, label, node):
+def get_impacted_nodes_all(team_id, label, node):
     """Get a JSON payload containing all nodes impacted by a given node.
 
     .. :quickref: GET; Get a JSON payload containing all nodes impacted by a given node.
@@ -384,7 +384,7 @@ def get_all_impacted_nodes(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes/download?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes/all?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -414,7 +414,7 @@ def get_all_impacted_nodes(team_id, label, node):
         abort(403)
 
     return jsonify(
-        DependenciesController.get_all_impacted_nodes(
+        DependenciesController.get_impacted_nodes_all(
             team_id,
             label,
             node,

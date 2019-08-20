@@ -293,7 +293,7 @@ class DependenciesController(Controller):
         return {"count": results.value()[0]}
 
     @classmethod
-    def get_all_impacted_nodes(
+    def get_impacted_nodes_all(
         cls,
         team_id,
         label,
