@@ -27,6 +27,7 @@ angular
     'angular-confirm',
     'chart.js',
     'daterangepicker',
+    'ngFileSaver',
   ])
   .config(function ($routeProvider, $locationProvider, $httpProvider, schemaFormProvider) {
     $routeProvider

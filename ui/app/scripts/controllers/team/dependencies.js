@@ -8,7 +8,7 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, $q, toastr, config, modalService, teamsService, dependenciesService) {
+  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, $q, toastr, config, modalService, teamsService, dependenciesService, FileSaver, Blob) {
     var self = this;
     self.teamName = $routeParams.team;
 
@@ -304,10 +304,17 @@ angular.module('depcwebuiApp')
       };
 
       self.extractAllImpactedNodes = function(withInactiveNodes) {
-        var impactedDownloadUrl= dependenciesService.getTeamImpactedNodesDownloadUrl(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes);
-        var impactedNodesDownload = document.createElement('a');
-        impactedNodesDownload.setAttribute('href', impactedDownloadUrl);
-        impactedNodesDownload.setAttribute('download', '');
-        impactedNodesDownload.click();
+        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes).then(function(response) {
+          var allImpactedNodesString = angular.toJson(response.data, true);
+
+          var filename = 'impacted_' + self.impactedLabel + '_list';
+          if (withInactiveNodes) {
+            filename += '_with_inactive';
+          }
+          filename += '.json';
+
+          var downloadData = new Blob([allImpactedNodesString], { type: 'text/plain;charset=utf-8' });
+          FileSaver.saveAs(downloadData, filename);
+        });
       };
   });

@@ -134,8 +134,8 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getTeamImpactedNodesDownloadUrl = function(teamId, label, node, impactedLabel, unixTs, withInactiveNodes) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/download';
+    var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, withInactiveNodes) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/all';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
       url += '?1=1';
@@ -152,7 +152,10 @@ angular.module('depcwebuiApp')
         url += '&withInactiveNodes=' + withInactiveNodes;
       }
 
-      return url
+      return $http({
+        url: url,
+        method: "GET"
+      });
     };
 
     return {
@@ -160,7 +163,7 @@ angular.module('depcwebuiApp')
       getTeamLabelNodes: getTeamLabelNodes,
       getTeamLabelNode: getTeamLabelNode,
       getTeamImpactedNodes: getTeamImpactedNodes,
-      getTeamImpactedNodesDownloadUrl: getTeamImpactedNodesDownloadUrl,
+      getTeamImpactedNodesAll: getTeamImpactedNodesAll,
       getTeamImpactedNodesCount: getTeamImpactedNodesCount,
       countNodeDependencies: countNodeDependencies,
       getNodeDependencies: getNodeDependencies,
