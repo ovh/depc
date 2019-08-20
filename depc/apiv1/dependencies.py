@@ -310,8 +310,8 @@ def get_impacted_nodes(team_id, label, node):
       ]
 
     :param impactedLabel: impacted nodes for the given label
-    :param skip: skip the given number of values
-    :param limit: limit to the given number of values
+    :param skip: skip the given number of values (default is 0)
+    :param limit: limit to the given number of values (default is 25)
     :param ts: unix timestamp to check if the nodes are active or not at this timestamp
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
@@ -375,10 +375,10 @@ def get_impacted_nodes_count(team_id, label, node):
 
 @api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/download")
 @login_required
-def get_impacted_nodes_download(team_id, label, node):
-    """Download a JSON file containing all nodes impacted by a given node.
+def get_all_impacted_nodes(team_id, label, node):
+    """Get a JSON payload containing all nodes impacted by a given node.
 
-    .. :quickref: GET; Download a JSON file containing all nodes impacted by a given node.
+    .. :quickref: GET; Get a JSON payload containing all nodes impacted by a given node.
 
     **Example request**:
 
@@ -405,7 +405,7 @@ def get_impacted_nodes_download(team_id, label, node):
 
     :param impactedLabel: impacted nodes for the given label
     :param ts: unix timestamp to check if the nodes are active or not at this timestamp
-    :param withInactiveNodes: return inactive impacted nodes in the downloaded file or not
+    :param withInactiveNodes: return inactive impacted nodes in the downloaded file or not (default is False)
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
     """
@@ -413,18 +413,13 @@ def get_impacted_nodes_download(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
-    all_impacted_nodes_bytes_stream = DependenciesController.get_impacted_nodes_download(
-        team_id,
-        label,
-        node,
-        request.args.get("impactedLabel", None),
-        request.args.get("ts", None),
-        request.args.get("withInactiveNodes", False),
+    return jsonify(
+        DependenciesController.get_all_impacted_nodes(
+            team_id,
+            label,
+            node,
+            request.args.get("impactedLabel", None),
+            request.args.get("ts", None),
+            request.args.get("withInactiveNodes", False),
+        )
     )
-
-    filename = "impacted_" + request.args.get("impactedLabel", None) + "_list"
-    # if with_inactive_nodes:
-    #     filename += "_with_inactive"
-    filename += ".json"
-
-    return send_file(all_impacted_nodes_bytes_stream, "text/html", True, filename)

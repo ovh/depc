@@ -293,7 +293,7 @@ class DependenciesController(Controller):
         return {"count": results.value()[0]}
 
     @classmethod
-    def get_impacted_nodes_download(
+    def get_all_impacted_nodes(
         cls,
         team_id,
         label,
@@ -345,14 +345,7 @@ class DependenciesController(Controller):
             impacted_nodes_data, ts, with_inactive_nodes=with_inactive_nodes
         )
 
-        # Convert the data to a JSON string and stream it as a bytes stream
-        json_string = json.dumps(impacted_nodes, indent=4)
-        json_bytearray = bytearray(json_string, "utf-8")
-        json_bytes_stream = io.BytesIO()
-        json_bytes_stream.write(json_bytearray)
-        json_bytes_stream.seek(0)
-
-        return json_bytes_stream
+        return impacted_nodes
 
     @classmethod
     def _build_query_count_nodes(cls, topic, labels):
