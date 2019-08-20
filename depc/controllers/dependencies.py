@@ -6,7 +6,7 @@ import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
 
-from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError
+from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError, IntegrityError
 from depc.controllers.configs import ConfigController
 from depc.controllers.teams import TeamController
 from depc.utils.neo4j import (
@@ -239,8 +239,21 @@ class DependenciesController(Controller):
 
     @classmethod
     def get_impacted_nodes(
-        cls, team_id, label, node, impacted_label=None, skip=None, limit=None, ts=None
+        cls, team_id, label, node, impacted_label, skip, limit, ts
     ):
+        try:
+            skip = int(skip)
+            limit = int(limit)
+            ts = int(ts)
+        except (TypeError, ValueError):
+            raise IntegrityError("'skip', 'limit' and 'ts' parameters must be positive numbers")
+
+        if skip < 0 or limit < 0 or ts < 0:
+            raise IntegrityError("'skip', 'limit' and 'ts' parameters must be positive numbers")
+
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
         team = TeamController._get({"Team": {"id": team_id}})
 
         query = cls._build_impacted_nodes_queries(
@@ -262,7 +275,10 @@ class DependenciesController(Controller):
         )
 
     @classmethod
-    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label=None):
+    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label):
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
         team = TeamController._get({"Team": {"id": team_id}})
 
         query = cls._build_impacted_nodes_queries(
@@ -282,10 +298,23 @@ class DependenciesController(Controller):
         team_id,
         label,
         node,
-        impacted_label=None,
-        ts=None,
-        with_inactive_nodes=None,
+        impacted_label,
+        ts,
+        with_inactive_nodes,
     ):
+        try:
+            ts = int(ts)
+        except (TypeError, ValueError):
+            raise IntegrityError("'ts' parameter must be a positive number")
+
+        if ts < 0:
+            raise IntegrityError("'ts' parameter must be a positive number")
+
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
+        with_inactive_nodes = with_inactive_nodes == "true"
+
         team = TeamController._get({"Team": {"id": team_id}})
 
         impacted_nodes_data = []

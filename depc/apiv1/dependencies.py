@@ -320,16 +320,15 @@ def get_impacted_nodes(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
-    ts = int(request.args.get("ts", None))
     return jsonify(
         DependenciesController.get_impacted_nodes(
             team_id,
             label,
             node,
             request.args.get("impactedLabel", None),
-            request.args.get("skip", None),
-            request.args.get("limit", None),
-            ts,
+            request.args.get("skip", 0),
+            request.args.get("limit", 25),
+            request.args.get("ts", None),
         )
     )
 
@@ -414,20 +413,18 @@ def get_impacted_nodes_download(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
-    ts = int(request.args.get("ts", None))
-    with_inactive_nodes = request.args.get("withInactiveNodes", None) == "true"
     all_impacted_nodes_bytes_stream = DependenciesController.get_impacted_nodes_download(
         team_id,
         label,
         node,
         request.args.get("impactedLabel", None),
-        ts,
-        with_inactive_nodes,
+        request.args.get("ts", None),
+        request.args.get("withInactiveNodes", False),
     )
 
     filename = "impacted_" + request.args.get("impactedLabel", None) + "_list"
-    if with_inactive_nodes:
-        filename += "_with_inactive"
+    # if with_inactive_nodes:
+    #     filename += "_with_inactive"
     filename += ".json"
 
     return send_file(all_impacted_nodes_bytes_stream, "text/html", True, filename)
