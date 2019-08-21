@@ -305,7 +305,7 @@ angular.module('depcwebuiApp')
 
       self.extractAllImpactedNodes = function(withInactiveNodes) {
         dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes).then(function(response) {
-          var allImpactedNodesString = angular.toJson(response.data, true);
+          var allImpactedNodesString = response.data['data'];
 
           var filename = 'impacted_' + self.impactedLabel + '_list';
           if (withInactiveNodes) {

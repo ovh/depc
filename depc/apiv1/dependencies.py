@@ -413,13 +413,15 @@ def get_impacted_nodes_all(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
+    json_string = DependenciesController.get_impacted_nodes_all(
+        team_id,
+        label,
+        node,
+        request.args.get("impactedLabel", None),
+        request.args.get("ts", None),
+        request.args.get("withInactiveNodes", False),
+    )
+
     return jsonify(
-        DependenciesController.get_impacted_nodes_all(
-            team_id,
-            label,
-            node,
-            request.args.get("impactedLabel", None),
-            request.args.get("ts", None),
-            request.args.get("withInactiveNodes", False),
-        )
+        {"data": json_string}
     )

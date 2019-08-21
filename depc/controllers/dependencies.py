@@ -317,8 +317,8 @@ class DependenciesController(Controller):
 
         team = TeamController._get({"Team": {"id": team_id}})
 
-        impacted_nodes_data = []
-        nodes_batch = 100000
+        json_string = "["
+        nodes_batch = 50000
         skip = 0
         total_count = cls.get_impacted_nodes_count(
             team_id, label, node, impacted_label
@@ -336,16 +336,21 @@ class DependenciesController(Controller):
                 count=False,
             )
 
-            results = get_records(query)
-            impacted_nodes_data += results.data()
+            new_json_string_data = json.dumps(cls._compute_impacted_nodes_from_data(
+                get_records(query).data(), ts, with_inactive_nodes=with_inactive_nodes
+            ), indent=4)
+
             skip += nodes_batch
 
-        # Get the impacted nodes list (with or without inactive nodes given the with_inactive_nodes parameter)
-        impacted_nodes = cls._compute_impacted_nodes_from_data(
-            impacted_nodes_data, ts, with_inactive_nodes=with_inactive_nodes
-        )
+            # if this is not the last loop, add a "," to the last element
+            # of the array to help easy concatenation at the next loop
+            if skip < total_count:
+                new_json_string_data = new_json_string_data[:-2] + ",\n]"
+            json_string += new_json_string_data[1:-2]
 
-        return impacted_nodes
+        json_string += "\n]"
+
+        return json_string
 
     @classmethod
     def _build_query_count_nodes(cls, topic, labels):
