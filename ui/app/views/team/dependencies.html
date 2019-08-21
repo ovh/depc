@@ -206,10 +206,10 @@
               <div class="row">
                 <h4 class="col-sm-6">Impacted nodes list</h4>
                 <div class="col-sm-3">
-                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes()">Extract all (without inactive)</button>
+                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithoutInactive" class="glyphicon glyphicon-refresh spinning"></i> Extract all (without inactive)</button>
                 </div>
                 <div class="col-sm-3">
-                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes()">Extract all (with inactive)</button>
+                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="!dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithInactive" class="glyphicon glyphicon-refresh spinning"></i> Extract all (with inactive)</button>
                 </div>
               </div>
 

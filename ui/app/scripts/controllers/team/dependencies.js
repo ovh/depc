@@ -35,6 +35,9 @@ angular.module('depcwebuiApp')
     self.impactedCurrentPage = 1;
     self.impactedTotalNumberOfNodes = 0;
     self.impactedDefaultLimit = 25;
+    self.impactedDownloadInProgress = false;
+    self.impactedDownloadInProgressWithoutInactive = false;
+    self.impactedDownloadInProgressWithInactive = false;
 
       self.init = function () {
           self.labels = [];
@@ -304,6 +307,13 @@ angular.module('depcwebuiApp')
       };
 
       self.extractAllImpactedNodes = function(withInactiveNodes) {
+        self.impactedDownloadInProgress = true;
+        if (withInactiveNodes) {
+          self.impactedDownloadInProgressWithInactive = true;
+        } else  {
+          self.impactedDownloadInProgressWithoutInactive = true;
+        }
+
         dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes).then(function(response) {
           var allImpactedNodesString = response.data['data'];
 
@@ -315,6 +325,10 @@ angular.module('depcwebuiApp')
 
           var downloadData = new Blob([allImpactedNodesString], { type: 'text/plain;charset=utf-8' });
           FileSaver.saveAs(downloadData, filename);
+
+          self.impactedDownloadInProgress = false;
+          self.impactedDownloadInProgressWithInactive = false;
+          self.impactedDownloadInProgressWithoutInactive = false;
         });
       };
   });
