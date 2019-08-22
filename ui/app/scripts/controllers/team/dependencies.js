@@ -30,6 +30,7 @@ angular.module('depcwebuiApp')
     self.dependencies = {};
 
     self.impactedLabel = null;
+    self.impactedDateFormat = moment().format('YYYY-MM-DD HH:mm:ss');
     self.impactedNodesLoading = false;
     self.impactedNodes = [];
     self.impactedCurrentPage = 1;
@@ -45,6 +46,10 @@ angular.module('depcwebuiApp')
 
           if ($routeParams.day) {
             self.selectedDay = $routeParams.day;
+          }
+
+          if ($routeParams.impactedDate) {
+            self.impactedDateFormat = $routeParams.impactedDate;
           }
 
           if ($routeParams.inactive) {
@@ -285,8 +290,17 @@ angular.module('depcwebuiApp')
       }
 
       self.selectImpactedLabel = function() {
-        self.impactedNodesLoading = true;
         $location.search('impactedLabel', self.impactedLabel);
+        self.refreshImpactedNodes();
+      };
+
+      self.selectImpactedDateFormat = function() {
+        $location.search('impactedDate', self.impactedDateFormat);
+        self.refreshImpactedNodes();
+      };
+
+      self.refreshImpactedNodes = function() {
+        self.impactedNodesLoading = true;
         self.impactedCurrentPage = 1;
         self.impactedTotalNumberOfNodes = 0;
 
@@ -299,8 +313,9 @@ angular.module('depcwebuiApp')
       self.getImpactedNodes = function(page) {
         self.impactedNodesLoading = true;
         var skip = (page - 1) * self.impactedDefaultLimit;
+        var impactedDateUnix = moment(self.impactedDateFormat, "YYYY-MM-DD HH:mm:ss").unix();
 
-        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, moment().unix()).then(function(response) {
+        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, impactedDateUnix).then(function(response) {
           self.impactedNodes = response.data;
           self.impactedNodesLoading = false;
         });
@@ -313,8 +328,9 @@ angular.module('depcwebuiApp')
         } else  {
           self.impactedDownloadInProgressWithoutInactive = true;
         }
+        var impactedDateUnix = moment(self.impactedDateFormat, "YYYY-MM-DD HH:mm:ss").unix();
 
-        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, moment().unix(), withInactiveNodes).then(function(response) {
+        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, impactedDateUnix, withInactiveNodes).then(function(response) {
           var allImpactedNodesString = response.data['data'];
 
           var filename = 'impacted_' + self.impactedLabel + '_list';

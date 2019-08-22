@@ -198,16 +198,38 @@
           Impacted nodes
         </div>
         <div class="panel-body">
-          <div data-ng-if="!dependenciesCtrl.selectedNode">Please select a node.</div>
+          <div data-ng-if="!dependenciesCtrl.selectedNode">
+            <div class="col-md-12">
+              Please select a node.
+            </div>
+          </div>
           <div data-ng-if="dependenciesCtrl.selectedNode">
             <div class="col-md-12">
-              <h4>Impacted label selection</h4>
-              <label>Please select a label impacted by the currently selected node
-                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.selectImpactedLabel()">
-                  <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
-                </select>
-              </label>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Impacted label selection</h4>
+                  <label for="impacted-label">Please select a label impacted by the currently selected node</label>
+                  <select id="impacted-label" class="form-control" data-ng-model="dependenciesCtrl.impactedLabel" data-ng-change="dependenciesCtrl.selectImpactedLabel()">
+                    <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <h4>Date & time selection</h4>
+                  <label for="dropdown2-input">Please select date & time</label>
+                  <div class="dropdown dropdown2-parent">
+                    <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target=".dropdown2-parent">
+                      <div class="input-group">
+                        <input id="dropdown2-input" type="text" class="form-control" data-ng-model="dependenciesCtrl.impactedDateFormat" data-ng-change="dependenciesCtrl.selectImpactedDateFormat()"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                      </div>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                      <datetimepicker data-ng-model="dependenciesCtrl.impactedDateFormat" data-on-set-time="dependenciesCtrl.selectImpactedDateFormat()" data-datetimepicker-config="{dropdownSelector: '#dropdown2', modelType: 'YYYY-MM-DD HH:mm:ss'}"></datetimepicker>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
+            <hr class="col-md-12">
             <div class="col-md-12">
               <div class="row">
                 <h4 class="col-sm-6">Impacted nodes list</h4>
