@@ -2,7 +2,7 @@
 
 <div class="col-md-12">
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-6">
 			<div class="panel panel-default panel-depc" data-ng-if="!dependenciesCtrl.selectedLabel">
 				<div class="panel-heading">List of labels</div>
 				<div class="panel-body">
@@ -39,69 +39,77 @@
 			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel">
 				<div class="panel-heading"><u>Label :</u> {{ dependenciesCtrl.selectedLabel }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetLabel()">Choose another label</button></div>
 			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel && !dependenciesCtrl.selectedNode">
-				<div class="panel-heading">Select a node</div>
-				<div class="panel-body">
-					<div class="row">
-					 	<div class="col-xs-9">
-					 		<form role="search" id="search" data-ng-submit="dependenciesCtrl.searchNode()">
-					 			<div class="input-group">
-									<input type="text" class="form-control" placeholder="Node's name" data-ng-model="dependenciesCtrl.nodeSearched">
-							      	<span class="input-group-btn">
+		</div>
+    <div class="col-md-6">
+      <div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel && !dependenciesCtrl.selectedNode">
+        <div class="panel-heading">Select a node</div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-9">
+              <form role="search" id="search" data-ng-submit="dependenciesCtrl.searchNode()">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Node's name" data-ng-model="dependenciesCtrl.nodeSearched">
+                  <span class="input-group-btn">
 							        <button class="btn btn-default" type="button" data-ng-click="dependenciesCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
 							      </span>
-							    </div>
-					        </form>
-						</div>
-						<div class="col-xs-3">
-							<button class="btn btn-default" data-ng-click="dependenciesCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
-						</div>
-				  	</div>
-				  	<div class="loader" data-ng-if="dependenciesCtrl.loadNodes"></div>
-				  	<div data-ng-if="dependenciesCtrl.resultTitle">
-			  			<div data-ng-if="dependenciesCtrl.nodesResult.length > 0">
-							<hr />
-							<div class="alert alert-info">{{ dependenciesCtrl.resultTitle }}</div>
-				  		</div>
-				  		<div data-ng-if="dependenciesCtrl.nodesResult.length == 0">
-							<hr />
-							<div class="alert alert-info">No result.</div>
-			  			</div>
-				  	</div>
-			        <div class="list-group" data-ng-if="dependenciesCtrl.nodesResult.length > 0">
-					  <a data-ng-repeat="node in dependenciesCtrl.nodesResult track by $index" data-ng-click="dependenciesCtrl.selectNode(node)" class="list-group-item">
-					  	{{ node }}
-					  </a>
-					</div>
-				</div>
-			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
-				<div class="panel-heading"><u>Node :</u> {{ dependenciesCtrl.selectedNode }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetNode()">Choose another node</button></div>
-				<div class="panel-body" data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
-					<div class="row">
-						<div class="col-md-6">
-							<p><strong>From :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.from) }}</span></p>
-						</div>
-						<div class="col-md-6">
-							<p><strong>To :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.to) }}</span></p>
-						</div>
-					</div>
-					<br />
-					<div class="row">
-						<div class="col-md-12">
-							<a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ dependenciesCtrl.selectedLabel }}/{{dependenciesCtrl.selectedNode}}" class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> Display the QoS evolution</a>
-							<a data-ng-click="dependenciesCtrl.deleteNode(dependenciesCtrl.selectedLabel, dependenciesCtrl.selectedNode)" class="btn btn-danger" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove"></i> Delete the node</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-8">
+                </div>
+              </form>
+            </div>
+            <div class="col-xs-3">
+              <button class="btn btn-default" data-ng-click="dependenciesCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
+            </div>
+          </div>
+          <div class="loader" data-ng-if="dependenciesCtrl.loadNodes"></div>
+          <div data-ng-if="dependenciesCtrl.resultTitle">
+            <div data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+              <hr />
+              <div class="alert alert-info">{{ dependenciesCtrl.resultTitle }}</div>
+            </div>
+            <div data-ng-if="dependenciesCtrl.nodesResult.length == 0">
+              <hr />
+              <div class="alert alert-info">No result.</div>
+            </div>
+          </div>
+          <div class="list-group" data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+            <a data-ng-repeat="node in dependenciesCtrl.nodesResult track by $index" data-ng-click="dependenciesCtrl.selectNode(node)" class="list-group-item">
+              {{ node }}
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
+        <div class="panel-heading"><u>Node :</u> {{ dependenciesCtrl.selectedNode }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetNode()">Choose another node</button></div>
+        <div class="panel-body" data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>From :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.from) }}</span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>To :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.to) }}</span></p>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-md-12">
+              <a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ dependenciesCtrl.selectedLabel }}/{{dependenciesCtrl.selectedNode}}" class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> Display the QoS evolution</a>
+              <a data-ng-click="dependenciesCtrl.deleteNode(dependenciesCtrl.selectedLabel, dependenciesCtrl.selectedNode)" class="btn btn-danger" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove"></i> Delete the node</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+		<div class="col-md-12">
 			<div class="panel panel-default panel-depc">
 				<div class="panel-heading">
 					Direct relations
+          <button type="button" class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.directRelationsCollapsed = !dependenciesCtrl.directRelationsCollapsed">
+            <i data-ng-if="!dependenciesCtrl.directRelationsCollapsed" class="glyphicon glyphicon-chevron-up"></i>
+            <i data-ng-if="dependenciesCtrl.directRelationsCollapsed" class="glyphicon glyphicon-chevron-down"></i>
+          </button>
 				</div>
-				<div class="panel-body">
+				<div class="panel-body" uib-collapse="dependenciesCtrl.directRelationsCollapsed">
           <div class="col-md-12">
             <h4>Filters</h4>
             <form>
@@ -196,8 +204,12 @@
       <div class="panel panel-default panel-depc">
         <div class="panel-heading">
           Impacted nodes
+          <button type="button" class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.impactedNodesCollapsed = !dependenciesCtrl.impactedNodesCollapsed">
+            <i data-ng-if="!dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-up"></i>
+            <i data-ng-if="dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-down"></i>
+          </button>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" uib-collapse="dependenciesCtrl.impactedNodesCollapsed">
           <div data-ng-if="!dependenciesCtrl.selectedNode">
             <div class="col-md-12">
               Please select a node.
