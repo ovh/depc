@@ -641,7 +641,8 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566424800
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566424800'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566424800'.format(team_id)
     )
     assert resp.json == [
         {
@@ -666,7 +667,8 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566338400
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566338400'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566338400'.format(team_id)
     )
     assert resp.json == [
         {
@@ -691,7 +693,8 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566252000
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566252000'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566252000'.format(team_id)
     )
     assert resp.json == [
         {
@@ -716,7 +719,8 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566079200
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566079200'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566079200'.format(team_id)
     )
     assert resp.json == [
         {
@@ -741,7 +745,8 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Offer nodes are impacted by the server02 node at timestamp 1566424800
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes?1=1&impactedLabel=Offer&skip=0&limit=25&ts=1566424800'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '?1=1&impactedLabel=Offer&skip=0&limit=25&ts=1566424800'.format(team_id)
     )
     assert resp.json == [
         {
@@ -883,19 +888,27 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
     # Display all acme_Website nodes impacted by the server02 node at timestamp 1566424800
     # (with inactive nodes included)
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=true'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all'
+        '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=true'.format(team_id)
     )
 
     assert resp.json == {
-        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": false,\n        \"to\": null,\n        \"from\": 1566079200,\n        \"name\": \"website02\"\n    },\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566079200,\n        \"name\": \"website03\"\n    }\n]"
+        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,"
+                "\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": false,\n        \"to\": null,"
+                "\n        \"from\": 1566079200,\n        \"name\": \"website02\"\n    },"
+                "\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566079200,"
+                "\n        \"name\": \"website03\"\n    }\n]"
     }
 
     # Display all acme_Website nodes impacted by the server02 node at timestamp 1566338400
     # (without inactive nodes included)
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=false'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all'
+        '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=false'.format(team_id)
     )
 
     assert resp.json == {
-        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566079200,\n        \"name\": \"website03\"\n    }\n]"
+        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,"
+                "\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": true,\n        \"to\": null,"
+                "\n        \"from\": 1566079200,\n        \"name\": \"website03\"\n    }\n]"
     }

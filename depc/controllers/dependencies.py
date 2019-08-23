@@ -1,4 +1,3 @@
-import io
 import json
 import re
 
@@ -424,7 +423,7 @@ class DependenciesController(Controller):
 
     @classmethod
     def _build_impacted_nodes_queries(
-        cls, topic, label, node, impacted_label=None, skip=None, limit=None, count=False
+        cls, topic, label, node, impacted_label, skip=None, limit=None, count=False
     ):
         # Get the standard impacted nodes query
         query = "MATCH p = (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) WITH *, relationships(p) AS r_list WITH *, nodes(p) as n_sub_list RETURN DISTINCT n AS impacted_node, collect({{ relationships: r_list, nodes: n_sub_list }}) AS all_path_elements ORDER BY n.name SKIP {skip} LIMIT {limit}".format(

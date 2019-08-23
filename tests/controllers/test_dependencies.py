@@ -488,31 +488,39 @@ def test_are_path_elements_all_active(app):
     }
 
     with app.app_context():
-        bool_result = DependenciesController._are_path_elements_all_active(path_elements_mock_ko_invalid_node, 1566338400)
-    assert bool_result == False
+        bool_result = DependenciesController._are_path_elements_all_active(
+            path_elements_mock_ko_invalid_node, 1566338400
+        )
+    assert bool_result is False
 
     with app.app_context():
-        bool_result = DependenciesController._are_path_elements_all_active(path_elements_mock_ko_invalid_rel, 1566338400)
-    assert bool_result == False
+        bool_result = DependenciesController._are_path_elements_all_active(
+            path_elements_mock_ko_invalid_rel, 1566338400
+        )
+    assert bool_result is False
 
     with app.app_context():
-        bool_result = DependenciesController._are_path_elements_all_active(path_elements_mock_ok, 1566338400)
-    assert bool_result == True
+        bool_result = DependenciesController._are_path_elements_all_active(
+            path_elements_mock_ok, 1566338400
+        )
+    assert bool_result is True
 
 
 def test_is_impacted_node_active(app):
     with app.app_context():
         bool_result = DependenciesController._is_impacted_node_active(impacted_node_data, 1566424800)
-    assert bool_result == True
+    assert bool_result is True
 
     with app.app_context():
         bool_result = DependenciesController._is_impacted_node_active(impacted_node_data, 1566252000)
-    assert bool_result == False
+    assert bool_result is False
 
 
 def test_compute_impacted_nodes_from_data(app):
     with app.app_context():
-        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(impacted_websites_by_server02, 1566424800, True)
+        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(
+            impacted_websites_by_server02, 1566424800, True
+        )
     assert computed_impacted_nodes == [
         {'active': True, 'name': 'website01', 'to': None, 'from': 1566424800},
         {'active': False, 'name': 'website02', 'to': None, 'from': 1566079200},
@@ -520,7 +528,9 @@ def test_compute_impacted_nodes_from_data(app):
     ]
 
     with app.app_context():
-        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(impacted_websites_by_server02, 1566338400, True)
+        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(
+            impacted_websites_by_server02, 1566338400, True
+        )
     assert computed_impacted_nodes == [
         {'active': False, 'name': 'website01', 'to': None, 'from': 1566424800},
         {'active': False, 'name': 'website02', 'to': None, 'from': 1566079200},
@@ -528,7 +538,9 @@ def test_compute_impacted_nodes_from_data(app):
     ]
 
     with app.app_context():
-        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(impacted_websites_by_server02, 1566252000, True)
+        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(
+            impacted_websites_by_server02, 1566252000, True
+        )
     assert computed_impacted_nodes == [
         {'active': False, 'name': 'website01', 'to': None, 'from': 1566424800},
         {'active': True, 'name': 'website02', 'to': None, 'from': 1566079200},
@@ -536,7 +548,9 @@ def test_compute_impacted_nodes_from_data(app):
     ]
 
     with app.app_context():
-        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(impacted_websites_by_server02, 1566079200, True)
+        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(
+            impacted_websites_by_server02, 1566079200, True
+        )
     assert computed_impacted_nodes == [
         {'active': False, 'name': 'website01', 'to': None, 'from': 1566424800},
         {'active': False, 'name': 'website02', 'to': None, 'from': 1566079200},
@@ -544,7 +558,9 @@ def test_compute_impacted_nodes_from_data(app):
     ]
 
     with app.app_context():
-        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(impacted_websites_by_server02, 1566424800, False)
+        computed_impacted_nodes = DependenciesController._compute_impacted_nodes_from_data(
+            impacted_websites_by_server02, 1566424800, False
+        )
     assert computed_impacted_nodes == [
         {'active': True, 'name': 'website01', 'to': None, 'from': 1566424800},
         {'active': True, 'name': 'website03', 'to': None, 'from': 1566079200}
