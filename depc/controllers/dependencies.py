@@ -5,7 +5,12 @@ import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
 
-from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError, IntegrityError
+from depc.controllers import (
+    Controller,
+    NotFoundError,
+    RequirementsNotSatisfiedError,
+    IntegrityError,
+)
 from depc.controllers.configs import ConfigController
 from depc.controllers.teams import TeamController
 from depc.utils.neo4j import (
@@ -237,18 +242,20 @@ class DependenciesController(Controller):
         return {}
 
     @classmethod
-    def get_impacted_nodes(
-        cls, team_id, label, node, impacted_label, skip, limit, ts
-    ):
+    def get_impacted_nodes(cls, team_id, label, node, impacted_label, skip, limit, ts):
         try:
             skip = int(skip)
             limit = int(limit)
             ts = int(ts)
         except (TypeError, ValueError):
-            raise IntegrityError("'skip', 'limit' and 'ts' parameters must be positive numbers")
+            raise IntegrityError(
+                "'skip', 'limit' and 'ts' parameters must be positive numbers"
+            )
 
         if skip < 0 or limit < 0 or ts < 0:
-            raise IntegrityError("'skip', 'limit' and 'ts' parameters must be positive numbers")
+            raise IntegrityError(
+                "'skip', 'limit' and 'ts' parameters must be positive numbers"
+            )
 
         if not impacted_label:
             raise IntegrityError("'impactedLabel' parameter must not be empty")
@@ -293,13 +300,7 @@ class DependenciesController(Controller):
 
     @classmethod
     def get_impacted_nodes_all(
-        cls,
-        team_id,
-        label,
-        node,
-        impacted_label,
-        ts,
-        with_inactive_nodes,
+        cls, team_id, label, node, impacted_label, ts, with_inactive_nodes
     ):
         try:
             ts = int(ts)
@@ -335,9 +336,14 @@ class DependenciesController(Controller):
                 count=False,
             )
 
-            new_json_string_data = json.dumps(cls._compute_impacted_nodes_from_data(
-                get_records(query).data(), ts, with_inactive_nodes=with_inactive_nodes
-            ), indent=4)
+            new_json_string_data = json.dumps(
+                cls._compute_impacted_nodes_from_data(
+                    get_records(query).data(),
+                    ts,
+                    with_inactive_nodes=with_inactive_nodes,
+                ),
+                indent=4,
+            )
 
             skip += nodes_batch
 

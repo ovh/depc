@@ -422,6 +422,4 @@ def get_impacted_nodes_all(team_id, label, node):
         request.args.get("withInactiveNodes", False),
     )
 
-    return jsonify(
-        {"data": json_string}
-    )
+    return jsonify({"data": json_string})
