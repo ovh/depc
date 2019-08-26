@@ -12,7 +12,7 @@ angular.module('depcwebuiApp')
     var self = this;
     self.teamName = $routeParams.team;
 
-    self.directRelationsCollapsed = false;
+    self.directRelationshipsCollapsed = false;
     self.impactedNodesCollapsed = false;
 
     self.selectedLabel = null;
