@@ -1,3 +1,4 @@
+import json
 from unittest.mock import PropertyMock, patch
 
 import arrow
@@ -892,13 +893,28 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
         '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=true'.format(team_id)
     )
 
-    assert resp.json == {
-        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,"
-                "\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": false,\n        \"to\": null,"
-                "\n        \"from\": 1566079200,\n        \"name\": \"website02\"\n    },"
-                "\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566079200,"
-                "\n        \"name\": \"website03\"\n    }\n]"
-    }
+    data_json = json.loads(resp.json["data"])
+
+    assert data_json == [
+        {
+            "active": True,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
 
     # Display all acme_Website nodes impacted by the server02 node at timestamp 1566338400
     # (without inactive nodes included)
@@ -907,8 +923,19 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
         '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=false'.format(team_id)
     )
 
-    assert resp.json == {
-        "data": "[\n    {\n        \"active\": true,\n        \"to\": null,\n        \"from\": 1566424800,"
-                "\n        \"name\": \"website01\"\n    },\n    {\n        \"active\": true,\n        \"to\": null,"
-                "\n        \"from\": 1566079200,\n        \"name\": \"website03\"\n    }\n]"
-    }
+    data_json = json.loads(resp.json["data"])
+
+    assert data_json == [
+        {
+            "active": True,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
