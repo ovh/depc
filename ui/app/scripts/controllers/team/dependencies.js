@@ -330,20 +330,20 @@ angular.module('depcwebuiApp')
         });
       };
 
-      self.extractAllImpactedNodes = function(withInactiveNodes) {
+      self.extractAllImpactedNodes = function(inactive) {
         self.impactedDownloadInProgress = true;
-        if (withInactiveNodes) {
+        if (inactive) {
           self.impactedDownloadInProgressWithInactive = true;
         } else  {
           self.impactedDownloadInProgressWithoutInactive = true;
         }
         var impactedDateUnix = moment(self.selectedDay + ' ' + self.impactedTimeFormat, "YYYY-MM-DD HH:mm:ss").unix();
 
-        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, impactedDateUnix, withInactiveNodes).then(function(response) {
+        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, impactedDateUnix, inactive).then(function(response) {
           var allImpactedNodesString = response.data['data'];
 
           var filename = 'impacted_' + self.impactedLabel + '_list';
-          if (withInactiveNodes) {
+          if (inactive) {
             filename += '_with_inactive';
           }
           filename += '.json';

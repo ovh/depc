@@ -134,7 +134,7 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, withInactiveNodes) {
+    var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, inactive) {
       var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/all';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
@@ -148,8 +148,8 @@ angular.module('depcwebuiApp')
         url += '&ts=' + unixTs;
       }
 
-      if (withInactiveNodes || withInactiveNodes === false) {
-        url += '&withInactiveNodes=' + withInactiveNodes;
+      if (inactive) {
+        url += '&inactive=1';
       }
 
       return $http({

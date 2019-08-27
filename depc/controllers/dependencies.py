@@ -313,8 +313,6 @@ class DependenciesController(Controller):
         if not impacted_label:
             raise IntegrityError("'impactedLabel' parameter must not be empty")
 
-        with_inactive_nodes = with_inactive_nodes == "true"
-
         team = TeamController._get({"Team": {"id": team_id}})
 
         json_string = "["

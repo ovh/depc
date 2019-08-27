@@ -384,7 +384,7 @@ def get_impacted_nodes_all(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted/all?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted/all?impactedLabel=Offer&ts=1564645344 HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -405,7 +405,7 @@ def get_impacted_nodes_all(team_id, label, node):
 
     :param impactedLabel: impacted nodes for the given label
     :param ts: unix timestamp to check if the nodes are active or not at this timestamp
-    :param withInactiveNodes: return inactive impacted nodes in the downloaded file or not (default is False)
+    :param inactive: return inactive impacted nodes in the downloaded file or not (default is False)
     :resheader Content-Type: application/json
     :status 200: the array of impacted nodes
     """
@@ -419,7 +419,7 @@ def get_impacted_nodes_all(team_id, label, node):
         node,
         request.args.get("impactedLabel", None),
         request.args.get("ts", None),
-        request.args.get("withInactiveNodes", False),
+        request.args.get("inactive", False),
     )
 
     return jsonify({"data": json_string})

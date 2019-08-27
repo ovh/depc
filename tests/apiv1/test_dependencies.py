@@ -890,7 +890,7 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
     # (with inactive nodes included)
     resp = client.get(
         '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
-        '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=true'.format(team_id)
+        '?1=1&impactedLabel=Website&ts=1566424800&inactive=1'.format(team_id)
     )
 
     data_json = json.loads(resp.json["data"])
@@ -920,7 +920,7 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
     # (without inactive nodes included)
     resp = client.get(
         '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
-        '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=false'.format(team_id)
+        '?1=1&impactedLabel=Website&ts=1566424800'.format(team_id)
     )
 
     data_json = json.loads(resp.json["data"])
