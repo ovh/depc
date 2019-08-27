@@ -89,6 +89,10 @@ angular.module('depcwebuiApp')
       self.init();
 
       self.refreshAll = function() {
+        if (!self.selectedLabel || !self.selectedNode) {
+          return
+        }
+
         self.loadDependencies();
         self.refreshImpactedNodes();
       };
@@ -237,12 +241,7 @@ angular.module('depcwebuiApp')
       self.selectNode = function (node) {
           $location.search('node', node);
           self.selectedNode = node;
-          self.loadDependencies();
-
-          // Refresh the impacted nodes when selecting a new node if a target label has already been selected before
-          if (self.impactedLabel) {
-            self.refreshImpactedNodes();
-          }
+          self.refreshAll();
       };
 
       self.hasDependencies = function () {
