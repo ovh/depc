@@ -33,7 +33,8 @@ angular.module('depcwebuiApp')
     self.dependencies = {};
 
     self.impactedLabel = null;
-    self.impactedDateFormat = moment().format('YYYY-MM-DD HH:mm:ss');
+    self.impactedTimeFormat = moment().format('HH:mm:ss');
+    self.impactedDatetime = moment(self.impactedTimeFormat, 'HH:mm:ss');
     self.impactedNodesLoading = false;
     self.impactedNodes = [];
     self.impactedCurrentPage = 1;
@@ -51,8 +52,9 @@ angular.module('depcwebuiApp')
             self.selectedDay = $routeParams.day;
           }
 
-          if ($routeParams.impactedDate) {
-            self.impactedDateFormat = $routeParams.impactedDate;
+          if ($routeParams.time) {
+            self.impactedTimeFormat = $routeParams.time;
+            self.impactedDatetime = moment(self.impactedTimeFormat, 'HH:mm:ss');
           }
 
           if ($routeParams.inactive) {
@@ -85,6 +87,11 @@ angular.module('depcwebuiApp')
           });
       };
       self.init();
+
+      self.refreshAll = function() {
+        self.loadDependencies();
+        self.refreshImpactedNodes();
+      };
 
       self.selectLabel = function (label) {
           $location.search('label', label);
@@ -234,7 +241,7 @@ angular.module('depcwebuiApp')
 
           // Refresh the impacted nodes when selecting a new node if a target label has already been selected before
           if (self.impactedLabel) {
-            self.selectImpactedLabel();
+            self.refreshImpactedNodes();
           }
       };
 
@@ -292,17 +299,16 @@ angular.module('depcwebuiApp')
         });
       }
 
-      self.selectImpactedLabel = function() {
-        $location.search('impactedLabel', self.impactedLabel);
-        self.refreshImpactedNodes();
-      };
-
-      self.selectImpactedDateFormat = function() {
-        $location.search('impactedDate', self.impactedDateFormat);
-        self.refreshImpactedNodes();
-      };
-
       self.refreshImpactedNodes = function() {
+        if (!self.impactedLabel || !self.impactedDatetime || !self.selectedDay) {
+          return
+        }
+
+        self.impactedTimeFormat = moment(self.impactedDatetime).format('HH:mm:ss');
+
+        $location.search('impactedLabel', self.impactedLabel);
+        $location.search('time', self.impactedTimeFormat);
+
         self.impactedNodesLoading = true;
         self.impactedCurrentPage = 1;
         self.impactedTotalNumberOfNodes = 0;
@@ -316,7 +322,7 @@ angular.module('depcwebuiApp')
       self.getImpactedNodes = function(page) {
         self.impactedNodesLoading = true;
         var skip = (page - 1) * self.impactedDefaultLimit;
-        var impactedDateUnix = moment(self.impactedDateFormat, "YYYY-MM-DD HH:mm:ss").unix();
+        var impactedDateUnix = moment(self.selectedDay + ' ' + self.impactedTimeFormat, "YYYY-MM-DD HH:mm:ss").unix();
 
         dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, impactedDateUnix).then(function(response) {
           self.impactedNodes = response.data;
@@ -331,7 +337,7 @@ angular.module('depcwebuiApp')
         } else  {
           self.impactedDownloadInProgressWithoutInactive = true;
         }
-        var impactedDateUnix = moment(self.impactedDateFormat, "YYYY-MM-DD HH:mm:ss").unix();
+        var impactedDateUnix = moment(self.selectedDay + ' ' + self.impactedTimeFormat, "YYYY-MM-DD HH:mm:ss").unix();
 
         dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, impactedDateUnix, withInactiveNodes).then(function(response) {
           var allImpactedNodesString = response.data['data'];
