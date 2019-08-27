@@ -114,7 +114,7 @@ def is_relationship_active_at_timestamp(relationship, ts):
     relationship_periods = relationship.get("periods", [])
 
     # If no periods are found, consider the relationship active
-    if len(relationship_periods) == 0:
+    if not relationship_periods:
         return True
 
     if len(relationship_periods) % 2 == 0:

@@ -430,20 +430,25 @@ class DependenciesController(Controller):
         cls, topic, label, node, impacted_label, skip=None, limit=None, count=False
     ):
         # Get the standard impacted nodes query
-        query = "MATCH p = (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) WITH *, relationships(p) AS r_list WITH *, nodes(p) as n_sub_list RETURN DISTINCT n AS impacted_node, collect({{ relationships: r_list, nodes: n_sub_list }}) AS all_path_elements ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
-            topic=topic,
-            impacted_label=impacted_label,
-            label=label,
-            name=node,
-            skip=skip,
-            limit=limit,
-        )
+        query = "MATCH p = (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) " \
+                "WITH *, relationships(p) AS r_list WITH *, nodes(p) AS n_sub_list " \
+                "RETURN DISTINCT n AS impacted_node, " \
+                "collect({{ relationships: r_list, nodes: n_sub_list }}) AS all_path_elements " \
+                "ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
+                    topic=topic,
+                    impacted_label=impacted_label,
+                    label=label,
+                    name=node,
+                    skip=skip,
+                    limit=limit,
+                )
 
         # If we want to count, get the impacted nodes count query
         if count:
-            query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) RETURN count(DISTINCT n) AS count".format(
-                topic=topic, impacted_label=impacted_label, label=label, name=node
-            )
+            query = "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) " \
+                    "RETURN count(DISTINCT n) AS count".format(
+                        topic=topic, impacted_label=impacted_label, label=label, name=node
+                    )
 
         return query
 
@@ -451,7 +456,8 @@ class DependenciesController(Controller):
     def _compute_impacted_nodes_from_data(
         cls, impacted_nodes_data, ts, with_inactive_nodes
     ):
-        """Return the list of impacted nodes adding metadata about if they are active or not (this function can also filter out inactive impacted nodes)"""
+        """Return the list of impacted nodes adding metadata about if they are active or not
+        (this function can also filter out inactive impacted nodes)"""
         impacted_nodes = []
         for impacted_node_data in impacted_nodes_data:
             if cls._is_impacted_node_active(impacted_node_data, ts):

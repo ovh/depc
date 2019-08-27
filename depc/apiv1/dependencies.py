@@ -1,5 +1,5 @@
 import arrow
-from flask import abort, jsonify, request, send_file
+from flask import abort, jsonify, request
 from flask_login import login_required
 
 from depc.apiv1 import api
