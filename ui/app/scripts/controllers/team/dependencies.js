@@ -32,6 +32,7 @@ angular.module('depcwebuiApp')
     self.dependenciesLoading = false;
     self.dependencies = {};
 
+    self.impactedFirstLoadDone = false;
     self.impactedLabel = null;
     self.impactedTimeFormat = moment().format('HH:mm:ss');
     self.impactedDatetime = moment(self.impactedTimeFormat, 'HH:mm:ss');
@@ -326,6 +327,7 @@ angular.module('depcwebuiApp')
         dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, impactedDateUnix).then(function(response) {
           self.impactedNodes = response.data;
           self.impactedNodesLoading = false;
+          self.impactedFirstLoadDone = true;
         });
       };
 

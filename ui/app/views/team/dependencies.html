@@ -111,7 +111,6 @@
         <div class="panel-body">
           <h4>Common filters</h4>
           <div class="col-md-12">
-            <label for="start">Choose the day:</label>
             <div class="dropdown">
               <a class="dropdown-toggle" id="dropdown1" role="button" data-toggle="dropdown">
                 <div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="dependenciesCtrl.selectedDay"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
@@ -139,21 +138,23 @@
           <h4>Impacted nodes filters only</h4>
           <div class="col-md-12">
             <div class="row">
-              <div class="col-md-6">
-                <label for="impacted-label">Impacted label selection</label>
-                <select id="impacted-label" class="form-control" data-ng-model="dependenciesCtrl.impactedLabel">
+              <div class="col-md-7">
+                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel">
+                  <option data-ng-if="!dependenciesCtrl.impactedLabel" value="">Impacted label</option>
                   <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
                 </select>
               </div>
-              <div class="col-md-6">
-                <label>Time selection</label>
-                <div class="pull-left" uib-timepicker data-ng-model="dependenciesCtrl.impactedDatetime" data-mousewheel="false" data-show-seconds="true" data-show-meridian="false" data-show-spinners="false"></div>
+              <div class="col-md-5">
+                <div class="pull-right" uib-timepicker data-ng-model="dependenciesCtrl.impactedDatetime" data-mousewheel="false" data-show-seconds="true" data-show-meridian="false" data-show-spinners="false"></div>
               </div>
             </div>
           </div>
           <hr class="col-md-12">
-          <div class="col-md-12">
-            <button class="btn btn-primary" data-ng-click="dependenciesCtrl.refreshAll()" data-ng-disabled="!dependenciesCtrl.selectedLabel || !dependenciesCtrl.selectedNode"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
+          <div class="col-md-6">
+            <a href="https://ovh.github.io/depc/index.html">See documentation</a>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.refreshAll()" data-ng-disabled="!dependenciesCtrl.selectedLabel || !dependenciesCtrl.selectedNode"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
           </div>
         </div>
       </div>
@@ -230,10 +231,14 @@
       <div class="panel panel-default panel-depc">
         <div class="panel-heading">
           Impacted nodes
-          <button type="button" class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.impactedNodesCollapsed = !dependenciesCtrl.impactedNodesCollapsed">
-            <i data-ng-if="!dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-up"></i>
-            <i data-ng-if="dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-down"></i>
-          </button>
+          <div class="pull-right">
+            <button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithoutInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (without inactive)</button>
+            <button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (with inactive)</button>
+            <button type="button" class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.impactedNodesCollapsed = !dependenciesCtrl.impactedNodesCollapsed">
+              <i data-ng-if="!dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-up"></i>
+              <i data-ng-if="dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-down"></i>
+            </button>
+          </div>
         </div>
         <div class="panel-body" uib-collapse="dependenciesCtrl.impactedNodesCollapsed">
           <div data-ng-if="!dependenciesCtrl.selectedNode">
@@ -244,19 +249,9 @@
           <div data-ng-if="dependenciesCtrl.selectedNode">
             <div class="col-md-12">
               <div class="row">
-                <h4 class="col-sm-6">Impacted nodes list</h4>
-                <div class="col-sm-3">
-                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithoutInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (without inactive)</button>
-                </div>
-                <div class="col-sm-3">
-                  <button class="btn btn-primary btn-block" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (with inactive)</button>
-                </div>
-              </div>
-
-              <div class="row">
                 <div class="loader col-md-12" data-ng-if="dependenciesCtrl.impactedNodesLoading"></div>
-                <div class="col-md-12" data-ng-if="!dependenciesCtrl.impactedLabel && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</div>
-                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                <div class="col-md-12" data-ng-if="!dependenciesCtrl.impactedFirstLoadDone && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</div>
+                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedFirstLoadDone && dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
                   No impacted nodes found for the selected label.
                 </div>
                 <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
