@@ -279,7 +279,7 @@ def delete_node(team_id, label, node):
     )
 
 
-@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes")
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted")
 @login_required
 def get_impacted_nodes(team_id, label, node):
     """Get the nodes impacted by a given node.
@@ -290,7 +290,7 @@ def get_impacted_nodes(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes?impactedLabel=Offer&skip=0&limit=25&ts=1564645111 HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted?impactedLabel=Offer&skip=0&limit=25&ts=1564645111 HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -333,7 +333,7 @@ def get_impacted_nodes(team_id, label, node):
     )
 
 
-@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/count")
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted/count")
 @login_required
 def get_impacted_nodes_count(team_id, label, node):
     """Count the total number of nodes impacted by a given node.
@@ -344,7 +344,7 @@ def get_impacted_nodes_count(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted-nodes/count?impactedLabel=Offer HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted/count?impactedLabel=Offer HTTP/1.1
       Host: example.com
       Accept: application/json
 
@@ -373,7 +373,7 @@ def get_impacted_nodes_count(team_id, label, node):
     )
 
 
-@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted-nodes/all")
+@api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>/impacted/all")
 @login_required
 def get_impacted_nodes_all(team_id, label, node):
     """Get a JSON payload containing all nodes impacted by a given node.
@@ -384,7 +384,7 @@ def get_impacted_nodes_all(team_id, label, node):
 
     .. sourcecode:: http
 
-      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted-nodes/all?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
+      GET /v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted/all?impactedLabel=Offer&ts=1564645344&withInactiveNodes=false HTTP/1.1
       Host: example.com
       Accept: application/json
 

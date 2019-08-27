@@ -94,7 +94,7 @@ angular.module('depcwebuiApp')
     }
 
     var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit, unixTs) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
       url += '?1=1';
@@ -122,7 +122,7 @@ angular.module('depcwebuiApp')
     };
 
     var getTeamImpactedNodesCount = function(teamId, label, node, impactedLabel) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/count';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/count';
 
       if (impactedLabel) {
         url += '?impactedLabel=' + impactedLabel;
@@ -135,7 +135,7 @@ angular.module('depcwebuiApp')
     };
 
     var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, withInactiveNodes) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted-nodes/all';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/all';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
       url += '?1=1';

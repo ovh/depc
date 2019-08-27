@@ -642,7 +642,7 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566424800
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
         '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566424800'.format(team_id)
     )
     assert resp.json == [
@@ -668,7 +668,7 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566338400
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
         '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566338400'.format(team_id)
     )
     assert resp.json == [
@@ -694,7 +694,7 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566252000
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
         '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566252000'.format(team_id)
     )
     assert resp.json == [
@@ -720,7 +720,7 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566079200
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
         '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566079200'.format(team_id)
     )
     assert resp.json == [
@@ -746,7 +746,7 @@ def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_
 
     # Display which acme_Offer nodes are impacted by the server02 node at timestamp 1566424800
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
         '?1=1&impactedLabel=Offer&skip=0&limit=25&ts=1566424800'.format(team_id)
     )
     assert resp.json == [
@@ -816,7 +816,7 @@ def test_get_impacted_nodes_count(client, create_team, create_user, create_grant
 
     # Display the number of acme_Website impacted by the server02 node
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/count?impactedLabel=Website'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/count?impactedLabel=Website'.format(team_id)
     )
     assert resp.json == {
         "count": 3
@@ -824,7 +824,7 @@ def test_get_impacted_nodes_count(client, create_team, create_user, create_grant
 
     # Display the number of acme_Offer impacted by the server02 node
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/count?impactedLabel=Offer'.format(team_id)
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/count?impactedLabel=Offer'.format(team_id)
     )
     assert resp.json == {
         "count": 1
@@ -889,7 +889,7 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
     # Display all acme_Website nodes impacted by the server02 node at timestamp 1566424800
     # (with inactive nodes included)
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
         '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=true'.format(team_id)
     )
 
@@ -919,7 +919,7 @@ def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, 
     # Display all acme_Website nodes impacted by the server02 node at timestamp 1566338400
     # (without inactive nodes included)
     resp = client.get(
-        '/v1/teams/{}/labels/Server/nodes/server02/impacted-nodes/all'
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
         '?1=1&impactedLabel=Website&ts=1566424800&withInactiveNodes=false'.format(team_id)
     )
 
