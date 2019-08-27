@@ -459,7 +459,7 @@ def test_build_impacted_nodes_queries(app):
             topic="acme", label="Server", node="server02", impacted_label="Website", skip=0, limit=25, count=False
         )
     assert query == "MATCH p = (n:acme_Website)-[*]->(:acme_Server{name: 'server02'}) " \
-                    "WITH *, relationships(p) AS r_list WITH *, nodes(p) as n_sub_list RETURN DISTINCT n " \
+                    "WITH *, relationships(p) AS r_list WITH *, nodes(p) AS n_sub_list RETURN DISTINCT n " \
                     "AS impacted_node, collect({ relationships: r_list, nodes: n_sub_list }) " \
                     "AS all_path_elements ORDER BY n.name SKIP 0 LIMIT 25"
 
