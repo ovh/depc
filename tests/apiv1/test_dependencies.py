@@ -1,3 +1,4 @@
+import json
 from unittest.mock import PropertyMock, patch
 
 import arrow
@@ -500,7 +501,7 @@ def test_get_node_dependencies_with_config(client, create_team, create_user, cre
     ]
 
 
-def test_get_node_dependencies_with_downstream(client, create_team, create_user, create_grant, create_rule, create_config, neo_create):
+def test_get_node_dependencies_with_impacted_nodes(client, create_team, create_user, create_grant, create_rule, create_config, neo_create):
     team_id = str(create_team('Acme')['id'])
     user_id = str(create_user('depc')['id'])
     create_grant(team_id, user_id, 'member')
@@ -528,13 +529,13 @@ def test_get_node_dependencies_with_downstream(client, create_team, create_user,
         'Server': [{'name': 'server001'}]
     }
 
-    # Display downstream nodes
-    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?downstream=1'.format(team_id))
+    # Display impacted nodes
+    resp = client.get('/v1/teams/{}/labels/Cluster/nodes/cluster01?impacted=1'.format(team_id))
     assert resp.json['dependencies'] == {
         'Cluster': [{'name': 'cluster01'}]
     }
 
-    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001?downstream=1'.format(team_id))
+    resp = client.get('/v1/teams/{}/labels/Server/nodes/server001?impacted=1'.format(team_id))
     assert resp.json['dependencies'] == {
         'Server': [{'name': 'server001'}],
         'Cluster': [{'inactive': False, 'name': 'cluster01', 'periods': [0]}]
@@ -582,3 +583,359 @@ def test_delete_node(client, create_team, create_user, create_grant, neo_create)
 
     resp = client.get('/v1/teams/{}/labels/Cluster/nodes'.format(team_id))
     assert resp.json == []
+
+
+def test_get_impacted_nodes(client, create_team, create_user, create_grant, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    user_id = str(create_user('depc')['id'])
+    create_grant(team_id, user_id, 'member')
+    client.login('depc')
+
+    # Create the following nodes with the following relationships
+    # (from/to/periods not indicated to improve readability)
+    #
+    #                                    DEPENDS_ON
+    #                                 ||===========> (ftp02)
+    #                DEPENDS_ON       ||
+    #             ||===========> (website03) ==||
+    #             ||                           ||
+    #             ||                           || DEPENDS_ON              DEPENDS_ON             DEPENDS_ON
+    # (offer01) ==||===========> (website01) ==||===========> (server02) ===========> (other-A) ===========> (other-B)
+    #             ||                           ||                                                               ||
+    #             ||                           ||                             DEPENDS_ON             DEPENDS_ON ||
+    #             ||===========> (website02) ==||                  (other-D) <=========== (other-C) <===========||
+    #             ||
+    #             ||                          DEPENDS_ON
+    #             ||===========> (web-other) ===========> (ftp01)
+    #                                ||
+    #                                || DEPENDS_ON
+    #                                ||===========> (server01)
+    neo_create(
+        "MERGE(off1:acme_Offer{name:'offer01', from: 1566338400}) "
+        "MERGE(web1:acme_Website{name:'website01', from: 1566424800}) "
+        "MERGE(web3:acme_Website{name:'website03', from: 1566079200}) "
+        "MERGE(web2:acme_Website{name:'website02', from: 1566079200}) "
+        "MERGE(web_other:acme_Website{name:'web-other', from: 1566338400}) "
+        "MERGE(serv1:acme_Server{name:'server01', from: 1566338400}) "
+        "MERGE(serv2:acme_Server{name:'server02', from: 1566079200}) "
+        "MERGE(ftp1:acme_Ftp{name:'ftp01', from: 1566338400}) "
+        "MERGE(ftp2:acme_Ftp{name:'ftp02', from: 1566338400}) "
+        "MERGE(other_a:acme_OtherA{name:'other-A', from: 1566338400}) "
+        "MERGE(other_b:acme_OtherB{name:'other-B', from: 1566165600, to: 1566252000}) "
+        "MERGE(other_c:acme_OtherC{name:'other-C', from: 1566338400}) "
+        "MERGE(other_d:acme_OtherD{name:'other-D', from: 1566338400}) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web1) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(web3) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(web2) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web_other) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv1) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(ftp1) "
+        "MERGE(web1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(ftp2) "
+        "MERGE(web2)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv2) "
+        "MERGE(serv2)-[:DEPENDS_ON{periods: [1566338400]}]->(other_a) "
+        "MERGE(other_a)-[:DEPENDS_ON{periods: [1566338400]}]->(other_b) "
+        "MERGE(other_b)-[:DEPENDS_ON{periods: [1566338400]}]->(other_c) "
+        "MERGE(other_c)-[:DEPENDS_ON{periods: [1566338400]}]->(other_d)"
+    )
+
+    # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566424800
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566424800'.format(team_id)
+    )
+    assert resp.json == [
+        {
+            "active": True,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
+
+    # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566338400
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566338400'.format(team_id)
+    )
+    assert resp.json == [
+        {
+            "active": False,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
+
+    # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566252000
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566252000'.format(team_id)
+    )
+    assert resp.json == [
+        {
+            "active": False,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
+
+    # Display which acme_Website nodes are impacted by the server02 node at timestamp 1566079200
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
+        '?1=1&impactedLabel=Website&skip=0&limit=25&ts=1566079200'.format(team_id)
+    )
+    assert resp.json == [
+        {
+            "active": False,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
+
+    # Display which acme_Offer nodes are impacted by the server02 node at timestamp 1566424800
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted'
+        '?1=1&impactedLabel=Offer&skip=0&limit=25&ts=1566424800'.format(team_id)
+    )
+    assert resp.json == [
+        {
+            "active": True,
+            "from": 1566338400,
+            "name": "offer01",
+            "to": None
+        }
+    ]
+
+
+def test_get_impacted_nodes_count(client, create_team, create_user, create_grant, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    user_id = str(create_user('depc')['id'])
+    create_grant(team_id, user_id, 'member')
+    client.login('depc')
+
+    # Create the following nodes with the following relationships
+    # (from/to/periods not indicated to improve readability)
+    #
+    #                                    DEPENDS_ON
+    #                                 ||===========> (ftp02)
+    #                DEPENDS_ON       ||
+    #             ||===========> (website03) ==||
+    #             ||                           ||
+    #             ||                           || DEPENDS_ON              DEPENDS_ON             DEPENDS_ON
+    # (offer01) ==||===========> (website01) ==||===========> (server02) ===========> (other-A) ===========> (other-B)
+    #             ||                           ||                                                               ||
+    #             ||                           ||                             DEPENDS_ON             DEPENDS_ON ||
+    #             ||===========> (website02) ==||                  (other-D) <=========== (other-C) <===========||
+    #             ||
+    #             ||                          DEPENDS_ON
+    #             ||===========> (web-other) ===========> (ftp01)
+    #                                ||
+    #                                || DEPENDS_ON
+    #                                ||===========> (server01)
+    neo_create(
+        "MERGE(off1:acme_Offer{name:'offer01', from: 1566338400}) "
+        "MERGE(web1:acme_Website{name:'website01', from: 1566424800}) "
+        "MERGE(web3:acme_Website{name:'website03', from: 1566079200}) "
+        "MERGE(web2:acme_Website{name:'website02', from: 1566079200}) "
+        "MERGE(web_other:acme_Website{name:'web-other', from: 1566338400}) "
+        "MERGE(serv1:acme_Server{name:'server01', from: 1566338400}) "
+        "MERGE(serv2:acme_Server{name:'server02', from: 1566079200}) "
+        "MERGE(ftp1:acme_Ftp{name:'ftp01', from: 1566338400}) "
+        "MERGE(ftp2:acme_Ftp{name:'ftp02', from: 1566338400}) "
+        "MERGE(other_a:acme_OtherA{name:'other-A', from: 1566338400}) "
+        "MERGE(other_b:acme_OtherB{name:'other-B', from: 1566165600, to: 1566252000}) "
+        "MERGE(other_c:acme_OtherC{name:'other-C', from: 1566338400}) "
+        "MERGE(other_d:acme_OtherD{name:'other-D', from: 1566338400}) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web1) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(web3) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(web2) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web_other) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv1) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(ftp1) "
+        "MERGE(web1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(ftp2) "
+        "MERGE(web2)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv2) "
+        "MERGE(serv2)-[:DEPENDS_ON{periods: [1566338400]}]->(other_a) "
+        "MERGE(other_a)-[:DEPENDS_ON{periods: [1566338400]}]->(other_b) "
+        "MERGE(other_b)-[:DEPENDS_ON{periods: [1566338400]}]->(other_c) "
+        "MERGE(other_c)-[:DEPENDS_ON{periods: [1566338400]}]->(other_d)"
+    )
+
+    # Display the number of acme_Website impacted by the server02 node
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/count?impactedLabel=Website'.format(team_id)
+    )
+    assert resp.json == {
+        "count": 3
+    }
+
+    # Display the number of acme_Offer impacted by the server02 node
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/count?impactedLabel=Offer'.format(team_id)
+    )
+    assert resp.json == {
+        "count": 1
+    }
+
+
+def test_get_impacted_nodes_all(client, create_team, create_user, create_grant, neo_create):
+    team_id = str(create_team('Acme')['id'])
+    user_id = str(create_user('depc')['id'])
+    create_grant(team_id, user_id, 'member')
+    client.login('depc')
+
+    # Create the following nodes with the following relationships
+    # (from/to/periods not indicated to improve readability)
+    #
+    #                                    DEPENDS_ON
+    #                                 ||===========> (ftp02)
+    #                DEPENDS_ON       ||
+    #             ||===========> (website03) ==||
+    #             ||                           ||
+    #             ||                           || DEPENDS_ON              DEPENDS_ON             DEPENDS_ON
+    # (offer01) ==||===========> (website01) ==||===========> (server02) ===========> (other-A) ===========> (other-B)
+    #             ||                           ||                                                               ||
+    #             ||                           ||                             DEPENDS_ON             DEPENDS_ON ||
+    #             ||===========> (website02) ==||                  (other-D) <=========== (other-C) <===========||
+    #             ||
+    #             ||                          DEPENDS_ON
+    #             ||===========> (web-other) ===========> (ftp01)
+    #                                ||
+    #                                || DEPENDS_ON
+    #                                ||===========> (server01)
+    neo_create(
+        "MERGE(off1:acme_Offer{name:'offer01', from: 1566338400}) "
+        "MERGE(web1:acme_Website{name:'website01', from: 1566424800}) "
+        "MERGE(web3:acme_Website{name:'website03', from: 1566079200}) "
+        "MERGE(web2:acme_Website{name:'website02', from: 1566079200}) "
+        "MERGE(web_other:acme_Website{name:'web-other', from: 1566338400}) "
+        "MERGE(serv1:acme_Server{name:'server01', from: 1566338400}) "
+        "MERGE(serv2:acme_Server{name:'server02', from: 1566079200}) "
+        "MERGE(ftp1:acme_Ftp{name:'ftp01', from: 1566338400}) "
+        "MERGE(ftp2:acme_Ftp{name:'ftp02', from: 1566338400}) "
+        "MERGE(other_a:acme_OtherA{name:'other-A', from: 1566338400}) "
+        "MERGE(other_b:acme_OtherB{name:'other-B', from: 1566165600, to: 1566252000}) "
+        "MERGE(other_c:acme_OtherC{name:'other-C', from: 1566338400}) "
+        "MERGE(other_d:acme_OtherD{name:'other-D', from: 1566338400}) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web1) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(web3) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(web2) "
+        "MERGE(off1)-[:DEPENDS_ON{periods: [1566338400]}]->(web_other) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv1) "
+        "MERGE(web_other)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(ftp1) "
+        "MERGE(web1)-[:DEPENDS_ON{periods: [1566165600, 1566252000, 1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(serv2) "
+        "MERGE(web3)-[:DEPENDS_ON{periods: [1566338400]}]->(ftp2) "
+        "MERGE(web2)-[:DEPENDS_ON{periods: [1566165600, 1566252000]}]->(serv2) "
+        "MERGE(serv2)-[:DEPENDS_ON{periods: [1566338400]}]->(other_a) "
+        "MERGE(other_a)-[:DEPENDS_ON{periods: [1566338400]}]->(other_b) "
+        "MERGE(other_b)-[:DEPENDS_ON{periods: [1566338400]}]->(other_c) "
+        "MERGE(other_c)-[:DEPENDS_ON{periods: [1566338400]}]->(other_d)"
+    )
+
+    # Display all acme_Website nodes impacted by the server02 node at timestamp 1566424800
+    # (with inactive nodes included)
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
+        '?1=1&impactedLabel=Website&ts=1566424800&inactive=1'.format(team_id)
+    )
+
+    data_json = json.loads(resp.json["data"])
+
+    assert data_json == [
+        {
+            "active": True,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": False,
+            "from": 1566079200,
+            "name": "website02",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]
+
+    # Display all acme_Website nodes impacted by the server02 node at timestamp 1566338400
+    # (without inactive nodes included)
+    resp = client.get(
+        '/v1/teams/{}/labels/Server/nodes/server02/impacted/all'
+        '?1=1&impactedLabel=Website&ts=1566424800'.format(team_id)
+    )
+
+    data_json = json.loads(resp.json["data"])
+
+    assert data_json == [
+        {
+            "active": True,
+            "from": 1566424800,
+            "name": "website01",
+            "to": None
+        },
+        {
+            "active": True,
+            "from": 1566079200,
+            "name": "website03",
+            "to": None
+        }
+    ]

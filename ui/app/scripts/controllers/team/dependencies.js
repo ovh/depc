@@ -8,16 +8,19 @@
  * Controller of the depcwebuiApp
  */
 angular.module('depcwebuiApp')
-  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, toastr, config, modalService, teamsService, dependenciesService) {
+  .controller('DependenciesCtrl', function ($routeParams, $location, $filter, $confirm, $q, toastr, config, modalService, teamsService, dependenciesService, FileSaver, Blob) {
     var self = this;
     self.teamName = $routeParams.team;
+
+    self.directRelationshipsCollapsed = false;
+    self.impactedNodesCollapsed = false;
 
     self.selectedLabel = null;
     self.selectedNode = null;
     self.nodeProperties = {};
     self.loadNodes = false;
     self.includeInactive = false;
-    self.displayDownstreamNodes = false;
+    self.displayImpactedNodes = false;
     self.selectedDay = moment().format('YYYY-MM-DD');
 
     self.resultTitle = null;
@@ -29,6 +32,19 @@ angular.module('depcwebuiApp')
     self.dependenciesLoading = false;
     self.dependencies = {};
 
+    self.impactedFirstLoadDone = false;
+    self.impactedLabel = null;
+    self.impactedTimeFormat = moment().format('HH:mm:ss');
+    self.impactedDatetime = moment(self.impactedTimeFormat, 'HH:mm:ss');
+    self.impactedNodesLoading = false;
+    self.impactedNodes = [];
+    self.impactedCurrentPage = 1;
+    self.impactedTotalNumberOfNodes = 0;
+    self.impactedDefaultLimit = 25;
+    self.impactedDownloadInProgress = false;
+    self.impactedDownloadInProgressWithoutInactive = false;
+    self.impactedDownloadInProgressWithInactive = false;
+
       self.init = function () {
           self.labels = [];
           self.labelsLoading = true;
@@ -37,12 +53,17 @@ angular.module('depcwebuiApp')
             self.selectedDay = $routeParams.day;
           }
 
+          if ($routeParams.time) {
+            self.impactedTimeFormat = $routeParams.time;
+            self.impactedDatetime = moment(self.impactedTimeFormat, 'HH:mm:ss');
+          }
+
           if ($routeParams.inactive) {
             self.includeInactive = true;
           }
 
-          if ($routeParams.downstream) {
-            self.displayDownstreamNodes = true;
+          if ($routeParams.impacted) {
+            self.displayImpactedNodes = true;
           }
 
           teamsService.getTeamByName(self.teamName).then(function (response) {
@@ -52,17 +73,30 @@ angular.module('depcwebuiApp')
                   self.labels = response.data;
                   self.labelsLoading = false;
 
+                  if ($routeParams.impactedLabel) {
+                    self.impactedLabel = $routeParams.impactedLabel;
+                  }
+
                   if ($routeParams.label) {
                       self.selectLabel($routeParams.label);
 
                       if ($routeParams.node) {
-                          self.selectNode($routeParams.node);
+                        self.selectNode($routeParams.node);
                       }
                   }
               });
           });
       };
       self.init();
+
+      self.refreshAll = function() {
+        if (!self.selectedLabel || !self.selectedNode) {
+          return
+        }
+
+        self.loadDependencies();
+        self.refreshImpactedNodes();
+      };
 
       self.selectLabel = function (label) {
           $location.search('label', label);
@@ -142,17 +176,17 @@ angular.module('depcwebuiApp')
             $location.search('inactive', null);
         }
 
-        if ( self.displayDownstreamNodes ) {
-            $location.search('downstream', true);
+        if ( self.displayImpactedNodes ) {
+            $location.search('impacted', true);
         } else {
-            $location.search('downstream', null);
+            $location.search('impacted', null);
         }
 
         self.dependenciesLoading = true;
         self.dependencies = {};
         self.legend = {};
 
-          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeInactive, self.displayDownstreamNodes).then(function (response) {
+          dependenciesService.getNodeDependencies(self.team.id, self.selectedLabel, self.selectedNode, self.selectedDay, false, self.includeInactive, self.displayImpactedNodes).then(function (response) {
             var data = response.data;
             var dependencies = data.dependencies;
 
@@ -208,13 +242,16 @@ angular.module('depcwebuiApp')
       self.selectNode = function (node) {
           $location.search('node', node);
           self.selectedNode = node;
-          self.loadDependencies();
-
+          self.refreshAll();
       };
 
       self.hasDependencies = function () {
           return Object.keys(self.dependencies).length > 0;
       }
+
+      self.hasImpactedNodes = function () {
+        return self.impactedNodes.length > 0;
+      };
 
       self.getNodeDate = function(d) {
           if (!d) {
@@ -262,4 +299,62 @@ angular.module('depcwebuiApp')
         });
       }
 
+      self.refreshImpactedNodes = function() {
+        if (!self.impactedLabel || !self.impactedDatetime || !self.selectedDay) {
+          return
+        }
+
+        self.impactedTimeFormat = moment(self.impactedDatetime).format('HH:mm:ss');
+
+        $location.search('impactedLabel', self.impactedLabel);
+        $location.search('time', self.impactedTimeFormat);
+
+        self.impactedNodesLoading = true;
+        self.impactedCurrentPage = 1;
+        self.impactedTotalNumberOfNodes = 0;
+
+        dependenciesService.getTeamImpactedNodesCount(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel).then(function(response) {
+          self.impactedTotalNumberOfNodes = response.data.count;
+          self.getImpactedNodes(self.impactedCurrentPage);
+        });
+      };
+
+      self.getImpactedNodes = function(page) {
+        self.impactedNodesLoading = true;
+        var skip = (page - 1) * self.impactedDefaultLimit;
+        var impactedDateUnix = moment(self.selectedDay + ' ' + self.impactedTimeFormat, "YYYY-MM-DD HH:mm:ss").unix();
+
+        dependenciesService.getTeamImpactedNodes(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, skip, self.impactedDefaultLimit, impactedDateUnix).then(function(response) {
+          self.impactedNodes = response.data;
+          self.impactedNodesLoading = false;
+          self.impactedFirstLoadDone = true;
+        });
+      };
+
+      self.extractAllImpactedNodes = function(inactive) {
+        self.impactedDownloadInProgress = true;
+        if (inactive) {
+          self.impactedDownloadInProgressWithInactive = true;
+        } else  {
+          self.impactedDownloadInProgressWithoutInactive = true;
+        }
+        var impactedDateUnix = moment(self.selectedDay + ' ' + self.impactedTimeFormat, "YYYY-MM-DD HH:mm:ss").unix();
+
+        dependenciesService.getTeamImpactedNodesAll(self.team.id, self.selectedLabel, self.selectedNode, self.impactedLabel, impactedDateUnix, inactive).then(function(response) {
+          var allImpactedNodesString = response.data['data'];
+
+          var filename = 'impacted_' + self.impactedLabel + '_list';
+          if (inactive) {
+            filename += '_with_inactive';
+          }
+          filename += '.json';
+
+          var downloadData = new Blob([allImpactedNodesString], { type: 'text/plain;charset=utf-8' });
+          FileSaver.saveAs(downloadData, filename);
+
+          self.impactedDownloadInProgress = false;
+          self.impactedDownloadInProgressWithInactive = false;
+          self.impactedDownloadInProgressWithoutInactive = false;
+        });
+      };
   });

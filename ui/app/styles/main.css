@@ -1044,3 +1044,20 @@ pre.white-space {
   margin-bottom: 20px;
   font-size: 1.6em;
 }
+
+tr.inactive {
+  background-color: #f2dede;
+}
+
+.glyphicon.spinning {
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}

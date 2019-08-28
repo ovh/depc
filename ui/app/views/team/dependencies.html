@@ -39,166 +39,245 @@
 			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel">
 				<div class="panel-heading"><u>Label :</u> {{ dependenciesCtrl.selectedLabel }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetLabel()">Choose another label</button></div>
 			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedLabel && !dependenciesCtrl.selectedNode">
-				<div class="panel-heading">Select a node</div>
-				<div class="panel-body">
-					<div class="row">
-					 	<div class="col-xs-9">
-					 		<form role="search" id="search" data-ng-submit="dependenciesCtrl.searchNode()">
-					 			<div class="input-group">
-									<input type="text" class="form-control" placeholder="Node's name" data-ng-model="dependenciesCtrl.nodeSearched">
-							      	<span class="input-group-btn">
+      <div class="panel panel-default panel-depc" data-ng-if="!dependenciesCtrl.selectedNode">
+        <div class="panel-heading">Select a node</div>
+        <div class="panel-body">
+          <div data-ng-if="!dependenciesCtrl.selectedLabel">
+            <div class="col-md-12">
+              Please select a label.
+            </div>
+          </div>
+          <div data-ng-if="dependenciesCtrl.selectedLabel">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-xs-9">
+                  <form role="search" id="search" data-ng-submit="dependenciesCtrl.searchNode()">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Node's name" data-ng-model="dependenciesCtrl.nodeSearched">
+                      <span class="input-group-btn">
 							        <button class="btn btn-default" type="button" data-ng-click="dependenciesCtrl.searchNode()"><i class="glyphicon glyphicon-search"></i></button>
 							      </span>
-							    </div>
-					        </form>
-						</div>
-						<div class="col-xs-3">
-							<button class="btn btn-default" data-ng-click="dependenciesCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
-						</div>
-				  	</div>
-				  	<div class="loader" data-ng-if="dependenciesCtrl.loadNodes"></div>
-				  	<div data-ng-if="dependenciesCtrl.resultTitle">
-			  			<div data-ng-if="dependenciesCtrl.nodesResult.length > 0">
-							<hr />
-							<div class="alert alert-info">{{ dependenciesCtrl.resultTitle }}</div>
-				  		</div>
-				  		<div data-ng-if="dependenciesCtrl.nodesResult.length == 0">
-							<hr />
-							<div class="alert alert-info">No result.</div>
-			  			</div>
-				  	</div>
-			        <div class="list-group" data-ng-if="dependenciesCtrl.nodesResult.length > 0">
-					  <a data-ng-repeat="node in dependenciesCtrl.nodesResult track by $index" data-ng-click="dependenciesCtrl.selectNode(node)" class="list-group-item">
-					  	{{ node }}
-					  </a>
-					</div>
-				</div>
-			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
-				<div class="panel-heading"><u>Node :</u> {{ dependenciesCtrl.selectedNode }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetNode()">Choose another node</button></div>
-				<div class="panel-body" data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
-					<div class="row">
-						<div class="col-md-6">
-							<p><strong>From :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.from) }}</span></p>
-						</div>
-						<div class="col-md-6">
-							<p><strong>To :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.to) }}</span></p>
-						</div>
-					</div>
-					<br />
-					<div class="row">
-						<div class="col-md-12">
-							<a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ dependenciesCtrl.selectedLabel }}/{{dependenciesCtrl.selectedNode}}" class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> Display the QoS evolution</a>
-							<a data-ng-click="dependenciesCtrl.deleteNode(dependenciesCtrl.selectedLabel, dependenciesCtrl.selectedNode)" class="btn btn-danger" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove"></i> Delete the node</a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="!dependenciesCtrl.labelsLoading">
-				<div class="panel panel-heading">Filters</div>
-				<div class="panel-body">
-					<form>
-						<div class="form-group">
-						  <label for="day">Choose the day:</label>
-						  <div class="dropdown">
-								<a class="dropdown-toggle" id="dropdown1" role="button" data-toggle="dropdown">
-								<div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="dependenciesCtrl.selectedDay"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
-								</a>
-								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-									<datetimepicker data-ng-model="dependenciesCtrl.selectedDay" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'YYYY-MM-DD', renderOn: 'datepicker-changed'}"/>
-								</ul>
-							</div>
-						</div>
-						<div class="checkbox">
-						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeInactive"> Display inactive nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Inactive nodes are peer nodes that were not linked to the main node on the requested day." tooltip-append-to-body="true"></i></label>
-						</div>
-						<div class="checkbox">
-						  <label><input type="checkbox" data-ng-model="dependenciesCtrl.displayDownstreamNodes"> Display downstream nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Downstream nodes are dependencies which depend of the main node (so upstream nodes are dependencies which impact the main node QoS)." tooltip-append-to-body="true"></i></label>
-						</div>
-						<button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.loadDependencies()"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
-					  </form>
-				</div>
-			</div>
-			<div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
-				<div class="panel panel-heading">Legend</div>
-				<div class="panel-body">
-					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
-					<div class="list-group">
-					  <a data-ng-repeat="(label, color) in dependenciesCtrl.legend" class="list-group-item">
-					  	{{ label }}
-					  	<div class="pull-right" id="circle" style="background-color: {{ color }}"></div>
-					  </a>
-					</div>
-				</div>
-			</div>
-		</div>
+                    </div>
+                  </form>
+                </div>
+                <div class="col-xs-3">
+                  <button class="btn btn-default" data-ng-click="dependenciesCtrl.loadExamples()" uib-tooltip="Get random nodes" tooltip-append-to-body="true">Get random <i class="glyphicon glyphicon-random"></i></button>
+                </div>
+              </div>
+              <div class="loader" data-ng-if="dependenciesCtrl.loadNodes"></div>
+              <div data-ng-if="dependenciesCtrl.resultTitle">
+                <div data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+                  <hr />
+                  <div class="alert alert-info">{{ dependenciesCtrl.resultTitle }}</div>
+                </div>
+                <div data-ng-if="dependenciesCtrl.nodesResult.length == 0">
+                  <hr />
+                  <div class="alert alert-info">No result.</div>
+                </div>
+              </div>
+              <div class="list-group" data-ng-if="dependenciesCtrl.nodesResult.length > 0">
+                <a data-ng-repeat="node in dependenciesCtrl.nodesResult track by $index" data-ng-click="dependenciesCtrl.selectNode(node)" class="list-group-item">
+                  {{ node }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default panel-depc" data-ng-if="dependenciesCtrl.selectedNode">
+        <div class="panel-heading"><u>Node :</u> {{ dependenciesCtrl.selectedNode }}<button class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.resetNode()">Choose another node</button></div>
+        <div class="panel-body" data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>From :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.from) }}</span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>To :</strong> <span class="label label-primary">{{ dependenciesCtrl.getNodeDate(dependenciesCtrl.nodeProperties.to) }}</span></p>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-md-12">
+              <a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ dependenciesCtrl.selectedLabel }}/{{dependenciesCtrl.selectedNode}}" class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> Display the QoS evolution</a>
+              <a data-ng-click="dependenciesCtrl.deleteNode(dependenciesCtrl.selectedLabel, dependenciesCtrl.selectedNode)" class="btn btn-danger" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])"><i class="glyphicon glyphicon-remove"></i> Delete the node</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default panel-depc">
+        <div class="panel-heading">
+          Filters
+        </div>
+        <div class="panel-body">
+          <h4>Common filters</h4>
+          <div class="col-md-12">
+            <div class="dropdown">
+              <a class="dropdown-toggle" id="dropdown1" role="button" data-toggle="dropdown">
+                <div class="input-group"><input type="text" id="start" class="form-control" data-ng-model="dependenciesCtrl.selectedDay"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span></div>
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <datetimepicker data-ng-model="dependenciesCtrl.selectedDay" data-datetimepicker-config="{ dropdownSelector: '#dropdown1', startView: 'day', minView: 'day', modelType: 'YYYY-MM-DD', renderOn: 'datepicker-changed'}"/>
+              </ul>
+            </div>
+          </div>
+          <hr class="col-md-12">
+          <h4>Direct relationships filters only</h4>
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="checkbox">
+                  <label><input type="checkbox" data-ng-model="dependenciesCtrl.includeInactive"> Display inactive nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Inactive nodes are peer nodes that were not linked to the main node on the requested day." tooltip-append-to-body="true"></i></label>
+                </div>
+                <div class="checkbox">
+                  <label><input type="checkbox" data-ng-model="dependenciesCtrl.displayImpactedNodes"> Display impacted nodes <i class="glyphicon glyphicon-info-sign pointer" uib-tooltip="Impacted nodes are nodes which need the currently selected node to run properly (because if the currently selected node is down it will impact them directly)." tooltip-append-to-body="true"></i></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="col-md-12">
+          <h4>Impacted nodes filters only</h4>
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-7">
+                <select class="form-control" data-ng-model="dependenciesCtrl.impactedLabel">
+                  <option data-ng-if="!dependenciesCtrl.impactedLabel" value="">Impacted label</option>
+                  <option data-ng-repeat="label in dependenciesCtrl.labels | orderBy: 'name'">{{ label.name }}</option>
+                </select>
+              </div>
+              <div class="col-md-5">
+                <div class="pull-right" uib-timepicker data-ng-model="dependenciesCtrl.impactedDatetime" data-mousewheel="false" data-show-seconds="true" data-show-meridian="false" data-show-spinners="false"></div>
+              </div>
+            </div>
+          </div>
+          <hr class="col-md-12">
+          <div class="col-md-6">
+            <a href="https://ovh.github.io/depc/index.html">See documentation</a>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-primary pull-right" data-ng-click="dependenciesCtrl.refreshAll()" data-ng-disabled="!dependenciesCtrl.selectedLabel || !dependenciesCtrl.selectedNode"> <i class="glyphicon glyphicon-refresh"></i> Reload</button>
+          </div>
+        </div>
+      </div>
+    </div>
 		<div class="col-md-8">
 			<div class="panel panel-default panel-depc">
 				<div class="panel-heading">
-					Dependencies
+					Direct relationships
+          <button type="button" class="btn btn-default btn-xs pull-right" data-ng-click="dependenciesCtrl.directRelationshipsCollapsed = !dependenciesCtrl.directRelationshipsCollapsed">
+            <i data-ng-if="!dependenciesCtrl.directRelationshipsCollapsed" class="glyphicon glyphicon-chevron-up"></i>
+            <i data-ng-if="dependenciesCtrl.directRelationshipsCollapsed" class="glyphicon glyphicon-chevron-down"></i>
+          </button>
 				</div>
-				<div class="panel-body">
-					<div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
-					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
-					<span data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
-						No dependency.
-					</span>
-					<table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
-						<thead>
-							<tr>
-								<th class="no-border-left"></th>
-								<th class="border-top">Name</th>
-								<th class="text-center border-top col-md-2">From</th>
-								<th class="text-center border-top col-md-2">To</th >
-								<th class="text-center border-top col-md-1">Relationship</th >
-								<th class="text-center border-top col-md-2">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].inactive ? 'danger' : ''">
-								<th class="align-middle text-center active" rowspan="{{val.nodes.length}}">
-									<abbr data-ng-if="val.rule" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'The QoS of <strong>{{ key }}</strong> is computed using the following query : <code>{{ val.rule }}</code>'">{{ key }}</abbr>
-									<span data-ng-if="!val.rule">{{ key }}</span>
-								</th>
-								<td class="col-md-4">{{val.nodes[0].name}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].from)}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].to)}}</td>
-								<td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(val.nodes[0].periods)" uib-tooltip="Display periods" tooltip-append-to-body="true"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
-								<td class="col-md-2 text-center">
-									<div class="btn-group">
-										<a data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{val.nodes[0].name}}" class="btn btn-xs btn-default">QoS</a>
-										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{val.nodes[0].name}}" class="btn btn-default btn-xs">Graph</a>
-										<a data-ng-click="dependenciesCtrl.deleteNode(key, val.nodes[0].name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
-									</div>
-								</td>
-							</tr>
-							<tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.inactive ? 'danger' : ''">
-								<td class="col-md-4">{{value.name}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.from)}}</td>
-								<td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.to)}}</td>
-								<td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(value.periods)"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
-								<td class="col-md-2 text-center">
-									<div class="btn-group">
-										<a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{value.name}}" class="btn btn-xs btn-default">QoS</a>
-										<a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{ value.name }}" class="btn btn-default btn-xs">Graph</a>
-										<a data-ng-click="dependenciesCtrl.deleteNode(key, value.name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+				<div class="panel-body" uib-collapse="dependenciesCtrl.directRelationshipsCollapsed">
+          <div class="col-md-12">
+            <div data-ng-if="!dependenciesCtrl.selectedNode && !dependenciesCtrl.dependenciesLoading">Please select a node.</div>
+            <div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
+            <span data-ng-if="dependenciesCtrl.selectedNode && !dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">No dependency.</span>
+            <div data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
+              <table class="table table-bordered no-border-left table-condensed" data-ng-if="dependenciesCtrl.selectedNode && dependenciesCtrl.hasDependencies() && !dependenciesCtrl.dependenciesLoading">
+                <thead>
+                <tr>
+                  <th class="no-border-left"></th>
+                  <th class="border-top">Name</th>
+                  <th class="text-center border-top col-md-2">From</th>
+                  <th class="text-center border-top col-md-2">To</th >
+                  <th class="text-center border-top col-md-1">Relationship</th >
+                  <th class="text-center border-top col-md-2">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat-start="(key, val) in dependenciesCtrl.dependencies" data-ng-class="val.nodes[0].inactive ? 'danger' : ''">
+                  <th class="align-middle text-center active" rowspan="{{val.nodes.length}}">
+                    <abbr data-ng-if="val.rule" class="help underlined-black" popover-trigger="'mouseenter'" uib-popover-html="'The QoS of <strong>{{ key }}</strong> is computed using the following query : <code>{{ val.rule }}</code>'">{{ key }}</abbr>
+                    <span data-ng-if="!val.rule">{{ key }}</span>
+                  </th>
+                  <td class="col-md-4">{{val.nodes[0].name}}</td>
+                  <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].from)}}</td>
+                  <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(val.nodes[0].to)}}</td>
+                  <td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(val.nodes[0].periods)" uib-tooltip="Display periods" tooltip-append-to-body="true"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
+                  <td class="col-md-2 text-center">
+                    <div class="btn-group">
+                      <a data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{val.nodes[0].name}}" class="btn btn-xs btn-default">QoS</a>
+                      <a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{val.nodes[0].name}}" class="btn btn-default btn-xs">Graph</a>
+                      <a data-ng-click="dependenciesCtrl.deleteNode(key, val.nodes[0].name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr ng-repeat-end ng-repeat="value in val.nodes.slice(1)" data-ng-class="value.inactive ? 'danger' : ''">
+                  <td class="col-md-4">{{value.name}}</td>
+                  <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.from)}}</td>
+                  <td class="col-md-2 text-center">{{dependenciesCtrl.getNodeDate(value.to)}}</td>
+                  <td class="col-md-1 text-center"><button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.displayRelationshipPeriods(value.periods)"><i class="glyphicon glyphicon-zoom-in"></i></button></td>
+                  <td class="col-md-2 text-center">
+                    <div class="btn-group">
+                      <a ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dashboard/{{ key }}/{{value.name}}" class="btn btn-xs btn-default">QoS</a>
+                      <a target="_blank" data-ng-href="#/teams/{{ dependenciesCtrl.teamName }}/dependencies?label={{ key }}&node={{ value.name }}" class="btn btn-default btn-xs">Graph</a>
+                      <a data-ng-click="dependenciesCtrl.deleteNode(key, value.name)" class="btn btn-danger btn-xs" data-ng-if="checkGrants(dependenciesCtrl.teamName, ['manager'])">Delete</a>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <hr>
+              <vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
+              <hr>
+              <div class="col-md-3" data-ng-repeat="(label, color) in dependenciesCtrl.legend">
+                <div class="pull-left" id="circle" style="background-color: {{ color }}"></div><p>&nbsp{{ label }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 			</div>
-
-			<div class="panel panel-default panel-depc">
-				<div class="panel-heading">Graph</div>
-				<div class="panel-body">
-					<div class="loader" data-ng-if="dependenciesCtrl.dependenciesLoading"></div>
-					<div data-ng-if="!dependenciesCtrl.selectedNode">Please select a node.</div>
-					<vis-network data="dependenciesCtrl.graph.data" data-ng-if="!dependenciesCtrl.dependenciesLoading && dependenciesCtrl.graph" options="dependenciesCtrl.graph.options" events="dependenciesCtrl.graph.events"></vis-network>
-				</div>
-			</div>
+      <div class="panel panel-default panel-depc">
+        <div class="panel-heading">
+          Impacted nodes
+          <div class="pull-right">
+            <button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(false)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithoutInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (without inactive)</button>
+            <button class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.extractAllImpactedNodes(true)" data-ng-disabled="dependenciesCtrl.impactedNodesLoading || !dependenciesCtrl.hasImpactedNodes() || dependenciesCtrl.impactedDownloadInProgress"><i data-ng-if="dependenciesCtrl.impactedDownloadInProgress && dependenciesCtrl.impactedDownloadInProgressWithInactive" class="glyphicon glyphicon-refresh spinning"></i> <i class="glyphicon glyphicon-download-alt"></i> Extract all (with inactive)</button>
+            <button type="button" class="btn btn-default btn-xs" data-ng-click="dependenciesCtrl.impactedNodesCollapsed = !dependenciesCtrl.impactedNodesCollapsed">
+              <i data-ng-if="!dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-up"></i>
+              <i data-ng-if="dependenciesCtrl.impactedNodesCollapsed" class="glyphicon glyphicon-chevron-down"></i>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body" uib-collapse="dependenciesCtrl.impactedNodesCollapsed">
+          <div data-ng-if="!dependenciesCtrl.selectedNode">
+            <div class="col-md-12">
+              Please select a node.
+            </div>
+          </div>
+          <div data-ng-if="dependenciesCtrl.selectedNode">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="loader col-md-12" data-ng-if="dependenciesCtrl.impactedNodesLoading"></div>
+                <div class="col-md-12" data-ng-if="!dependenciesCtrl.impactedFirstLoadDone && !dependenciesCtrl.impactedNodesLoading">Please select an impacted label.</div>
+                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedFirstLoadDone && dependenciesCtrl.impactedLabel && !dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                  No impacted nodes found for the selected label.
+                </div>
+                <div class="col-md-12" data-ng-if="dependenciesCtrl.impactedLabel && dependenciesCtrl.hasImpactedNodes() && !dependenciesCtrl.impactedNodesLoading">
+                  <table class="table table-bordered no-border-left table-condensed">
+                    <thead>
+                    <tr>
+                      <th class="border-top">Name</th>
+                      <th class="text-center border-top">From</th>
+                      <th class="text-center border-top">To</th >
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-ng-repeat="impactedNode in dependenciesCtrl.impactedNodes" data-ng-class="{'inactive': !impactedNode.active}">
+                      <td>{{ impactedNode.name }} <i data-ng-if="!impactedNode.active" class="glyphicon glyphicon-info-sign pointer" uib-tooltip="This impacted node is tagged as inactive (either because the node itself is inactive or because one of the path elements is inactive)" tooltip-append-to-body="true"></i></td>
+                      <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.from) }}</td>
+                      <td class="text-center">{{ dependenciesCtrl.getNodeDate(impactedNode.to) }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <ul uib-pagination data-total-items="dependenciesCtrl.impactedTotalNumberOfNodes" data-ng-model="dependenciesCtrl.impactedCurrentPage" data-ng-change="dependenciesCtrl.getImpactedNodes(dependenciesCtrl.impactedCurrentPage)" data-items-per-page="dependenciesCtrl.impactedDefaultLimit" data-max-size="5" data-boundary-link-numbers="true" data-rotate="false"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 		</div>
 	</div>
 </div>

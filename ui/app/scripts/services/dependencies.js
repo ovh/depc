@@ -55,7 +55,7 @@ angular.module('depcwebuiApp')
       });
     };
 
-    var getNodeDependencies = function(team_id, label, node, day, filteredByConfig, includingInactive, displayDownstream) {
+    var getNodeDependencies = function(team_id, label, node, day, filteredByConfig, includingInactive, displayImpacted) {
       var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node + '?1=1';
 
       if ( day ) {
@@ -70,8 +70,8 @@ angular.module('depcwebuiApp')
         url = url + '&inactive=1';
       }
 
-      if ( displayDownstream ) {
-        url = url + '&downstream=1';
+      if ( displayImpacted ) {
+        url = url + '&impacted=1';
       }
 
       return $http({
@@ -93,10 +93,78 @@ angular.module('depcwebuiApp')
       });
     }
 
+    var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit, unixTs) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted';
+
+      // We do not know the order of parameters, so this dirty patch abstracts it
+      url += '?1=1';
+
+      if (impactedLabel) {
+        url += '&impactedLabel=' + impactedLabel;
+      }
+
+      if (skip || skip === 0) {
+        url += '&skip=' + skip;
+      }
+
+      if (limit || limit === 0) {
+        url += '&limit=' + limit;
+      }
+
+      if (unixTs || unixTs === 0) {
+        url += '&ts=' + unixTs;
+      }
+
+      return $http({
+        url: url,
+        method: "GET"
+      });
+    };
+
+    var getTeamImpactedNodesCount = function(teamId, label, node, impactedLabel) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/count';
+
+      if (impactedLabel) {
+        url += '?impactedLabel=' + impactedLabel;
+      }
+
+      return $http({
+        url: url,
+        method: "GET"
+      });
+    };
+
+    var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, inactive) {
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/all';
+
+      // We do not know the order of parameters, so this dirty patch abstracts it
+      url += '?1=1';
+
+      if (impactedLabel) {
+        url += '&impactedLabel=' + impactedLabel;
+      }
+
+      if (unixTs || unixTs === 0) {
+        url += '&ts=' + unixTs;
+      }
+
+      if (inactive) {
+        url += '&inactive=1';
+      }
+
+      return $http({
+        url: url,
+        method: "GET"
+      });
+    };
+
     return {
       getTeamLabels: getTeamLabels,
       getTeamLabelNodes: getTeamLabelNodes,
       getTeamLabelNode: getTeamLabelNode,
+      getTeamImpactedNodes: getTeamImpactedNodes,
+      getTeamImpactedNodesAll: getTeamImpactedNodesAll,
+      getTeamImpactedNodesCount: getTeamImpactedNodesCount,
       countNodeDependencies: countNodeDependencies,
       getNodeDependencies: getNodeDependencies,
       deleteNode: deleteNode

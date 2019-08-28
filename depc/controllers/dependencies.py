@@ -1,10 +1,16 @@
+import json
 import re
 
 import arrow
 from neo4jrestclient.constants import DATA_GRAPH
 from neo4jrestclient.exceptions import TransactionException
 
-from depc.controllers import Controller, NotFoundError, RequirementsNotSatisfiedError
+from depc.controllers import (
+    Controller,
+    NotFoundError,
+    RequirementsNotSatisfiedError,
+    IntegrityError,
+)
 from depc.controllers.configs import ConfigController
 from depc.controllers.teams import TeamController
 from depc.utils.neo4j import (
@@ -12,6 +18,8 @@ from depc.utils.neo4j import (
     get_records,
     is_active_node,
     has_active_relationship,
+    is_node_active_at_timestamp,
+    is_relationship_active_at_timestamp,
 )
 
 
@@ -120,11 +128,11 @@ class DependenciesController(Controller):
         day=None,
         filter_on_config=False,
         include_inactive=False,
-        display_downstream=False,
+        display_impacted=False,
     ):
         topic = TeamController._get({"Team": {"id": team_id}}).kafka_topic
         query = cls._build_dependencies_query(
-            team_id, topic, label, node, filter_on_config, display_downstream
+            team_id, topic, label, node, filter_on_config, display_impacted
         )
         dependencies = {"dependencies": {}, "graph": {"nodes": [], "relationships": []}}
         records = get_records(query)
@@ -151,7 +159,7 @@ class DependenciesController(Controller):
                 continue
 
             # Check inactive nodes
-            if display_downstream:
+            if display_impacted:
                 start_node = rel.end_node
                 end_node = rel.start_node
             else:
@@ -195,8 +203,8 @@ class DependenciesController(Controller):
             dependencies["graph"]["relationships"].append(
                 {
                     "id": rel.id,
-                    "from": end_node.id if display_downstream else start_node.id,
-                    "to": start_node.id if display_downstream else end_node.id,
+                    "from": end_node.id if display_impacted else start_node.id,
+                    "to": start_node.id if display_impacted else end_node.id,
                     "arrows": "to",
                     "periods": list(rel.get("periods")),
                 }
@@ -232,6 +240,120 @@ class DependenciesController(Controller):
             raise RequirementsNotSatisfiedError(str(e))
 
         return {}
+
+    @classmethod
+    def get_impacted_nodes(cls, team_id, label, node, impacted_label, skip, limit, ts):
+        try:
+            skip = int(skip)
+            limit = int(limit)
+            ts = int(ts)
+        except (TypeError, ValueError):
+            raise IntegrityError(
+                "'skip', 'limit' and 'ts' parameters must be positive numbers"
+            )
+
+        if skip < 0 or limit < 0 or ts < 0:
+            raise IntegrityError(
+                "'skip', 'limit' and 'ts' parameters must be positive numbers"
+            )
+
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        query = cls._build_impacted_nodes_queries(
+            topic=team.kafka_topic,
+            label=label,
+            node=node,
+            impacted_label=impacted_label,
+            skip=skip,
+            limit=limit,
+            count=False,
+        )
+
+        results = get_records(query)
+        impacted_nodes_data = results.data()
+
+        # Return all impacted nodes (active and inactive) with metadata indicating if they are active or not
+        return cls._compute_impacted_nodes_from_data(
+            impacted_nodes_data, ts, with_inactive_nodes=True
+        )
+
+    @classmethod
+    def get_impacted_nodes_count(cls, team_id, label, node, impacted_label):
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        query = cls._build_impacted_nodes_queries(
+            topic=team.kafka_topic,
+            label=label,
+            node=node,
+            impacted_label=impacted_label,
+            count=True,
+        )
+
+        results = get_records(query)
+        return {"count": results.value()[0]}
+
+    @classmethod
+    def get_impacted_nodes_all(
+        cls, team_id, label, node, impacted_label, ts, with_inactive_nodes
+    ):
+        try:
+            ts = int(ts)
+        except (TypeError, ValueError):
+            raise IntegrityError("'ts' parameter must be a positive number")
+
+        if ts < 0:
+            raise IntegrityError("'ts' parameter must be a positive number")
+
+        if not impacted_label:
+            raise IntegrityError("'impactedLabel' parameter must not be empty")
+
+        team = TeamController._get({"Team": {"id": team_id}})
+
+        json_string = "["
+        nodes_batch = 50000
+        skip = 0
+        total_count = cls.get_impacted_nodes_count(
+            team_id, label, node, impacted_label
+        )["count"]
+
+        # Load all impacted nodes data by batch inside a list
+        while skip < total_count:
+            query = cls._build_impacted_nodes_queries(
+                topic=team.kafka_topic,
+                label=label,
+                node=node,
+                impacted_label=impacted_label,
+                skip=skip,
+                limit=nodes_batch,
+                count=False,
+            )
+
+            new_json_string_data = json.dumps(
+                cls._compute_impacted_nodes_from_data(
+                    get_records(query).data(),
+                    ts,
+                    with_inactive_nodes=with_inactive_nodes,
+                ),
+                indent=4,
+            )
+
+            skip += nodes_batch
+
+            # if this is not the last loop, add a "," to the last element
+            # of the array to help easy concatenation at the next loop
+            if skip < total_count:
+                new_json_string_data = new_json_string_data[:-2] + ",\n]"
+            json_string += new_json_string_data[1:-2]
+
+        json_string += "\n]"
+
+        return json_string
 
     @classmethod
     def _build_query_count_nodes(cls, topic, labels):
@@ -275,11 +397,11 @@ class DependenciesController(Controller):
 
     @classmethod
     def _build_dependencies_query(
-        cls, team_id, topic, label, node, filter_on_config=False, downstream=False
+        cls, team_id, topic, label, node, filter_on_config=False, impacted=False
     ):
         """Build a Cypher query based on given parameters."""
         where = ""
-        order = "(n)<-[r]-(m)" if downstream else "(n)-[r]->(m)"
+        order = "(n)<-[r]-(m)" if impacted else "(n)-[r]->(m)"
         query = (
             "MATCH(n:{topic}_{label}{{name: '{name}'}}) "
             "OPTIONAL MATCH {order} {where}"
@@ -302,3 +424,81 @@ class DependenciesController(Controller):
         return query.format(
             where=where, order=order, topic=topic, label=label, name=node
         )
+
+    @classmethod
+    def _build_impacted_nodes_queries(
+        cls, topic, label, node, impacted_label, skip=None, limit=None, count=False
+    ):
+        # Get the standard impacted nodes query
+        query = (
+            "MATCH p = (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) "
+            "WITH *, relationships(p) AS r_list WITH *, nodes(p) AS n_sub_list "
+            "RETURN DISTINCT n AS impacted_node, "
+            "collect({{ relationships: r_list, nodes: n_sub_list }}) AS all_path_elements "
+            "ORDER BY n.name SKIP {skip} LIMIT {limit}".format(
+                topic=topic,
+                impacted_label=impacted_label,
+                label=label,
+                name=node,
+                skip=skip,
+                limit=limit,
+            )
+        )
+
+        # If we want to count, get the impacted nodes count query
+        if count:
+            query = (
+                "MATCH (n:{topic}_{impacted_label})-[*]->(:{topic}_{label}{{name: '{name}'}}) "
+                "RETURN count(DISTINCT n) AS count".format(
+                    topic=topic, impacted_label=impacted_label, label=label, name=node
+                )
+            )
+
+        return query
+
+    @classmethod
+    def _compute_impacted_nodes_from_data(
+        cls, impacted_nodes_data, ts, with_inactive_nodes
+    ):
+        """Return the list of impacted nodes adding metadata about if they are active or not
+        (this function can also filter out inactive impacted nodes)"""
+        impacted_nodes = []
+        for impacted_node_data in impacted_nodes_data:
+            if cls._is_impacted_node_active(impacted_node_data, ts):
+                impacted_nodes.append(
+                    {
+                        "name": impacted_node_data["impacted_node"].get("name", ""),
+                        "from": impacted_node_data["impacted_node"].get("from", None),
+                        "to": impacted_node_data["impacted_node"].get("to", None),
+                        "active": True,
+                    }
+                )
+            elif with_inactive_nodes:
+                impacted_nodes.append(
+                    {
+                        "name": impacted_node_data["impacted_node"].get("name", ""),
+                        "from": impacted_node_data["impacted_node"].get("from", None),
+                        "to": impacted_node_data["impacted_node"].get("to", None),
+                        "active": False,
+                    }
+                )
+        return impacted_nodes
+
+    @classmethod
+    def _is_impacted_node_active(cls, impacted_node_data, ts):
+        """Determine if an impacted node is active or not with all its path elements"""
+        for path_elements in impacted_node_data["all_path_elements"]:
+            if cls._are_path_elements_all_active(path_elements, ts):
+                return True
+        return False
+
+    @classmethod
+    def _are_path_elements_all_active(cls, path_elements, ts):
+        """Determine if the path elements (nodes and relationships) of an impacted node are all active or not"""
+        for node in path_elements["nodes"]:
+            if not is_node_active_at_timestamp(node, ts):
+                return False
+        for relationship in path_elements["relationships"]:
+            if not is_relationship_active_at_timestamp(relationship, ts):
+                return False
+        return True
