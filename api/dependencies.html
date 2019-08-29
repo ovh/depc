@@ -187,23 +187,176 @@
 <td>Delete a node.</td>
 </tr>
 <tr class="row-odd"><td>GET</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-count">GET /v1/teams/(team_id)/labels/(label)/nodes/(path:node)/impacted/count</a></td>
+<td>Count the total number of nodes impacted by a given node.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-all">GET /v1/teams/(team_id)/labels/(label)/nodes/(path:node)/impacted/all</a></td>
+<td>Get a JSON payload containing all nodes impacted by a given node.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted">GET /v1/teams/(team_id)/labels/(label)/nodes/(path:node)/impacted</a></td>
+<td>Get the nodes impacted by a given node.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
 <td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-count">GET /v1/teams/(team_id)/labels/(label)/nodes/(path:node)/count</a></td>
 <td>Count the dependencies of a node.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)">GET /v1/teams/(team_id)/labels/(label)/nodes/(path:node)</a></td>
 <td>Get the dependencies of a node.</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td><a class="reference external" href="#get--v1-teams-(team_id)-labels-(label)-nodes">GET /v1/teams/(team_id)/labels/(label)/nodes</a></td>
 <td>Get the nodes of a label.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td><a class="reference external" href="#get--v1-teams-(team_id)-labels">GET /v1/teams/(team_id)/labels</a></td>
 <td>Get the labels of a team.</td>
 </tr>
 </tbody>
 </table>
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-count">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/labels/</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><code class="descname">/nodes/</code><span class="sig-paren">(</span><em class="property">path: </em><em>node</em><span class="sig-paren">)</span><code class="descname">/impacted/count</code><a class="headerlink" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count the total number of nodes impacted by a given node.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Website/nodes/example.com/impacted/count?impactedLabel=Offer</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+{
+  &quot;count&quot;: 1
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>impactedLabel</strong> – impacted nodes for the given label</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the array of impacted nodes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-all">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/labels/</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><code class="descname">/nodes/</code><span class="sig-paren">(</span><em class="property">path: </em><em>node</em><span class="sig-paren">)</span><code class="descname">/impacted/all</code><a class="headerlink" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted-all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a JSON payload containing all nodes impacted by a given node.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted/all?impactedLabel=Offer&amp;ts=1564645344</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+[
+  {
+    &quot;active&quot;: true,
+    &quot;from&quot;: null,
+    &quot;name&quot;: &quot;premium&quot;,
+    &quot;to&quot;: null
+  }
+]
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>impactedLabel</strong> – impacted nodes for the given label</li>
+<li><strong>ts</strong> – unix timestamp to check if the nodes are active or not at this timestamp</li>
+<li><strong>inactive</strong> – return inactive impacted nodes in the downloaded file or not (default is False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the array of impacted nodes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted">
+<code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/labels/</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><code class="descname">/nodes/</code><span class="sig-paren">(</span><em class="property">path: </em><em>node</em><span class="sig-paren">)</span><code class="descname">/impacted</code><a class="headerlink" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-impacted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the nodes impacted by a given node.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/teams/66859c4a-3e0a-4968-a5a4-4c3b8662acb7/labels/Apache/nodes/apache2/impacted?impactedLabel=Offer&amp;skip=0&amp;limit=25&amp;ts=1564645111</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+
+[
+  {
+    &quot;active&quot;: true,
+    &quot;from&quot;: null,
+    &quot;name&quot;: &quot;premium&quot;,
+    &quot;to&quot;: null
+  }
+]
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>impactedLabel</strong> – impacted nodes for the given label</li>
+<li><strong>skip</strong> – skip the given number of values (default is 0)</li>
+<li><strong>limit</strong> – limit to the given number of values (default is 25)</li>
+<li><strong>ts</strong> – unix timestamp to check if the nodes are active or not at this timestamp</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – the array of impacted nodes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="get">
 <dt id="get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-count">
 <code class="descname">GET </code><code class="descname">/v1/teams/</code><span class="sig-paren">(</span><em>team_id</em><span class="sig-paren">)</span><code class="descname">/labels/</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><code class="descname">/nodes/</code><span class="sig-paren">(</span><em class="property">path: </em><em>node</em><span class="sig-paren">)</span><code class="descname">/count</code><a class="headerlink" href="#get--v1-teams-(team_id)-labels-(label)-nodes-(path-node)-count" title="Permalink to this definition">¶</a></dt>
@@ -311,7 +464,7 @@
 <li><strong>day</strong> – Filter by day (default is today)</li>
 <li><strong>config</strong> – Only include labels used in configuration</li>
 <li><strong>inactive</strong> – Include the inactive nodes</li>
-<li><strong>downstream</strong> – Display the downstream nodes</li>
+<li><strong>impacted</strong> – Display the impacted nodes</li>
 </ul>
 </td>
 </tr>
