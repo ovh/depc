@@ -33,7 +33,7 @@
     "time-grunt": "^1.0.0"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=8.0"
   },
   "scripts": {},
   "dependencies": {
