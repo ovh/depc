@@ -1,4 +1,5 @@
 import time
+import uuid
 from collections import OrderedDict
 
 import fastjsonschema
@@ -61,6 +62,10 @@ class Neo4jBoltDriver(object):
                 return result, summary
 
 
+def generate_batch_id():
+    return uuid.uuid4().hex[:10]
+
+
 def trigger_heartbeat(neo_driver):
     now = int(time.time())
     logger.info("Sending heartbeat using {}...".format(now))
@@ -72,7 +77,7 @@ def trigger_heartbeat(neo_driver):
     return now
 
 
-def validate_and_reformat_messages(team, records):
+def validate_and_reformat_messages(team, records, validation_logger=logger):
     """This function converts a list of message which has been sent in a
     Kafka topic by some producers. It also prefixes the labels by the
     team's name. Each message has the following format:
@@ -172,7 +177,7 @@ def validate_and_reformat_messages(team, records):
     for msg in records:
         # Happens when the message is not properly deserialized
         if msg is None:
-            logger.info("message is NoneType, skipped")
+            validation_logger.warning("[validation] message is not valid JSON, skipped")
             continue
 
         # Message sent using the EventBus SDK
@@ -185,7 +190,7 @@ def validate_and_reformat_messages(team, records):
         try:
             validate(msg)
         except fastjsonschema.JsonSchemaException as e:
-            logger.warning(
+            validation_logger.warning(
                 "[validation] message: {} failed validation with error: {}".format(
                     msg, e.message
                 )
@@ -307,10 +312,14 @@ def run_consumer(consumer_config, kafka_config, neo4j_config):
             first_offset = records[0].offset
             last_offset = records[-1].offset
 
+            team = topic_partition.topic.split(".")[1]
+
+            # Add extra fields to the logger
+            _logger = logger.bind(team=team, batch_id=generate_batch_id())
+
             # List of formatted messages used in micro-batches
             messages = validate_and_reformat_messages(
-                team=topic_partition.topic.split(".")[1],
-                records=[r.value for r in records],
+                team=team, records=[r.value for r in records], validation_logger=_logger
             )
 
             # Check if indexes are created
@@ -320,13 +329,13 @@ def run_consumer(consumer_config, kafka_config, neo4j_config):
                     "$LABEL$", lab
                 )
                 neo_driver.exec_cypher(cypher, {})
-                logger.info(
+                _logger.info(
                     "[*] {} index created, indexes are now {}".format(lab, labels)
                 )
                 labels.append(lab)
 
             start_batch_time = time.time()
-            logger.info(
+            _logger.info(
                 "[*] Consuming {} with offsets from #{} to #{}...".format(
                     topic_partition.topic, first_offset, last_offset
                 )
@@ -340,7 +349,7 @@ def run_consumer(consumer_config, kafka_config, neo4j_config):
 
                 _, summary = neo_driver.exec_cypher(cypher, {"nodes": nodes})
 
-                logger.info(
+                _logger.info(
                     "[nodes] {} done using {} messages in {}s : {}".format(
                         label,
                         len(nodes),
@@ -361,19 +370,19 @@ def run_consumer(consumer_config, kafka_config, neo4j_config):
 
                     failures, stats = catch_relationship_validation_errors(result)
                     if len(failures):
-                        logger.warning(
+                        _logger.warning(
                             "[validation] {} relationship(s) failed validation".format(
                                 len(failures)
                             )
                         )
                     for f in failures:
-                        logger.warning(
+                        _logger.warning(
                             "[validation] relationship properties failed validation : {}".format(
                                 f
                             )
                         )
 
-                    logger.info(
+                    _logger.info(
                         "[rels] {} -> {} done using {} message(s) in {}s : {}".format(
                             source,
                             target,
@@ -383,7 +392,7 @@ def run_consumer(consumer_config, kafka_config, neo4j_config):
                         )
                     )
 
-            logger.info(
+            _logger.info(
                 "[*] Batch done in {} seconds".format(
                     round(time.time() - start_batch_time, 3)
                 )
