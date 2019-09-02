@@ -5,6 +5,7 @@ import sys
 from loguru import logger
 
 from depc.logs.handlers import InterceptHandler
+from depc.logs.sinks import GraylogExtendedLogFormatSink
 
 
 def setup_loggers(app):
@@ -37,7 +38,18 @@ def setup_loggers(app):
 
         return True
 
-    stdout_sink = {"sink": sys.stdout, "filter": stdout_filter, "level": logging_level}
+    sink = sys.stdout
+    is_serialized = False
+    if logging_config.get("gelf"):
+        sink = GraylogExtendedLogFormatSink
+        is_serialized = True
+
+    stdout_sink = {
+        "sink": sink,
+        "filter": stdout_filter,
+        "level": logging_level,
+        "serialize": is_serialized,
+    }
     logging_format = logging_config.get("format")
     if logging_format:
         stdout_sink.update({"format": logging_format})
