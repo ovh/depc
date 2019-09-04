@@ -1,4 +1,5 @@
 import hashlib
+import inspect
 import json
 import pickle
 import re
@@ -57,7 +58,7 @@ class RedisCache(redis.Redis):
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                key_name = self.get_key_name(func_name, *args, **kwargs)
+                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
 
                 if prefix:
                     key_name = "{}_{}".format(prefix, key_name)
@@ -128,14 +129,14 @@ class RedisCache(redis.Redis):
             setattr(wrapper, "cache_bypass", cache_bypass)
 
             def cache_clear(*args, **kwargs):
-                key_name = self.get_key_name(func_name, *args, **kwargs)
+                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
                 logger.debug("Erasing cache for {}".format(key_name))
                 self.delete(key_name)
 
             setattr(wrapper, "cache_clear", cache_clear)
 
             def cache_refresh(*args, **kwargs):
-                key_name = self.get_key_name(func_name, *args, **kwargs)
+                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
                 logger.debug("Refreshing cache for {}".format(key_name))
                 res = func(*args, **kwargs)
                 result_serialized = pickle.dumps(res, protocol=pickle.HIGHEST_PROTOCOL)
@@ -151,9 +152,87 @@ class RedisCache(redis.Redis):
         return decorator
 
     @classmethod
-    def get_key_name(cls, func_name, *args, **kwargs):
+    def get_key_name(cls, func, func_name, team_name_override, label_name_override, *args, **kwargs):
+        """
+        team_name_override and label_name_override parameters should only be used if no func parameter can be provided.
+        That means you should not override team and label when passing a func in general except if you really
+        know what you are doing.
+        You should also not pass a func if you override team and label using team_name_override and
+        label_name_override in general except if you really know what you are doing.
+        These parameters do not have default values and they use this comment as a warning instead because adding
+        default values would cause problems with *args and **kwargs if not all of the parameters are provided.
+
+        The point of these three parameters is to have the team and the label name in the Redis keys names if available.
+        If not, we will use the names "NoTeam" and "NoLabel" instead.
+        """
+        from depc.controllers.teams import TeamController
+
         # retrieve key from func attributes
         func_signature = {"args": args, "kwargs": kwargs}
+
+        # Init team and label names data
+        team_data_set = False
+        label_set = False
+        team_data = ""
+        label = ""
+
+        # Get the team and label from the override first if provided
+        if team_name_override:
+            team_data = team_name_override
+            team_data_set = True
+        if label_name_override:
+            label = label_name_override
+            label_set = True
+
+        # Get the team and label from kwargs if possible (and if not already set before)
+        if "team" in kwargs and not team_data_set:
+            team_data = kwargs["team"]
+            team_data_set = True
+        elif "team_id" in kwargs and not team_data_set:
+            team_data = kwargs["team_id"]
+            team_data_set = True
+
+        if "label" in kwargs and not label_set:
+            label = kwargs["label"]
+            label_set = True
+
+        # Get the team and label from func args if possible (and if not already set before)
+        if func and (not team_data_set or not label_set):
+            team_data_index_found = False
+            label_index_found = False
+            team_data_index = 0
+            label_index = 0
+            for index, param_name in enumerate(inspect.signature(func).parameters.keys()):
+                if param_name == "team" or param_name == "team_id":
+                    team_data_index = index
+                    team_data_index_found = True
+                if param_name == "label":
+                    label_index = index
+                    label_index_found = True
+            # Set the team and label names if the func arg names match (and if they have not already been set before)
+            if not team_data_set and team_data_index_found:
+                team_data = args[team_data_index]
+                team_data_set = True
+            if not label_set and label_index_found:
+                label = args[label_index]
+                label_set = True
+
+        if not team_data_set or not team_data:
+            # Give a default value to the team name if not found / not available
+            team_name = "NoTeam"
+        else:
+            # Format the team name if found
+            if re.match(
+                    "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}", team_data
+            ):
+                team_name = TeamController.get({"Team": {"id": team_data}})["name"]
+            else:
+                team_name = team_data
+            team_name = "".join(e for e in team_name if e.isalnum()).lower()
+
+        if not label_set or not label:
+            # Give a default value to the label name if not found / not available
+            label = "NoLabel"
 
         try:
             func_signature_serialized = json.dumps(
@@ -165,7 +244,7 @@ class RedisCache(redis.Redis):
         except Exception:
             func_signature_hash = "{:x}".format(int(time.perf_counter() * 100000000000))
 
-        key_name = "{}_{}".format(func_name, func_signature_hash)
+        key_name = "{}.{}.{}_{}".format(func_name, team_name, label, func_signature_hash)
         return key_name
 
     @classmethod
