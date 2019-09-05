@@ -58,7 +58,9 @@ class RedisCache(redis.Redis):
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
+                key_name = self.get_key_name(
+                    func, func_name, None, None, *args, **kwargs
+                )
 
                 if prefix:
                     key_name = "{}_{}".format(prefix, key_name)
@@ -129,14 +131,18 @@ class RedisCache(redis.Redis):
             setattr(wrapper, "cache_bypass", cache_bypass)
 
             def cache_clear(*args, **kwargs):
-                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
+                key_name = self.get_key_name(
+                    func, func_name, None, None, *args, **kwargs
+                )
                 logger.debug("Erasing cache for {}".format(key_name))
                 self.delete(key_name)
 
             setattr(wrapper, "cache_clear", cache_clear)
 
             def cache_refresh(*args, **kwargs):
-                key_name = self.get_key_name(func, func_name, None, None, *args, **kwargs)
+                key_name = self.get_key_name(
+                    func, func_name, None, None, *args, **kwargs
+                )
                 logger.debug("Refreshing cache for {}".format(key_name))
                 res = func(*args, **kwargs)
                 result_serialized = pickle.dumps(res, protocol=pickle.HIGHEST_PROTOCOL)
@@ -152,7 +158,9 @@ class RedisCache(redis.Redis):
         return decorator
 
     @classmethod
-    def get_key_name(cls, func, func_name, team_name_override, label_name_override, *args, **kwargs):
+    def get_key_name(
+        cls, func, func_name, team_name_override, label_name_override, *args, **kwargs
+    ):
         """
         team_name_override and label_name_override parameters should only be used if no func parameter can be provided.
         That means you should not override team and label when passing a func in general except if you really
@@ -202,7 +210,9 @@ class RedisCache(redis.Redis):
             label_index_found = False
             team_data_index = 0
             label_index = 0
-            for index, param_name in enumerate(inspect.signature(func).parameters.keys()):
+            for index, param_name in enumerate(
+                inspect.signature(func).parameters.keys()
+            ):
                 if param_name == "team" or param_name == "team_id":
                     team_data_index = index
                     team_data_index_found = True
@@ -223,7 +233,8 @@ class RedisCache(redis.Redis):
         else:
             # Format the team name if found
             if re.match(
-                    "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}", team_data
+                "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}",
+                team_data,
             ):
                 team_name = TeamController.get({"Team": {"id": team_data}})["name"]
             else:
@@ -244,7 +255,9 @@ class RedisCache(redis.Redis):
         except Exception:
             func_signature_hash = "{:x}".format(int(time.perf_counter() * 100000000000))
 
-        key_name = "{}.{}.{}_{}".format(func_name, team_name, label, func_signature_hash)
+        key_name = "{}.{}.{}_{}".format(
+            func_name, team_name, label, func_signature_hash
+        )
         return key_name
 
     @classmethod

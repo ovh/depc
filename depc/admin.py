@@ -165,28 +165,32 @@ class NewsModelView(ExtendedModelView):
 
 
 class CacheBaseView(BaseView):
-    @expose('/', methods=["GET", "POST"])
+    @expose("/", methods=["GET", "POST"])
     def index(self):
         if request.method == "POST":
             query_value = request.form.get("query", None, type=str)
             delete_all = request.form.get("deleteAll", False, type=bool)
             confirm_delete_all = request.form.get("confirmDeleteAll", False, type=bool)
-            confirm_delete_partial = request.form.get("confirmDeletePartial", False, type=bool)
+            confirm_delete_partial = request.form.get(
+                "confirmDeletePartial", False, type=bool
+            )
 
             # Handle the delete confirmation cases first
             if confirm_delete_all:
                 redis.flushdb()
-                return self.render('admin/cache.html')
+                return self.render("admin/cache.html")
 
             if confirm_delete_partial:
-                confirmed_keys_to_delete = ast.literal_eval(request.form.get("confirmedKeysToDelete", "", type=str))
+                confirmed_keys_to_delete = ast.literal_eval(
+                    request.form.get("confirmedKeysToDelete", "", type=str)
+                )
                 redis.delete(*confirmed_keys_to_delete)
-                return self.render('admin/cache.html')
+                return self.render("admin/cache.html")
 
             # Then handle the standard requests (list keys/delete all)
             if delete_all:
                 number_of_keys = redis.dbsize()
-                return self.render('admin/cache.html', number_of_keys=number_of_keys)
+                return self.render("admin/cache.html", number_of_keys=number_of_keys)
             else:
                 keys_bytes = []
                 for key in redis.scan_iter(query_value, 100):
@@ -197,10 +201,12 @@ class CacheBaseView(BaseView):
                 if string_query_value is None:
                     string_query_value = ""
 
-                return self.render('admin/cache.html', keys=keys, query_value=string_query_value)
+                return self.render(
+                    "admin/cache.html", keys=keys, query_value=string_query_value
+                )
 
         if request.method == "GET":
-            return self.render('admin/cache.html',)
+            return self.render("admin/cache.html")
 
 
 admin.add_view(CheckModelView(Check, db.session))
