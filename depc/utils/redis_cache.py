@@ -228,22 +228,24 @@ class RedisCache(redis.Redis):
                 label_set = True
 
         if not team_data_set or not team_data:
-            # Give a default value to the team name if not found / not available
-            team_name = "NoTeam"
+            # Give a default value to the team name if team data is not found / not available
+            team_name = "__noteam__"
         else:
-            # Format the team name if found
+            # Format the team name if team data is found:
             if re.match(
                 "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}",
                 team_data,
             ):
+                # If the team data is a team UUID, get the team name
                 team_name = TeamController.get({"Team": {"id": team_data}})["name"]
             else:
+                # Else, we already have a team name and we use it directly
                 team_name = team_data
             team_name = "".join(e for e in team_name if e.isalnum()).lower()
 
         if not label_set or not label:
-            # Give a default value to the label name if not found / not available
-            label = "NoLabel"
+            # Give a default value to the label name if label data is not found / not available
+            label = "__nolabel_"
 
         try:
             func_signature_serialized = json.dumps(

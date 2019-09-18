@@ -1,4 +1,10 @@
 {% extends "admin/master.html" %}
+
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/cache.css', _external=True) }}" ></link>
+{% endblock %}
+
 {% block body %}
 
 <form action="" method="post">
@@ -20,7 +26,7 @@
 <strong>Confirm deletion of all keys in database ({{ number_of_keys }} keys)?</strong>
 <form action="" method="post">
     <input name="confirmDeleteAll" type="hidden" value="true">
-    <input type="submit" value="CONFIRM Delete ALL keys">
+    <input id="delete_all" type="submit" value="CONFIRM Delete ALL keys">
 </form>
 {% endif %}
 
