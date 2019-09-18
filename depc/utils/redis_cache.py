@@ -171,7 +171,7 @@ class RedisCache(redis.Redis):
         default values would cause problems with *args and **kwargs if not all of the parameters are provided.
 
         The point of these three parameters is to have the team and the label name in the Redis keys names if available.
-        If not, we will use the names "NoTeam" and "NoLabel" instead.
+        If not, we will use the names "noteam" and "nolabel" instead.
         """
         from depc.controllers.teams import TeamController
 
