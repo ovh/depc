@@ -1,17 +1,19 @@
-from flask import abort
+import ast
+
+from flask import abort, request
 from flask import current_app
+from flask_admin import form, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import JSONField
-from flask_admin import form
 from flask_login import current_user
 
-from depc.extensions import admin, db
+from depc.extensions import admin, db, redis
 from depc.models.checks import Check
+from depc.models.news import News
 from depc.models.rules import Rule
 from depc.models.sources import Source
 from depc.models.teams import Team
 from depc.models.users import User, Grant
-from depc.models.news import News
 
 
 class AuthModelView(ModelView):
@@ -162,6 +164,51 @@ class NewsModelView(ExtendedModelView):
     form_columns = ("title", "message")
 
 
+class CacheBaseView(BaseView):
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        if request.method == "POST":
+            query_value = request.form.get("query", None, type=str)
+            delete_all = request.form.get("deleteAll", False, type=bool)
+            confirm_delete_all = request.form.get("confirmDeleteAll", False, type=bool)
+            confirm_delete_partial = request.form.get(
+                "confirmDeletePartial", False, type=bool
+            )
+
+            # Handle the delete confirmation cases first
+            if confirm_delete_all:
+                redis.flushdb()
+                return self.render("admin/cache.html")
+
+            if confirm_delete_partial:
+                confirmed_keys_to_delete = ast.literal_eval(
+                    request.form.get("confirmedKeysToDelete", "", type=str)
+                )
+                redis.delete(*confirmed_keys_to_delete)
+                return self.render("admin/cache.html")
+
+            # Then handle the standard requests (list keys/delete all)
+            if delete_all:
+                number_of_keys = redis.dbsize()
+                return self.render("admin/cache.html", number_of_keys=number_of_keys)
+            else:
+                keys_bytes = []
+                for key in redis.scan_iter(query_value, 100):
+                    keys_bytes.append(key)
+                keys = list(map(lambda key_name: key_name.decode("utf-8"), keys_bytes))
+
+                string_query_value = query_value
+                if string_query_value is None:
+                    string_query_value = ""
+
+                return self.render(
+                    "admin/cache.html", keys=keys, query_value=string_query_value
+                )
+
+        if request.method == "GET":
+            return self.render("admin/cache.html")
+
+
 admin.add_view(CheckModelView(Check, db.session))
 admin.add_view(SourceModelView(Source, db.session))
 admin.add_view(RuleModelView(Rule, db.session))
@@ -169,3 +216,4 @@ admin.add_view(UserModelView(User, db.session))
 admin.add_view(TeamModelView(Team, db.session))
 admin.add_view(GrantModelView(Grant, db.session))
 admin.add_view(NewsModelView(News, db.session))
+admin.add_view(CacheBaseView(name="Cache", endpoint="cache"))

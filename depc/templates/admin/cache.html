@@ -1,0 +1,47 @@
+{% extends "admin/master.html" %}
+
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/cache.css', _external=True) }}" ></link>
+{% endblock %}
+
+{% block body %}
+
+<form action="" method="post">
+    <div>
+        <label for="query">Redis MATCH query: </label>
+        <input type="text" name="query" id="query" required value="{{ query_value }}">
+    </div>
+    <div>
+        <input type="submit" value="Select keys">
+    </div>
+</form>
+
+<form action="" method="post">
+    <input name="deleteAll" type="hidden" value="true">
+    <input type="submit" value="Delete ALL keys">
+</form>
+
+{% if number_of_keys %}
+<strong>Confirm deletion of all keys in database ({{ number_of_keys }} keys)?</strong>
+<form action="" method="post">
+    <input name="confirmDeleteAll" type="hidden" value="true">
+    <input type="submit" value="CONFIRM Delete ALL keys" style="color: red">
+</form>
+{% endif %}
+
+{% if keys %}
+
+<strong>Confirm deletion of the selected keys ({{ keys | length }} keys)?</strong>
+<form action="" method="post">
+    <input name="confirmDeletePartial" type="hidden" value="true">
+    <input name="confirmedKeysToDelete" type="hidden" value="{{ keys }}">
+    <input type="submit" value="CONFIRM Delete SELECTED keys">
+</form>
+
+<p>Key list:</p>
+{% for key in keys %}<li>{{ key }}</li>{% endfor %}
+
+{% endif %}
+
+{% endblock %}

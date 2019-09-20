@@ -62,7 +62,9 @@ class RuleController(Controller):
 
         # Get a unique key used for the cache
         kwargs.update({"variables": variables, "parameters": parameters})
-        result_key = redis.get_key_name("rule", rule_id, **kwargs)
+        result_key = redis.get_key_name(
+            None, "rule", rule.team.kafka_topic, None, rule_id, **kwargs
+        )
 
         if not redis.exists(result_key):
             logs = []
