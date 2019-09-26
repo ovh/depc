@@ -1,10 +1,11 @@
-import collections
 import json
 import logging
+import os
 import time
 import uuid
 
 import arrow
+import collections
 from airflow.models import BaseOperator
 
 from depc.utils.neo4j import is_active_node, get_records, has_active_relationship
@@ -46,16 +47,25 @@ class QosOperator(BaseOperator):
         with self.app.app_context():
             sources = self.app.config["BEAMIUM"]["source-dir"]
 
+        def _write_on_fs(_filename, data):
+            with open(_filename, mode="w", encoding="utf-8") as f:
+                f.write(data)
+
         filename = "{path}/{id}-{ts}.metrics".format(
             path=sources[:-1] if sources.endswith("/") else sources,
             id=uuid.uuid4().hex,
             ts="{}000000".format(arrow.utcnow().timestamp),
         )
-        with open(filename, mode="w", encoding="utf-8") as f:
-            if type(metrics) == list:
-                f.write("\n".join(metrics))
-            else:
-                f.write(metrics)
+        if type(metrics) == list:
+            # In some cases, Beamium can ingest the file before all metrics were written
+            # and produces a corrupted file into the "sinks" folder.
+            # That's why we use a temporary file to write multiple metrics first and then
+            # rename this file into the right filename for Beamium.
+            temporary_filename = "{}.tmp".format(filename)
+            _write_on_fs(temporary_filename, "\n".join(metrics))
+            os.rename(temporary_filename, filename)
+        else:
+            _write_on_fs(filename, metrics)
 
         self.log.info("Result written in {f}".format(f=filename))
 
