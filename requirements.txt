@@ -47,7 +47,7 @@ sphinxcontrib-mermaid==0.3.1
 sphinxcontrib-httpdomain==1.7.0
 
 # Tests
-pytest==4.1.0
+pytest==4.6.6
 deepdiff==3.3.0
 pytest-cov==2.6.1
 pytest-freezegun==0.3.0.post1
