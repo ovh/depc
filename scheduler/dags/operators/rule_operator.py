@@ -92,9 +92,13 @@ class RuleOperator(QosOperator):
                     key = "{ds}.{team}.{label}".format(
                         ds=ds, team=self.team_name, label=self.label
                     )
-                    redis.zadd(
-                        "{}.sorted".format(key), node["name"], result["qos"]["qos"]
-                    )
+
+                    if not self.excluded_from_label_average(
+                        self.team_name, self.label, node["name"]
+                    ):
+                        redis.zadd(
+                            "{}.sorted".format(key), node["name"], result["qos"]["qos"]
+                        )
 
                     # Save information to reuse it later (`bools_dps` is used in
                     # OperationOperator and `qos` is used in AggregationOperator)

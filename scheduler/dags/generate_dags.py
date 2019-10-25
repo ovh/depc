@@ -172,7 +172,15 @@ def create_subdag(dag_parent, label, team):
 
         before_subdag_task = BeforeSubdagOperator(
             task_id="{}.before_subdag".format(label),
-            params={"app": app, "team": team, "label": label, "count": count},
+            params={
+                "app": app,
+                "team": team,
+                "label": label,
+                "count": count,
+                "excluded_nodes_from_average": schema.get("label", {}).get(
+                    "average.exclude"
+                ),
+            },
         )
 
         after_subdag_task = AfterSubdagOperator(

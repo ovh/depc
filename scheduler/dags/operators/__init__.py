@@ -8,6 +8,7 @@ import arrow
 import collections
 from airflow.models import BaseOperator
 
+from depc.extensions import redis_scheduler as redis
 from depc.utils.neo4j import is_active_node, get_records, has_active_relationship
 from scheduler.dags.decoder import BoolsDpsDecoder
 
@@ -77,6 +78,31 @@ class QosOperator(BaseOperator):
 
     def write_metrics(self, metrics):
         return self.write_metric_on_fs(metrics)
+
+    def excluded_from_label_average(self, team, label, node):
+        """
+        Check if the given node name is present into the list of excluded nodes for the Label average computing.
+        :param team: The name of the team who manages this node
+        :param label: The name of the label
+        :param node: The name of the node to check
+        :return: True if the node is excluded from the Label average computing
+        """
+
+        excluded_nodes_key = "{team}.{label}.excluded_nodes_from_label_average".format(
+            team=team, label=label
+        )
+        excluded_nodes_list = redis.lrange(excluded_nodes_key, 0, -1)
+        try:
+            # FIXME: currently, using encode() to compare values,
+            #  use decode_responses=True parameter in Redis client instead?
+            excluded_nodes_list.index(node.encode("utf-8"))
+            self.log.info("Excluding the node {} for label {}".format(node, label))
+            # raises a ValueError exception if the node is not into the excluded_nodes_list.
+        except ValueError:
+            # The node is not present into the excluded_nodes_list
+            return False
+
+        return True
 
 
 class DependenciesOperator(QosOperator):
@@ -341,11 +367,14 @@ class DependenciesOperator(QosOperator):
                     )
                 )
 
-                # Save it in redis for the average
                 key = "{ds}.{team}.{label}".format(
                     ds=ds, team=self.team_name, label=self.label
                 )
-                redis.zadd("{}.sorted".format(key), node, node_qos["qos"])
+
+                if not self.excluded_from_label_average(
+                    self.team_name, self.label, node
+                ):
+                    redis.zadd("{}.sorted".format(key), node, node_qos["qos"])
 
                 # Save information to reuse it later (`bools_dps` is used in
                 # OperationOperator and `qos` is used in AggregationOperator)

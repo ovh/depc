@@ -8,6 +8,21 @@
         "additionalProperties": false,
         "required": ["qos"],
         "properties": {
+          "label": {
+            "description": "Extra fields affecting the label",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["average.exclude"],
+            "properties": {
+              "average.exclude": {
+                "description": "Exclusion list of nodes from the compute of the Label average QOS",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "qos": {
             "description": "The QOS query",
             "type": "string",
