@@ -94,6 +94,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#rule-based-qos">Rule-based QOS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#operation-based-qos">Operation-based QOS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#aggregation-based-qos">Aggregation-based QOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exclude-nodes-from-label-average">Exclude nodes from label average</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="sources.html">Sources Configuration</a></li>
@@ -300,6 +301,23 @@ into booleans datapoints (a list of <em>timestamp:value</em> becomes a list of <
 An aggregation QoS simply computes multiple floats into a single float, so we lose the list
 of <em>timestamp:boolean</em> DPS.</p>
 </div>
+</div>
+<div class="section" id="exclude-nodes-from-label-average">
+<h2>Exclude nodes from label average<a class="headerlink" href="#exclude-nodes-from-label-average" title="Permalink to this headline">¶</a></h2>
+<p>You can exclude a node QoS from the average of its label. It can be useful for
+example if a server is in maintenance :</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;Apache&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;qos&quot;</span><span class="p">:</span> <span class="s2">&quot;rule.Servers&quot;</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;average.exclude&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;apache1&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">apache1</span></code> node will still have a QoS but it will not affect the
+whole QoS of the <code class="docutils literal notranslate"><span class="pre">Apache</span></code> label.</p>
 </div>
 </div>
 
