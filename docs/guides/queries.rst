@@ -146,3 +146,23 @@ You can use the following syntaxes in your configuration :
     into booleans datapoints (a list of *timestamp:value* becomes a list of *timestamp:boolean*).
     An aggregation QoS simply computes multiple floats into a single float, so we lose the list
     of *timestamp:boolean* DPS.
+
+Exclude nodes from label average
+--------------------------------
+
+You can exclude a node QoS from the average of its label. It can be useful for
+example if a server is in maintenance :
+
+.. code:: json
+
+    {
+      "Apache": {
+        "qos": "rule.Servers"
+        "label": {
+          "average.exclude": ["apache1"]
+        }
+      }
+    }
+
+Here the ``apache1`` node will still have a QoS but it will not affect the
+whole QoS of the ``Apache`` label.
