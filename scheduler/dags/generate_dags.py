@@ -4,7 +4,7 @@ import math
 import re
 
 from airflow import DAG
-from airflow.executors import GetDefaultExecutor
+from airflow.executors import get_default_executor
 from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
@@ -216,7 +216,7 @@ def create_subdag_operator(dag_parent, label, team):
     # executor for the SubDagOperator, so we need to explicitly specify the
     # executor from the airflow.cfg
     sd_op = SubDagOperator(
-        task_id=label, dag=dag_parent, subdag=subdag, executor=GetDefaultExecutor()
+        task_id=label, dag=dag_parent, subdag=subdag, executor=get_default_executor()
     )
     return sd_op, dependencies
 

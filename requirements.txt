@@ -18,7 +18,7 @@ aiohttp==2.3.10
 yarl==1.1.1
 
 # Apache Airflow
-apache-airflow==1.10.3
+apache-airflow==1.10.6
 cryptography==2.4.2
 
 # SqlAlchemy
