@@ -20,7 +20,7 @@ def write_log(logs, message, level):
     return logs
 
 
-async def execute_asyncio_check(check, name, start, end, key, variables):
+async def execute_asyncio_check(check, name, start, end, key, variables, auto_fill):
     logs = []
     logs = write_log(
         logs, "[{0}] Executing check ({1})...".format(check.name, check.id), "INFO"
@@ -56,7 +56,11 @@ async def execute_asyncio_check(check, name, start, end, key, variables):
 
         try:
             check_result = await source_plugin.run(
-                parameters=parameters, name=name, start=start, end=end
+                parameters=parameters,
+                name=name,
+                start=start,
+                end=end,
+                auto_fill=auto_fill,
             )
         except UnknownStateException as e:
             error = e
@@ -103,7 +107,7 @@ async def execute_asyncio_check(check, name, start, end, key, variables):
     return {"logs": logs, "result": result}
 
 
-def merge_all_checks(checks, rule, key, context):
+def merge_all_checks(checks, rule, key, auto_fill, context):
     result = {"context": context, "logs": []}
 
     # Remove the result key
@@ -119,7 +123,7 @@ def merge_all_checks(checks, rule, key, context):
 
     if checks_copy:
         result_rule = compute_qos_from_bools(
-            booleans=[c["bools_dps"] for c in checks_copy]
+            booleans=[c["bools_dps"] for c in checks_copy], auto_fill=auto_fill
         )
         result.update(result_rule)
 
