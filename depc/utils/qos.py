@@ -45,7 +45,9 @@ class AggregationTypes:
         return max(values)
 
 
-def compute_qos_from_bools(booleans, start=None, end=None, agg_op=OperationTypes.AND):
+def compute_qos_from_bools(
+    booleans, start=None, end=None, agg_op=OperationTypes.AND, auto_fill=True
+):
     from flask import current_app as app
 
     if not booleans:
@@ -56,21 +58,25 @@ def compute_qos_from_bools(booleans, start=None, end=None, agg_op=OperationTypes
         {"TS_{}".format(i + 1): ts for i, ts in enumerate(booleans)}
     )
 
-    if start or end:
-        # Ensure the QOS is computed between the start and the end specified by the user
-        idx = merged_ts.index.tolist()
-        if start:
-            idx.insert(0, start)
-        if end:
-            idx.append(end)
+    if auto_fill:
+        if start or end:
+            # Ensure the QOS is computed between the start and the end specified by the user
+            idx = merged_ts.index.tolist()
+            if start:
+                idx.insert(0, start)
+            if end:
+                idx.append(end)
 
-        # Using a Set to ensure there is no redundant values
-        s = sorted(set(idx))
+            # Using a Set to ensure there is no redundant values
+            s = sorted(set(idx))
 
+            merged_ts = merged_ts.reindex(s)
+
+        # Replacing NaN values created during the merge and/or reindex process
+        merged_ts = merged_ts.fillna(method="ffill").fillna(method="bfill")
+    else:
+        s = sorted(set(merged_ts.index.tolist()))
         merged_ts = merged_ts.reindex(s)
-
-    # Replacing NaN values created during the merge and/or reindex process
-    merged_ts = merged_ts.fillna(method="ffill").fillna(method="bfill")
 
     # Apply an aggregation between all series
     merged_ts["Results"] = agg_op(merged_ts)
@@ -133,3 +139,17 @@ def compute_qos_from_bools(booleans, start=None, end=None, agg_op=OperationTypes
         "bools_dps": normalized_results.to_dict(),
         "periods": {"ok": periods_true.seconds, "ko": periods_false.seconds},
     }
+
+
+def check_enable_auto_fill(*ids):
+    """
+    Check if one or multiple IDs are blacklisted for the regular QoS computing method
+    :param ids: the IDs (UUID v4) to check
+    :return: False if one of the ID is in the list specified with EXCLUDE_FROM_AUTO_FILL
+    """
+    from flask import current_app as app
+
+    excluded_ids = app.config.get("EXCLUDE_FROM_AUTO_FILL")
+    if len(excluded_ids) == 0:
+        return True
+    return all([_id not in excluded_ids for _id in ids])

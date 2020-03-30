@@ -102,7 +102,7 @@ class BaseSource(object):
     async def execute(self, parameters, name, start, end):
         raise NotImplementedError
 
-    async def run(self, parameters, name, start, end):
+    async def run(self, parameters, name, start, end, auto_fill):
         timeseries = await self.execute(parameters, name, start, end)
         threshold = parameters["threshold"]
 
@@ -127,7 +127,7 @@ class BaseSource(object):
                 "Bad threshold format : {}".format(parameters["threshold"])
             )
 
-        result = compute_qos_from_bools(bool_per_ts, start, end)
+        result = compute_qos_from_bools(bool_per_ts, start, end, auto_fill=auto_fill)
         result.update({"timeseries": timeseries})
 
         return result

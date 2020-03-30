@@ -31,7 +31,7 @@ class RuleController(Controller):
     model_cls = Rule
 
     @classmethod
-    def execute(cls, rule_id, sync=False, **kwargs):
+    def execute(cls, rule_id, auto_fill=True, **kwargs):
         rule = cls._get({"Rule": {"id": rule_id}})
 
         # If a parameter is changed, we must change the cache key
@@ -85,7 +85,11 @@ class RuleController(Controller):
             asyncio.set_event_loop(loop)
             loop.run_until_complete(
                 cls.execute_asyncio_rule(
-                    loop=loop, rule=rule, key=result_key, kwargs=kwargs
+                    loop=loop,
+                    rule=rule,
+                    key=result_key,
+                    auto_fill=auto_fill,
+                    kwargs=kwargs,
                 )
             )
 
@@ -223,7 +227,7 @@ class RuleController(Controller):
             )
 
     @classmethod
-    async def execute_asyncio_rule(cls, loop, rule, key, kwargs):
+    async def execute_asyncio_rule(cls, loop, rule, key, auto_fill, kwargs):
         all_checks_result = await asyncio.gather(
             *[
                 execute_asyncio_check(
@@ -233,6 +237,7 @@ class RuleController(Controller):
                     end=int(kwargs.get("end")),
                     key=key,
                     variables=kwargs.get("variables", {}),
+                    auto_fill=auto_fill,
                 )
                 for check in rule.checks
             ],
@@ -241,7 +246,11 @@ class RuleController(Controller):
         )
 
         qos = merge_all_checks(
-            checks=all_checks_result, rule=rule, key=key, context=kwargs
+            checks=all_checks_result,
+            rule=rule,
+            key=key,
+            auto_fill=auto_fill,
+            context=kwargs,
         )
 
         return qos

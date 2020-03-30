@@ -3,6 +3,7 @@ import json
 from airflow.utils.decorators import apply_defaults
 
 from depc.utils.neo4j import is_active_node, get_records
+from depc.utils.qos import check_enable_auto_fill
 from scheduler.dags.operators import QosOperator
 
 
@@ -56,10 +57,11 @@ class RuleOperator(QosOperator):
                 return False
 
             has_qos = False
+            auto_fill = check_enable_auto_fill(rule["id"], self.team_id)
             for node in nodes:
                 result = RuleController.execute(
                     rule_id=rule["id"],
-                    sync=True,
+                    auto_fill=auto_fill,
                     name=node["name"],
                     start=start,
                     end=end,

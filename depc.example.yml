@@ -59,3 +59,9 @@ CONSUMER:
         group_id: depc.consumer.depc_consumer_group
     heartbeat:
         delay: 5
+
+# Optional: exclude a specific team or rule from the regular QoS compute method
+# This variable needs a list of UUIDs used in the database
+# The compute for these IDs will be based only on the data points sent by the source
+EXCLUDE_FROM_AUTO_FILL:
+    - 123e4567-e89b-12d3-a456-426655440000

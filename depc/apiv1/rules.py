@@ -4,6 +4,7 @@ from flask_login import login_required
 from depc.apiv1 import api, format_object, get_payload
 from depc.controllers.rules import RuleController
 from depc.users import TeamPermission
+from depc.utils.qos import check_enable_auto_fill
 
 VISIBLE = ["name", "description", "checks"]
 
@@ -244,5 +245,7 @@ def execute_rule(team_id, rule_id):
     # Does the team owns the rule
     RuleController.get({"Rule": {"id": rule_id, "team_id": team_id}})
 
-    result = RuleController.execute(rule_id, **payload)
+    result = RuleController.execute(
+        rule_id=rule_id, auto_fill=check_enable_auto_fill(rule_id, team_id), **payload
+    )
     return jsonify({"result": result}), 200

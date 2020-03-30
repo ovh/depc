@@ -46,6 +46,7 @@ class Config:
     STATIC_DIR = str(Path(BASE_DIR) / "static")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     MAX_WORST_ITEMS = 15
+    EXCLUDE_FROM_AUTO_FILL = []
 
     @staticmethod
     def init_app(app):
