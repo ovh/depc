@@ -1,4 +1,4 @@
-FROM python:3.5
+FROM python:3.6
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 EXPOSE 5000
