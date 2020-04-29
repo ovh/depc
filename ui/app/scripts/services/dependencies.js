@@ -43,20 +43,20 @@ angular.module('depcwebuiApp')
 
     var getTeamLabelNode = function(team_id, label, node) {
       return $http({
-        url: config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node + '?alone=1',
+        url: config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '?alone=1',
         method: "GET"
       });
     };
 
     var countNodeDependencies = function(team_id, label, node) {
       return $http({
-        url: config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node + '/count',
+        url: config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '/count',
         method: "GET"
       });
     };
 
     var getNodeDependencies = function(team_id, label, node, day, filteredByConfig, includingInactive, displayImpacted) {
-      var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node + '?1=1';
+      var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '?1=1';
 
       if ( day ) {
         url = url + '&day=' + day;
@@ -81,7 +81,7 @@ angular.module('depcwebuiApp')
     };
 
     var deleteNode = function(team_id, label, node, detach) {
-      var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + node;
+      var url = config.depc_endpoint() + '/teams/' + team_id + '/labels/' + label + '/nodes/' + encodeURIComponent(node);
 
       if ( detach ) {
         url = url + '?detach=1';
@@ -94,7 +94,7 @@ angular.module('depcwebuiApp')
     }
 
     var getTeamImpactedNodes = function(teamId, label, node, impactedLabel, skip, limit, unixTs) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '/impacted';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
       url += '?1=1';
@@ -122,7 +122,7 @@ angular.module('depcwebuiApp')
     };
 
     var getTeamImpactedNodesCount = function(teamId, label, node, impactedLabel) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/count';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '/impacted/count';
 
       if (impactedLabel) {
         url += '?impactedLabel=' + impactedLabel;
@@ -135,7 +135,7 @@ angular.module('depcwebuiApp')
     };
 
     var getTeamImpactedNodesAll = function(teamId, label, node, impactedLabel, unixTs, inactive) {
-      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + node + '/impacted/all';
+      var url = config.depc_endpoint() + '/teams/' + teamId + '/labels/' + label + '/nodes/' + encodeURIComponent(node) + '/impacted/all';
 
       // We do not know the order of parameters, so this dirty patch abstracts it
       url += '?1=1';
