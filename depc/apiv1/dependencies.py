@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 import arrow
 from flask import abort, jsonify, request
 from flask_login import login_required
@@ -137,7 +139,9 @@ def count_node_dependencies(team_id, label, node):
     if not TeamPermission.is_user(team_id):
         abort(403)
 
-    return jsonify(DependenciesController.count_node_dependencies(team_id, label, node))
+    return jsonify(
+        DependenciesController.count_node_dependencies(team_id, label, unquote(node))
+    )
 
 
 @api.route("/teams/<team_id>/labels/<label>/nodes/<path:node>")
@@ -220,7 +224,7 @@ def get_node(team_id, label, node):
         abort(403)
 
     # We just want to return the node
-    data = DependenciesController.get_label_node(team_id, label, node)
+    data = DependenciesController.get_label_node(team_id, label, unquote(node))
     if request.args.get("alone", False):
         return jsonify(data)
 
@@ -324,7 +328,7 @@ def get_impacted_nodes(team_id, label, node):
         DependenciesController.get_impacted_nodes(
             team_id,
             label,
-            node,
+            unquote(node),
             request.args.get("impactedLabel", None),
             request.args.get("skip", 0),
             request.args.get("limit", 25),
@@ -368,7 +372,7 @@ def get_impacted_nodes_count(team_id, label, node):
 
     return jsonify(
         DependenciesController.get_impacted_nodes_count(
-            team_id, label, node, request.args.get("impactedLabel", None)
+            team_id, label, unquote(node), request.args.get("impactedLabel", None)
         )
     )
 
@@ -416,7 +420,7 @@ def get_impacted_nodes_all(team_id, label, node):
     json_string = DependenciesController.get_impacted_nodes_all(
         team_id,
         label,
-        node,
+        unquote(node),
         request.args.get("impactedLabel", None),
         request.args.get("ts", None),
         request.args.get("inactive", False),
