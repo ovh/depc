@@ -5,6 +5,8 @@ Revises: d2dc7ff020a0
 Create Date: 2019-06-28 11:42:47.081483
 
 """
+from sqlalchemy.exc import ProgrammingError
+
 from depc.extensions import db
 from depc.models.checks import Check
 
@@ -20,7 +22,17 @@ KEYS_MAPPING = {"Fake": "metric", "OpenTSDB": "query", "WarpScript": "script"}
 
 
 def upgrade():
-    checks = Check.query.all()
+    """
+    This code upgrades the format of the checks data, not the schema
+    itself. We need to verify if we're in a fresh DepC installation or
+    if it's a DepC version upgrade.
+    """
+    try:
+        checks = Check.query.all()
+
+    # Handles the 'relation "checks" does not exist' error
+    except ProgrammingError:
+        return
 
     for check in checks:
         query = check.parameters[KEYS_MAPPING[check.source.plugin]]
