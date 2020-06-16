@@ -245,13 +245,10 @@ def create_dag(team, schedule_interval, default_args):
 
 # Create the DAGs
 teams = Variable.get("config", default_var=[], deserialize_json=True)
-if not teams:
-    logger.error("Configuration has not been saved.")
-else:
-    for team in teams:
-        try:
-            globals()[team["topic"]] = create_dag(team, schedule_interval, default_args)
-        except Exception as e:
-            logger.error(
-                "Exception in team {team} : {exc}".format(team=team["name"], exc=str(e))
-            )
+for team in teams:
+    try:
+        globals()[team["topic"]] = create_dag(team, schedule_interval, default_args)
+    except Exception as e:
+        logger.error(
+            "Exception in team {team} : {exc}".format(team=team["name"], exc=str(e))
+        )
