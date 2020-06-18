@@ -74,6 +74,15 @@ Set these environment variables :
     # Production environment will use a depc.prod.yml file
     export DEPC_ENV=prod
 
+Then you need to configure the secrets in your configuration. You can generate values with
+the following command :
+
+.. code:: bash
+
+    $ python -c "import binascii;from Crypto import Random; print(binascii.hexlify(Random.new().read(32)).decode())"
+    62bb303abfd246b2dde9b6513187ede335e238bb957d7c57fdc69d41bf501a0f
+
+Execute it twice to populate the ``SECRET`` and ``DB_ENCRYPTION_KEY`` variables.
 
 Launch the API
 ~~~~~~~~~~~~~~
@@ -82,36 +91,26 @@ Using the Flask development server :
 
 .. code:: bash
 
-    make api
+    $ export FLASK_ENV=development
+    $ export FLASK_APP=manage:app
+    $ make api
 
 Using Gunicorn :
 
 .. code:: bash
 
-    gunicorn --bind 0.0.0.0:5000 manage:app
+    $ export FLASK_ENV=production
+    $ gunicorn --bind 0.0.0.0:5000 manage:app
 
 
-Now you can reach the API to this URL :
+Now you can reach the API :
 
 .. code:: bash
 
-    curl http://localhost:5000/v1/ping
-
-You should have this response :
-
-.. code:: json
-
+    $ curl http://localhost:5000/v1/ping
     {
       "message": "pong"
     }
-
-
-.. note::
-
-    During development, you may want to create a new team, grant users, etc...
-    To force the access to the DepC admin panel at: ``http://localhost:5000/admin``.
-    Put the ``FORCE_INSECURE_ADMIN: true`` value into your configuration file.
-
 
 Setup the Web UI
 ~~~~~~~~~~~~~~~~
@@ -123,9 +122,9 @@ In the ``ui/`` directory :
 
 .. code:: bash
 
-    npm install
-    npm install bower grunt grunt-cli -g
-    bower install
+    $ npm install
+    $ npm install bower grunt grunt-cli -g
+    $ bower install
 
 .. note::
 
@@ -137,14 +136,40 @@ In the ``ui/`` directory :
 
         // config.headers['X-Remote-User'] = 'username';
 
-
 To start the Web UI :
 
 .. code:: bash
 
-    make ui
+    $ make ui
 
-Now, you ca reach the DepC Web UI at : ``http://localhost:9000/#/teams``
+Now, you can reach the DepC Web UI at : ``http://localhost:9000/#/teams`` :
+
+.. figure:: _static/images/empty_homepage.png
+   :alt: DepC Empty Homepage
+   :align: center
+
+Create your first team
+~~~~~~~~~~~~~~~~~~~~~~
+
+During development you may want to create a new team, grant users, etc... You can
+do it using the DepC admin panel at: ``http://localhost:5000/admin``.
+
+You can also force the access with the ``FORCE_INSECURE_ADMIN: true`` value in your
+configuration file.
+
+.. warning::
+
+    The ``FORCE_INSECURE_ADMIN`` variable must only be used in development mode,
+    we recommend to use a reverse proxy adding the authentication layer in production.
+
+The first thing to do is to create a team in **Admin > Team > Create** :
+
+.. figure:: _static/images/installation/create_team.png
+   :alt: DepC Create Team
+   :align: center
+
+You can omit the ``meta`` field for now, it will be used to inform users about their own
+Grafana access.
 
 Setup Airflow
 ~~~~~~~~~~~~~
@@ -152,19 +177,66 @@ Setup Airflow
 To get more details about how to setup Airflow,
 please read the `official documentation <https://airflow.apache.org/index.html>`__.
 
+The first step is to export some variables :
+
 .. code:: bash
 
     # Add the DepC root directory to the PYTHONPATH
-    export PYTHONPATH="$(pwd)/:$PYTHONPATH"
+    $ export PYTHONPATH="$(pwd)/:$PYTHONPATH"
 
     # Specify the DepC scheduler directory as the Airflow root directory
-    export AIRFLOW_HOME="$(pwd)/scheduler"
+    $ export AIRFLOW_HOME="$(pwd)/scheduler"
 
-    # Before this step, remember, you have to generate/configure the airflow.cfg
+Then you can initialize Airflow :
+
+.. code:: bash
+
+    $ airflow initdb
+
+You will have lot's of DAG examples, you can remove them in the airflow configuration
+and reset the database :
+
+.. code:: bash
+
+    $ vim scheduler/airflow.cfg
+    ...
+    load_examples = False
+    ...
+    $ airflow resetdb
+
+You can now start the webserver :
+
+.. code:: bash
+
     make webserver
 
-    # In another terminal
-    make scheduler
+The WebUI is available at http://127.0.0.1:8080 :
+
+.. figure:: _static/images/installation/airflow_webserver.png
+   :alt: Airflow WebServer
+   :align: center
+
+As you can see Airflow indicates that the scheduler is not running. Before doing it
+we need to change the `captchup` configuration :
+
+.. code:: bash
+
+    $ vim scheduler/airflow.cfg
+    ...
+    catchup_by_default = False
+
+You can now start the scheduler :
+
+.. code:: bash
+
+    $ make scheduler
+
+As you can see in the web interface the message has disapeared. You can now activate the
+`config` DAG :
+
+.. figure:: _static/images/installation/airflow_webserver_config.png
+   :alt: Airflow WebServer Config
+   :align: center
 
 
 Start the Kafka consumer
@@ -172,6 +244,8 @@ Start the Kafka consumer
 
 You have to configure the appropriate fields into your configuration file (section ``CONSUMER``).
 
+Then you can launch the Kafka consumer :
+
 .. code:: bash
 
-    make consumer
+    $ make consumer
