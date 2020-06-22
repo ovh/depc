@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#configure-your-environment">Configure your environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-the-api">Launch the API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-the-web-ui">Setup the Web UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-your-first-team">Create your first team</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-airflow">Setup Airflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#start-the-kafka-consumer">Start the Kafka consumer</a></li>
 </ul>
@@ -226,32 +227,33 @@ Name the configuration file <code class="docutils literal notranslate"><span cla
 <span class="n">export</span> <span class="n">DEPC_ENV</span><span class="o">=</span><span class="n">prod</span>
 </pre></div>
 </div>
+<p>Then you need to configure the secrets in your configuration. You can generate values with
+the following command :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &quot;import binascii;from Crypto import Random; print(binascii.hexlify(Random.new().read(32)).decode())&quot;
+62bb303abfd246b2dde9b6513187ede335e238bb957d7c57fdc69d41bf501a0f
+</pre></div>
+</div>
+<p>Execute it twice to populate the <code class="docutils literal notranslate"><span class="pre">SECRET</span></code> and <code class="docutils literal notranslate"><span class="pre">DB_ENCRYPTION_KEY</span></code> variables.</p>
 </div>
 <div class="section" id="launch-the-api">
 <h2>Launch the API<a class="headerlink" href="#launch-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Using the Flask development server :</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">api</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ export FLASK_ENV=development
+$ export FLASK_APP=manage:app
+$ make api
 </pre></div>
 </div>
 <p>Using Gunicorn :</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gunicorn</span> <span class="o">--</span><span class="n">bind</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">5000</span> <span class="n">manage</span><span class="p">:</span><span class="n">app</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ export FLASK_ENV=production
+$ gunicorn --bind 0.0.0.0:5000 manage:app
 </pre></div>
 </div>
-<p>Now you can reach the API to this URL :</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">ping</span>
+<p>Now you can reach the API :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:5000/v1/ping
+{
+  &quot;message&quot;: &quot;pong&quot;
+}
 </pre></div>
-</div>
-<p>You should have this response :</p>
-<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;pong&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">During development, you may want to create a new team, grant users, etc…
-To force the access to the DepC admin panel at: <code class="docutils literal notranslate"><span class="pre">http://localhost:5000/admin</span></code>.
-Put the <code class="docutils literal notranslate"><span class="pre">FORCE_INSECURE_ADMIN:</span> <span class="pre">true</span></code> value into your configuration file.</p>
 </div>
 </div>
 <div class="section" id="setup-the-web-ui">
@@ -259,9 +261,9 @@ Put the <code class="docutils literal notranslate"><span class="pre">FORCE_INSEC
 <p>To install and run the Web UI you need to install <a class="reference external" href="https://nodejs.org/en/download/releases/">Node.js 8</a>.
 Then you will be able to run the NPM command-line tool packaged with your Node.js installation.</p>
 <p>In the <code class="docutils literal notranslate"><span class="pre">ui/</span></code> directory :</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span>
-<span class="n">npm</span> <span class="n">install</span> <span class="n">bower</span> <span class="n">grunt</span> <span class="n">grunt</span><span class="o">-</span><span class="n">cli</span> <span class="o">-</span><span class="n">g</span>
-<span class="n">bower</span> <span class="n">install</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ npm install
+$ npm install bower grunt grunt-cli -g
+$ bower install
 </pre></div>
 </div>
 <div class="admonition note">
@@ -274,33 +276,87 @@ Uncomment this line and replace <code class="docutils literal notranslate"><span
 </div>
 </div>
 <p>To start the Web UI :</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">ui</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ make ui
 </pre></div>
 </div>
-<p>Now, you ca reach the DepC Web UI at : <code class="docutils literal notranslate"><span class="pre">http://localhost:9000/#/teams</span></code></p>
+<p>Now, you can reach the DepC Web UI at : <code class="docutils literal notranslate"><span class="pre">http://localhost:9000/#/teams</span></code> :</p>
+<div class="figure align-center">
+<img alt="DepC Empty Homepage" src="_static/images/empty_homepage.png" />
+</div>
+</div>
+<div class="section" id="create-your-first-team">
+<h2>Create your first team<a class="headerlink" href="#create-your-first-team" title="Permalink to this headline">¶</a></h2>
+<p>During development you may want to create a new team, grant users, etc… You can
+do it using the DepC admin panel at: <code class="docutils literal notranslate"><span class="pre">http://localhost:5000/admin</span></code>.</p>
+<p>You can also force the access with the <code class="docutils literal notranslate"><span class="pre">FORCE_INSECURE_ADMIN:</span> <span class="pre">true</span></code> value in your
+configuration file.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">FORCE_INSECURE_ADMIN</span></code> variable must only be used in development mode,
+we recommend to use a reverse proxy adding the authentication layer in production.</p>
+</div>
+<p>The first thing to do is to create a team in <strong>Admin &gt; Team &gt; Create</strong> :</p>
+<div class="figure align-center">
+<img alt="DepC Create Team" src="_images/create_team.png" />
+</div>
+<p>You can omit the <code class="docutils literal notranslate"><span class="pre">meta</span></code> field for now, it will be used to inform users about their own
+Grafana access.</p>
 </div>
 <div class="section" id="setup-airflow">
 <h2>Setup Airflow<a class="headerlink" href="#setup-airflow" title="Permalink to this headline">¶</a></h2>
 <p>To get more details about how to setup Airflow,
 please read the <a class="reference external" href="https://airflow.apache.org/index.html">official documentation</a>.</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add the DepC root directory to the PYTHONPATH</span>
-<span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;$(pwd)/:$PYTHONPATH&quot;</span>
+<p>The first step is to export some variables :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span># Add the DepC root directory to the PYTHONPATH
+$ export PYTHONPATH=&quot;$(pwd)/:$PYTHONPATH&quot;
 
-<span class="c1"># Specify the DepC scheduler directory as the Airflow root directory</span>
-<span class="n">export</span> <span class="n">AIRFLOW_HOME</span><span class="o">=</span><span class="s2">&quot;$(pwd)/scheduler&quot;</span>
-
-<span class="c1"># Before this step, remember, you have to generate/configure the airflow.cfg</span>
-<span class="n">make</span> <span class="n">webserver</span>
-
-<span class="c1"># In another terminal</span>
-<span class="n">make</span> <span class="n">scheduler</span>
+# Specify the DepC scheduler directory as the Airflow root directory
+$ export AIRFLOW_HOME=&quot;$(pwd)/scheduler&quot;
 </pre></div>
+</div>
+<p>Then you can initialize Airflow :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ airflow initdb
+</pre></div>
+</div>
+<p>You will have lot’s of DAG examples, you can remove them in the airflow configuration
+and reset the database :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ vim scheduler/airflow.cfg
+...
+load_examples = False
+...
+$ airflow resetdb
+</pre></div>
+</div>
+<p>You can now start the webserver :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">webserver</span>
+</pre></div>
+</div>
+<p>The WebUI is available at <a class="reference external" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> :</p>
+<div class="figure align-center">
+<img alt="Airflow WebServer" src="_images/airflow_webserver.png" />
+</div>
+<p>As you can see Airflow indicates that the scheduler is not running. Before doing it
+we need to change the <cite>captchup</cite> configuration :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ vim scheduler/airflow.cfg
+...
+catchup_by_default = False
+</pre></div>
+</div>
+<p>You can now start the scheduler :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ make scheduler
+</pre></div>
+</div>
+<p>As you can see in the web interface the message has disapeared. You can now activate the
+<cite>config</cite> DAG :</p>
+<div class="figure align-center">
+<img alt="Airflow WebServer Config" src="_images/airflow_webserver_config.png" />
 </div>
 </div>
 <div class="section" id="start-the-kafka-consumer">
 <h2>Start the Kafka consumer<a class="headerlink" href="#start-the-kafka-consumer" title="Permalink to this headline">¶</a></h2>
 <p>You have to configure the appropriate fields into your configuration file (section <code class="docutils literal notranslate"><span class="pre">CONSUMER</span></code>).</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">consumer</span>
+<p>Then you can launch the Kafka consumer :</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ make consumer
 </pre></div>
 </div>
 </div>
