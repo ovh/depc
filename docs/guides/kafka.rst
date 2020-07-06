@@ -106,25 +106,31 @@ Example script
 
 Here is a simple example in Python :
 
+.. note::
+   First, you may need to install this dependency :
+   ``pip install kafka-python==1.4.3``
+
 .. code:: python
 
-   from kafka import KafkaProducer
-   import ssl
    import json
-    
+   import os
+   import ssl
+
+   from kafka import KafkaProducer
+
    conf = {
-      'bootstrap_servers': os.getenv('DEPC_KAFKA_HOST'),
-      'security_protocol': 'SASL_SSL',
-      'sasl_mechanism': 'PLAIN',
-      'sasl_plain_username': os.getenv('DEPC_KAFKA_USERNAME'),
-      'sasl_plain_password': os.getenv('DEPC_KAFKA_PASSWORD'),
-      'ssl_context': ssl.SSLContext(ssl.PROTOCOL_SSLv23),
-      'ssl_check_hostname': False,
-      'client_id': os.getenv('DEPC_KAFKA_TOPIC'),
-      'value_serializer': lambda v: json.dumps(v).encode('utf-8')
+       'bootstrap_servers': os.environ['DEPC_KAFKA_HOST'],
+       'security_protocol': 'SASL_SSL',
+       'sasl_mechanism': 'PLAIN',
+       'sasl_plain_username': os.environ['DEPC_KAFKA_USERNAME'],
+       'sasl_plain_password': os.environ['DEPC_KAFKA_PASSWORD'],
+       'ssl_context': ssl.SSLContext(ssl.PROTOCOL_SSLv23),
+       'ssl_check_hostname': False,
+       'client_id': os.environ['DEPC_KAFKA_TOPIC'],
+       'value_serializer': lambda v: json.dumps(v).encode('utf-8')
    }
    p = KafkaProducer(**conf)
-    
+
    message = {
        "source": {
            "label": "Cluster",
@@ -135,10 +141,10 @@ Here is a simple example in Python :
            "name": None
        }
    }
-    
+
    for name in ['ns375001.ip-xx-xxx-xx.eu', 'ns375002.ip-xx-xxx-xx.eu', 'ns375003.ip-xx-xxx-xx.eu']:
        message['target']['name'] = name
-       p.send('depc.myteam', message)
+       p.send(os.environ['DEPC_KAFKA_TOPIC'], message)
    p.flush()
 
 The following graph will be created :
