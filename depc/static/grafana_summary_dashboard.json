@@ -5,7 +5,7 @@
       "label": "Depc Warp10",
       "description": "",
       "type": "datasource",
-      "pluginId": "grafana-warp10-datasource",
+      "pluginId": "ovh-warp10-datasource",
       "pluginName": "Warp10"
     }
   ],
@@ -18,7 +18,7 @@
     },
     {
       "type": "datasource",
-      "id": "grafana-warp10-datasource",
+      "id": "ovh-warp10-datasource",
       "name": "Warp10",
       "version": "2.1.0"
     },
