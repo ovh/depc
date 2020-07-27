@@ -3,6 +3,8 @@ FROM python:3.6
 ENTRYPOINT ["./docker-entrypoint.sh"]
 EXPOSE 5000
 
+RUN apt-get update && apt-get install -y libsnappy-dev
+
 # Working directory
 RUN mkdir -p /app
 WORKDIR /app

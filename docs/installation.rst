@@ -49,6 +49,15 @@ Install the requirements
 
     pip install -r requirements.txt
 
+.. note::
+    To support the `Snappy compression library <https://github.com/google/snappy>`__ for the Kafka consumer,
+    on Debian-based Linux distribution you have to install the ``libsnappy-dev`` package. Then you can install
+    the related Python package.
+
+    .. code:: bash
+
+        pip install python-snappy==0.5.4
+
 
 Configure your environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
