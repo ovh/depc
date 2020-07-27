@@ -9,7 +9,13 @@ python:
 services:
   - neo4j
 
+addons:
+  apt:
+    packages:
+      - libsnappy-dev
+
 install:
+  - pip install python-snappy==0.5.4
   - pip install -r requirements.txt
 
 script:
