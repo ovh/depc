@@ -153,7 +153,7 @@ To start the Web UI :
 
 Now, you can reach the DepC Web UI at : ``http://localhost:9000/#/teams`` :
 
-.. figure:: _static/images/empty_homepage.png
+.. figure:: _static/images/installation/empty_homepage.png
    :alt: DepC Empty Homepage
    :align: center
 
