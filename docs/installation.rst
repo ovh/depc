@@ -31,7 +31,7 @@ Take a look on the ``depc.example.yml`` to set the required configuration fields
 Create your virtual environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may need to install Python 3.5+ first, this step can differ depending on your operating system,
+You may need to install Python 3.6+ first, this step can differ depending on your operating system,
 please refer to the official `Python documentation <https://docs.python.org/3/using/index.html>`__
 for further details.
 
