@@ -49,7 +49,12 @@ def compute_qos_from_bools(
     booleans, start=None, end=None, agg_op=OperationTypes.AND, auto_fill=True
 ):
     from flask import current_app as app
+    float_decimal = app.config.get("FLOAT_DECIMAL", 3)
 
+    return _compute_qos(booleans, start, end, agg_op, auto_fill, float_decimal)
+
+
+def _compute_qos(booleans, start, end, agg_op, auto_fill, float_decimal):
     if not booleans:
         return {"qos": None, "bools_dps": {}, "periods": {"ok": 0, "ko": 0}}
 
@@ -126,7 +131,7 @@ def compute_qos_from_bools(
 
     try:
         qos = periods_true / (periods_false + periods_true)
-        qos = round(qos * 100, app.config.get("FLOAT_DECIMAL", 3))
+        qos = round(qos * 100, float_decimal)
     except ZeroDivisionError:
         logger.warning(
             "Catching a division by zero (ZeroDivisionError) during the Pandas compute (periods_"
