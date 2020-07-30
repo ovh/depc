@@ -49,6 +49,7 @@ def compute_qos_from_bools(
     booleans, start=None, end=None, agg_op=OperationTypes.AND, auto_fill=True
 ):
     from flask import current_app as app
+
     float_decimal = app.config.get("FLOAT_DECIMAL", 3)
 
     return _compute_qos(booleans, start, end, agg_op, auto_fill, float_decimal)
