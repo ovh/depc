@@ -14,9 +14,15 @@ addons:
     packages:
       - libsnappy-dev
 
+before_install:
+  - pip install black==19.10b0
+
 install:
   - pip install python-snappy==0.5.4
   - pip install -r requirements.txt
+
+before_script:
+  - black --check depc consumer scheduler
 
 script:
   - make tests
