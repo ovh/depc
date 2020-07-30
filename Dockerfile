@@ -15,6 +15,7 @@ ENV AIRFLOW_GPL_UNIDECODE yes
 # Install the Python requirements
 ADD requirements.txt /app/
 RUN pip install --upgrade pip
+RUN pip install python-snappy==0.5.4
 RUN pip install -r requirements.txt
 
 # Copy the source files
