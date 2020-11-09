@@ -31,7 +31,7 @@ Take a look on the ``depc.example.yml`` to set the required configuration fields
 Create your virtual environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may need to install Python 3.6+ first, this step can differ depending on your operating system,
+You may need to install **Python 3.6+** first, this step can differ depending on your operating system,
 please refer to the official `Python documentation <https://docs.python.org/3/using/index.html>`__
 for further details.
 
@@ -225,6 +225,14 @@ The WebUI is available at http://127.0.0.1:8080 :
    :alt: Airflow WebServer
    :align: center
 
+.. note::
+
+    To secure the Airflow Web UI, you can read the
+    `Security section <https://airflow.apache.org/docs/1.10.11/security.html>`__
+    and the
+    `Security Connections How-To guide <https://airflow.apache.org/docs/1.10.11/howto/secure-connections.html>`__
+    in the official Airflow documentation.
+
 As you can see Airflow indicates that the scheduler is not running. Before doing it
 we need to change the `captchup` configuration :
 
@@ -240,7 +248,7 @@ You can now start the scheduler :
 
     $ make scheduler
 
-As you can see in the web interface the message has disapeared. You can now activate the
+As you can see in the web interface the message has disappeared. You can now activate the
 `config` DAG :
 
 .. figure:: _static/images/installation/airflow_webserver_config.png

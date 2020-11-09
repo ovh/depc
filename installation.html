@@ -191,7 +191,7 @@ We plan to improve the installation process in a future release.</p>
 </div>
 <div class="section" id="create-your-virtual-environment">
 <h2>Create your virtual environment<a class="headerlink" href="#create-your-virtual-environment" title="Permalink to this headline">¶</a></h2>
-<p>You may need to install Python 3.6+ first, this step can differ depending on your operating system,
+<p>You may need to install <strong>Python 3.6+</strong> first, this step can differ depending on your operating system,
 please refer to the official <a class="reference external" href="https://docs.python.org/3/using/index.html">Python documentation</a>
 for further details.</p>
 <div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
@@ -344,6 +344,14 @@ $ airflow resetdb
 <div class="figure align-center">
 <img alt="Airflow WebServer" src="_images/airflow_webserver.png" />
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To secure the Airflow Web UI, you can read the
+<a class="reference external" href="https://airflow.apache.org/docs/1.10.11/security.html">Security section</a>
+and the
+<a class="reference external" href="https://airflow.apache.org/docs/1.10.11/howto/secure-connections.html">Security Connections How-To guide</a>
+in the official Airflow documentation.</p>
+</div>
 <p>As you can see Airflow indicates that the scheduler is not running. Before doing it
 we need to change the <cite>captchup</cite> configuration :</p>
 <div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ vim scheduler/airflow.cfg
@@ -355,7 +363,7 @@ catchup_by_default = False
 <div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ make scheduler
 </pre></div>
 </div>
-<p>As you can see in the web interface the message has disapeared. You can now activate the
+<p>As you can see in the web interface the message has disappeared. You can now activate the
 <cite>config</cite> DAG :</p>
 <div class="figure align-center">
 <img alt="Airflow WebServer Config" src="_images/airflow_webserver_config.png" />
