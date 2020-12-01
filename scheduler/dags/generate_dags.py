@@ -243,11 +243,19 @@ def create_dag(team, schedule_interval, default_args):
     return dag
 
 
-# Create the DAGs
 teams = Variable.get("config", default_var=[], deserialize_json=True)
+# You need to go on the Variables page of the Airflow Web UI, e.g.: http://localhost:8080/admin/variable/
+# then create a new Variable with a key "schedule" and for value, e.g.: {"slug_of_the_team": "15 2 * * *"}
+custom_schedule_intervals = Variable.get(
+    "schedule", default_var={}, deserialize_json=True
+)
+# Create the DAGs
 for team in teams:
     try:
-        globals()[team["topic"]] = create_dag(team, schedule_interval, default_args)
+        team_schedule_interval = custom_schedule_intervals.get(team["topic"], schedule_interval)
+        globals()[team["topic"]] = create_dag(
+            team, team_schedule_interval, default_args
+        )
     except Exception as e:
         logger.error(
             "Exception in team {team} : {exc}".format(team=team["name"], exc=str(e))
