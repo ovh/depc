@@ -267,7 +267,9 @@ custom_schedule_intervals = Variable.get(
 # Create the DAGs
 for team in teams:
     try:
-        team_schedule_interval = custom_schedule_intervals.get(team["topic"], schedule_interval)
+        team_schedule_interval = custom_schedule_intervals.get(
+            team["topic"], schedule_interval
+        )
         globals()[team["topic"]] = create_dag(
             team, team_schedule_interval, default_args
         )
