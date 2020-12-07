@@ -119,6 +119,31 @@ def find_label_operator(query):
     return None, None
 
 
+def generate_chunked_tuples(count, chunk_size=1000):
+    """
+    Generate the "SKIP" values and "LIMIT" values for the Neo4j queries
+    :param count: number of items to chunk
+    :param chunk_size: size of a chunk (default: 1000)
+    :return: list of tuples with two values (skip, limit)
+    """
+    if count <= chunk_size:
+        return [(0, count)]
+
+    nb_chunks = count // chunk_size
+    nb_orphans = count % chunk_size
+
+    skips = range(0, nb_chunks * chunk_size + chunk_size, chunk_size)
+    limits = [chunk_size for _ in range(nb_chunks)]
+
+    middle = chunk_size / 2
+    if nb_orphans <= middle:
+        limits[len(limits) - 1] = chunk_size + nb_orphans
+    elif nb_orphans > middle:
+        limits.append(nb_orphans)
+
+    return [(s, l) for s, l in zip(skips, limits)]
+
+
 def create_subdag(dag_parent, label, team):
     dag_id_child = "%s.%s" % (dag_parent.dag_id, label)
     schema = team["schema"][label]
@@ -138,18 +163,9 @@ def create_subdag(dag_parent, label, team):
         DummyOperator(task_id="{}.notask".format(label), dag=dag)
         return dag, operator_params.get("dependencies")
 
-    if count < 100:
-        length = count
-    else:
-        frac, length = math.modf(count / 100)
-        if frac:
-            length += 1
-
-    chunks = {"{}.chunk.{}".format(label, i): i for i in range(0, count, int(length))}
-
     tasks = []
-    for name, skip in chunks.items():
-
+    for skip, length in generate_chunked_tuples(count):
+        chunk_name = "{}.chunk.{}".format(label, skip)
         # All custom operators share these parameters
         params = {
             "app": app,
@@ -159,8 +175,7 @@ def create_subdag(dag_parent, label, team):
             "length": length,
             **operator_params,
         }
-
-        tasks.append(fn(task_id=name, dag=dag, params=params))
+        tasks.append(fn(task_id=chunk_name, dag=dag, params=params))
 
     with dag:
         delete_redis_avg_op = PythonOperator(
