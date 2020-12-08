@@ -119,7 +119,7 @@ def find_label_operator(query):
     return None, None
 
 
-def create_subdag(dag_parent, label, team):
+def create_subdag(dag_parent, label, team, chunk_settings):
     dag_id_child = "%s.%s" % (dag_parent.dag_id, label)
     schema = team["schema"][label]
 
@@ -138,10 +138,10 @@ def create_subdag(dag_parent, label, team):
         DummyOperator(task_id="{}.notask".format(label), dag=dag)
         return dag, operator_params.get("dependencies")
 
-    if count < 100:
+    if count < int(chunk_settings["min_count"]):
         length = count
     else:
-        frac, length = math.modf(count / 100)
+        frac, length = math.modf(count / int(chunk_settings["amount"]))
         if frac:
             length += 1
 
@@ -209,8 +209,8 @@ def create_subdag(dag_parent, label, team):
     return dag, operator_params.get("dependencies")
 
 
-def create_subdag_operator(dag_parent, label, team):
-    subdag, dependencies = create_subdag(dag_parent, label, team)
+def create_subdag_operator(dag_parent, label, team, chunk_settings):
+    subdag, dependencies = create_subdag(dag_parent, label, team, chunk_settings)
 
     # Since v1.10, Airflow forces to use the SequentialExecutor as the default
     # executor for the SubDagOperator, so we need to explicitly specify the
@@ -221,7 +221,7 @@ def create_subdag_operator(dag_parent, label, team):
     return sd_op, dependencies
 
 
-def create_dag(team, schedule_interval, default_args):
+def create_dag(team, schedule_interval, chunk_settings, default_args):
     dag = DAG(
         team["topic"], schedule_interval=schedule_interval, default_args=default_args
     )
@@ -231,7 +231,7 @@ def create_dag(team, schedule_interval, default_args):
 
         # First step : create the tasks
         for label in team["schema"].keys():
-            sd_op, deps = create_subdag_operator(dag, label, team)
+            sd_op, deps = create_subdag_operator(dag, label, team, chunk_settings)
             subdags[label] = {"op": sd_op, "dependencies": deps}
 
         # Second step : link them
@@ -249,6 +249,11 @@ teams = Variable.get("config", default_var=[], deserialize_json=True)
 custom_schedule_intervals = Variable.get(
     "schedules", default_var={}, deserialize_json=True
 )
+# Create a new Variable with key "chunks" and for values, e.g.: {"amount": 25, "min_count": 3000}
+# (amount: the number of chunks you want, min_count: the count required to enable the chunk feature)
+chunk_settings = Variable.get(
+    "chunks", default_var={"amount": 100, "min_count": 100}, deserialize_json=True
+)
 # Create the DAGs
 for team in teams:
     try:
@@ -256,7 +261,7 @@ for team in teams:
             team["topic"], schedule_interval
         )
         globals()[team["topic"]] = create_dag(
-            team, team_schedule_interval, default_args
+            team, team_schedule_interval, chunk_settings, default_args
         )
     except Exception as e:
         logger.error(
