@@ -17,6 +17,64 @@ def test_compute_qos_empty():
     assert DeepDiff(expected, actual, ignore_order=True) == {}
 
 
+def test_compute_qos_one_good_datapoint():
+    data = pd.Series({1595980800: True})
+    expected = {
+        "bools_dps": {1595980800: True, 1596067199: True},
+        "periods": {"ko": 0, "ok": 86399},
+        "qos": 100.0,
+    }
+    actual = _compute_qos([data], start=1595980800, end=1596067199, **DEFAULT_ARGS)
+    assert DeepDiff(expected, actual, ignore_order=True) == {}
+
+
+def test_compute_qos_one_bad_datapoint():
+    data = pd.Series({1595980800: False})
+    expected = {
+        "bools_dps": {1595980800: False, 1596067199: False},
+        "periods": {"ko": 86399, "ok": 0},
+        "qos": 0.0,
+    }
+    actual = _compute_qos([data], start=1595980800, end=1596067199, **DEFAULT_ARGS)
+    assert DeepDiff(expected, actual, ignore_order=True) == {}
+
+
+def test_compute_qos_one_good_datapoint_no_autofill():
+    data = pd.Series({1595980800: True})
+    expected = {
+        "bools_dps": {1595980800: True},
+        "periods": {"ko": 0, "ok": 1},
+        "qos": 100.0,
+    }
+    actual = _compute_qos(
+        [data],
+        start=1595980800,
+        end=1596067199,
+        agg_op=OperationTypes.AND,
+        auto_fill=False,
+        float_decimal=3,
+    )
+    assert DeepDiff(expected, actual, ignore_order=True) == {}
+
+
+def test_compute_qos_one_bad_datapoint_no_autofill():
+    data = pd.Series({1595980800: False})
+    expected = {
+        "bools_dps": {1595980800: False},
+        "periods": {"ko": 1, "ok": 0},
+        "qos": 0.0,
+    }
+    actual = _compute_qos(
+        [data],
+        start=1595980800,
+        end=1596067199,
+        agg_op=OperationTypes.AND,
+        auto_fill=False,
+        float_decimal=3,
+    )
+    assert DeepDiff(expected, actual, ignore_order=True) == {}
+
+
 def test_compute_qos_good_values():
     data = pd.Series({1595980800: True, 1595994060: True})
     expected = {

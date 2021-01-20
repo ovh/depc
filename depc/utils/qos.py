@@ -87,10 +87,14 @@ def _compute_qos(booleans, start, end, agg_op, auto_fill, float_decimal):
     # Apply an aggregation between all series
     merged_ts["Results"] = agg_op(merged_ts)
 
-    # If we just have 1 timestamp,
-    # the QOS is this value
-    if merged_ts.Results.size == 1:
-        return 100.0 if merged_ts.Results.bool() else 0.0
+    # If we just have only 1 timestamp, when the autofill feature is disable
+    if not auto_fill and merged_ts.Results.size == 1:
+        qos = 100.0 if merged_ts.Results.bool() else 0.0
+        return {
+            "qos": qos,
+            "bools_dps": merged_ts.Results.to_dict(),
+            "periods": {"ko": 0, "ok": 1} if qos == 100.0 else {"ko": 1, "ok": 0},
+        }
 
     # Only keep the changes to reduce the size
     normalized_results = merged_ts.Results[
