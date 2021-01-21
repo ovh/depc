@@ -30,6 +30,7 @@ class Config:
         "uri": "bolt://127.0.0.1:7687",
         "username": "neo4j",
         "password": "neo4j",
+        "encrypted": False,
     }
     CONSUMER = {
         "kafka": {
@@ -64,6 +65,10 @@ class Config:
 
 class TestingConfig(Config):
     DEBUG = True
+    NEO4J = {
+        **Config.NEO4J,
+        "password": "foobar",
+    }
 
     @staticmethod
     def init_app(app):

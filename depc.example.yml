@@ -17,6 +17,8 @@ NEO4J:
     uri: bolt://127.0.0.1:7687
     username: neo4j
     password: p4ssw0rd
+    # Optional setting
+    # encrypted: False
 
 WARP10:
     url: https://example.com/api/v0
