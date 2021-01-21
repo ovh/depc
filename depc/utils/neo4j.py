@@ -132,23 +132,23 @@ def is_relationship_active_at_timestamp(relationship, ts):
         return _iterate_over_periods(relationship_periods[:-1])
 
 
-def get_records(query, params={}):
+def get_config():
     config = app.config["NEO4J"]
+    return {
+        "uri": config["uri"],
+        "auth": (config["username"], config["password"]),
+        # Support configuration without the "encrypted" setting
+        "encrypted": config.get("encrypted", False),
+    }
 
-    driver = BoltGraphDatabase.driver(
-        config["uri"], auth=(config["username"], config["password"])
-    )
+
+def get_records(query, params={}):
+    driver = BoltGraphDatabase.driver(**get_config())
     session = driver.session()
-
     return session.read_transaction(lambda tx: tx.run(query, params))
 
 
 def set_records(query, params={}):
-    config = app.config["NEO4J"]
-
-    driver = BoltGraphDatabase.driver(
-        config["uri"], auth=(config["username"], config["password"])
-    )
+    driver = BoltGraphDatabase.driver(**get_config())
     session = driver.session()
-
     return session.write_transaction(lambda tx: tx.run(query, params))
