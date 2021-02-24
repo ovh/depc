@@ -12,11 +12,21 @@ INTERPOLATE
 
 # Specific item QOS
 QOS_ITEM_PER_TEAM_LABEL = """
-[   $token
-    'depc.qos.node'
-    { 'team' '$TEAM$' 'label' '$LABEL$' 'name' '$NAME$' }
-    $start $end
-] FETCH
+{
+    'token' $token
+    'gts'
+    [
+    NEWGTS
+        'depc.qos.node' RENAME
+        {
+            'team' '$TEAM$'
+            'label' '$LABEL$'
+            'name' '$NAME$'
+        } RELABEL
+    ]
+    'start' $start
+    'end' $end
+} FETCH
 
 {  '.app' '' } RELABEL
 """
