@@ -2,7 +2,7 @@
 arrow==0.10.0
 fastjsonschema==1.6
 gunicorn==19.5.0
-jinja2==2.10.1
+jinja2==2.11.3
 jsonschema==3.2.0
 loguru==0.2.5
 neo4j-driver==1.6.1
