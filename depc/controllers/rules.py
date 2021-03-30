@@ -65,6 +65,8 @@ class RuleController(Controller):
         result_key = redis.get_key_name(
             None, "rule", rule.team.kafka_topic, None, rule_id, **kwargs
         )
+        # fix an idle-in-transaction timeout error with the Postgres database
+        db.session.close()
 
         if not redis.exists(result_key):
             logs = []
