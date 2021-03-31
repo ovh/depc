@@ -10,7 +10,7 @@ neo4jrestclient==2.1.1
 numpy==1.19.1
 pandas==0.23.3
 pycryptodome==3.7.3
-pyyaml==4.2b1
+pyyaml==5.4
 redis==2.10.5
 requests==2.20.0
 werkzeug==0.15.4
