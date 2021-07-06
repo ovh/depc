@@ -13,7 +13,7 @@ class OperationOperator(DependenciesOperator):
         super(OperationOperator, self).__init__(params, *args, **kwargs)
 
     def compute_node_qos(self, data, start, end):
-        from depc.utils.qos import compute_qos_from_bools
+        from depc.utils.qos import compute_qos_from_bools, check_enable_auto_fill
         from depc.utils.qos import OperationTypes
 
         # Keep the good values
@@ -27,8 +27,14 @@ class OperationOperator(DependenciesOperator):
             type = getattr(OperationTypes, self.type)
 
         with self.app.app_context():
+            # At this point, there is no DepC rule to compute the QoS, then
+            # the only ID provided is the team ID for check_enable_auto_fill()
             result = compute_qos_from_bools(
-                booleans=data, start=start, end=end, agg_op=type
+                booleans=data,
+                start=start,
+                end=end,
+                agg_op=type,
+                auto_fill=check_enable_auto_fill(self.team_id),
             )
 
         return {"qos": result["qos"], "bools_dps": result["bools_dps"]}
