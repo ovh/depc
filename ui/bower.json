@@ -23,7 +23,7 @@
     "angular-toastr": "^2.1.1",
     "angular-confirm-modal": "^1.2.6",
     "angular-chart.js": "^1.1.1",
-    "color-hash": "^1.0.3",
+    "color-hash": "1.0.3",
     "angular-daterangepicker": "^0.2.2",
     "moment": "^2.10.2",
     "angular-bootstrap-datetimepicker": "^1.1.3",
