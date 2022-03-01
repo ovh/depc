@@ -19,7 +19,7 @@ aiohttp==2.3.10
 yarl==1.1.1
 
 # Apache Airflow
-apache-airflow==1.10.14
+apache-airflow==2.2.4
 
 # SqlAlchemy
 alembic==1.4.2
