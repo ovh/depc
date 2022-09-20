@@ -1,3 +1,7 @@
+**Note:** DepC is archived as of Sept 2022. It remains here in read-only mode for historical interest.
+
+=========
+
 .. raw:: html
 
     <p align="center"><img alt="DepC logo" src="https://raw.githubusercontent.com/ovh/depc/master/depc_logo.png"></p>
